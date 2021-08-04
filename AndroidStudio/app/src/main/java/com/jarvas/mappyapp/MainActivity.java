@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import net.daum.mf.map.api.MapView;
 
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
         mapViewContainer.addView(mapView);
+
+        SearchView searchView = findViewById(R.id.search_view);
+        searchView.bringToFront();
     }
 
 }
