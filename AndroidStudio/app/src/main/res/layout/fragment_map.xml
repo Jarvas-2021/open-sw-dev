@@ -8,21 +8,18 @@
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <SearchView
-            android:id="@+id/search_view"
-            android:layout_width="365dp"
-            android:layout_height="33dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:background="#E1EEF4"
-            app:iconifiedByDefault="true"
-            app:searchIcon="@drawable/ic_baseline_search_24" />
-
     </RelativeLayout>
-
+    <SearchView
+        android:id="@+id/search_view"
+        android:layout_width="365dp"
+        android:layout_height="33dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:background="#E1EEF4"
+        app:iconifiedByDefault="true"
+        app:searchIcon="@drawable/ic_baseline_search_24" />
 </FrameLayout>
