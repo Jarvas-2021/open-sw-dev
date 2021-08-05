@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MappyApp</string>
+    <string name="string_d">도착지</string>
+    <string name="string_dt">도착시간</string>
+    <string name="string_s">출발지</string>
+    <string name="string_st">출발시간</string>
+    <string name="string_w">경유지</string>
+    <string name="string_wt">경유시간</string>
 </resources>
