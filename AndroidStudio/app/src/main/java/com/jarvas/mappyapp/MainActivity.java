@@ -7,43 +7,22 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.SearchView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import net.daum.mf.map.api.MapView;
+
 public class MainActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigationView; //바텀 네비게이션 뷰
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bottomNavigationView = findViewById(R.id.bottomNAV);
+        MapView mapView = new MapView(this);
 
-        //첫화면
-        getSupportFragmentManager().beginTransaction().add(R.id.main_frame,new Fragment_map()).commit();
-
-        // 바텀 네비게이션 뷰 안 아이템 설정
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem){
-                switch(menuItem.getItemId()){
-                    case R.id.map:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment_map()).commit();
-                        break;
-                    case R.id.stars:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment_stars()).commit();
-                        break;
-                    case R.id.setting:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_frame, new Fragment_setting()).commit();
-                        break;
-                }
-                return true;
-            }
-        });
-
-
-
+        ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+        mapViewContainer.addView(mapView);
     }
 
 }
