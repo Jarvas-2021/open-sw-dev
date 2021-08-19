@@ -18,13 +18,21 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         >
+
         <EditText
-            android:hint="검색할 장소를 입력 후 선택해주세요"
             android:id="@+id/map_et_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="match_parent"
+            android:hint="검색할 장소를 입력 후 선택해주세요" />
+
     </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/map_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:visibility="gone" />
+
         <RelativeLayout
             android:id="@+id/map_view"
             android:layout_width="match_parent"

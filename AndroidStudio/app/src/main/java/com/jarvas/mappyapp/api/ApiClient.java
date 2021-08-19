@@ -5,6 +5,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
+
     private static final String BASE_URL = "https://dapi.kakao.com/";
     private static Retrofit retrofit;
 
@@ -15,7 +16,8 @@ public class ApiClient {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-        return retrofit;
+        return  retrofit;
     }
+
 
 }

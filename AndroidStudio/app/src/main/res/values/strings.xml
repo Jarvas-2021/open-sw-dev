@@ -6,4 +6,5 @@
     <string name="string_st">출발시간</string>
     <string name="string_w">경유지</string>
     <string name="string_wt">경유시간</string>
+    <string name="restapi_key">bf933f6f3eaefea7f346a19ccf6fee70</string>
 </resources>
