@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,16 +18,21 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.utils.IntentKey;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -39,16 +47,25 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener {
+public class MainActivity extends AppCompatActivity implements MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener{
+
+    final static String TAG = "MapTAG";
 
     MapView mMapView;
     ViewGroup mMapViewContainer;
     RecyclerView recyclerView;
     EditText mSearchEdit;
+    private Animation fab_open, fab_close;
+    private Boolean isFabOpen = false;
+    private FloatingActionButton fab, fab1, fab2, fab3, searchDetailFab, stopTrackingFab;
 
+    MapPoint currentMapPoint;
+    private double mCurrentLng; //Long = X, Lat = Yㅌ
+    private double mCurrentLat;
     private double mSearchLng = -1;
     private double mSearchLat = -1;
     private String mSearchName;
+    boolean isTrackingMode = false; //트래킹 모드인지 (3번째 버튼 현재위치 추적 눌렀을 경우 true되고 stop 버튼 누르면 false로 된다)
 
     ArrayList<Document> bigMartList = new ArrayList<>(); //대형마트 MT1
     ArrayList<Document> gs24List = new ArrayList<>(); //편의점 CS2
@@ -74,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private void initView() {
         // 바인딩하기
         mSearchEdit = findViewById(R.id.map_et_search);
+        fab1 = findViewById(R.id.fab1);
+        stopTrackingFab = findViewById(R.id.fab_stop_tracking);
         mMapView = new MapView(this);
         mMapViewContainer = findViewById(R.id.map_view);
         mMapViewContainer.addView(mMapView);
@@ -89,6 +108,16 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         mMapView.setMapViewEventListener(this);
         mMapView.setPOIItemEventListener(this);
         mMapView.setOpenAPIKeyAuthenticationResultListener(this);
+
+        //버튼리스너
+        //fab1.setOnClickListener(this);
+        //stopTrackingFab.setOnClickListener(this);
+
+        //맵 리스너 (현재위치 업데이트)
+        //mMapView.setCurrentLocationEventListener(this);
+        //setCurrentLocationTrackingMode (지도랑 현재위치 좌표 찍어주고 따라다닌다.)
+        //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+        //mLoaderLayout.setVisibility(View.VISIBLE);
 
         // editText 검색 텍스처이벤트
         mSearchEdit.addTextChangedListener(new TextWatcher() {
@@ -116,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
+                            }
+                            else{
+                                Log.e("test",response.message());
                             }
                         }
 
@@ -155,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
     }
+
 
     @Override
     public void onMapViewInitialized(MapView mapView) {
@@ -205,12 +238,73 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem) {
 
     }
+    // 길찾기 카카오맵 호출( 카카오맵앱이 없을 경우 플레이스토어 링크로 이동)
+    public void showMap(Uri geoLocation) {
+        Intent intent;
+        try {
+            Toast.makeText(getApplicationContext(), "카카오맵으로 길찾기를 시도합니다.", Toast.LENGTH_SHORT).show();
+            intent = new Intent(Intent.ACTION_VIEW, geoLocation);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "길찾기에는 카카오맵이 필요합니다. 다운받아주시길 바랍니다.",Toast.LENGTH_SHORT).show();
+            intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://play.google.com/store/apps/details?id=net.daum.android.map&hl=ko"));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+    }
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem) {
     }
 
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
+        double lat = mapPOIItem.getMapPoint().getMapPointGeoCoord().latitude;
+        double lng = mapPOIItem.getMapPoint().getMapPointGeoCoord().longitude;
+        Toast.makeText(this, mapPOIItem.getItemName(), Toast.LENGTH_SHORT).show();
+        CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
+        builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
+        builder.setTitle("선택해주세요");
+        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기"}, 2, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+                if (index == 0) {
+                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(getString(R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            if (response.isSuccessful()) {
+                                Intent intent = new Intent(MainActivity.this, PlaceDetailActivity.class);
+                                assert response.body() != null;
+                                intent.putExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA, response.body().getDocuments().get(0));
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CategoryResult> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "해당장소에 대한 상세정보는 없습니다.", Toast.LENGTH_SHORT).show();
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            Intent intent = new Intent(MainActivity.this, PlaceDetailActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                } else if (index == 1) {
+                    showMap(Uri.parse("daummaps://route?sp=" + mCurrentLat + "," + mCurrentLng + "&ep=" + lat + "," + lng + "&by=FOOT"));
+                }
+            }
+        });
+        builder.addButton("취소", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.show();
+
 
     }
 
@@ -218,6 +312,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     public void onDraggablePOIItemMoved(MapView mapView, MapPOIItem mapPOIItem, MapPoint mapPoint) {
 
     }
+
+
      //검색예시 클릭시 이벤트 오토버스
     public void search(Document document) {//public항상 붙여줘야함
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
