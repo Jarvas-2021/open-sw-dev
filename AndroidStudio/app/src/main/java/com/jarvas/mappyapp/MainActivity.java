@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -32,7 +33,10 @@ import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.IntentKey;
+import com.squareup.otto.Subscribe;
+import com.squareup.otto.Bus;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     private double mSearchLat = -1;
     private String mSearchName;
     boolean isTrackingMode = false; //트래킹 모드인지 (3번째 버튼 현재위치 추적 눌렀을 경우 true되고 stop 버튼 누르면 false로 된다)
+    Bus bus = BusProvider.getInstance();
 
     ArrayList<Document> bigMartList = new ArrayList<>(); //대형마트 MT1
     ArrayList<Document> gs24List = new ArrayList<>(); //편의점 CS2
@@ -84,7 +89,9 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
+        bus.register(this); //정류소 등록
         initView();
     }
 
@@ -189,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     }
 
 
+
     @Override
     public void onMapViewInitialized(MapView mapView) {
     }
@@ -259,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
+        Log.e("test","test : Call POI");
         double lat = mapPOIItem.getMapPoint().getMapPointGeoCoord().latitude;
         double lng = mapPOIItem.getMapPoint().getMapPointGeoCoord().longitude;
         Toast.makeText(this, mapPOIItem.getItemName(), Toast.LENGTH_SHORT).show();
@@ -310,12 +319,26 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
     @Override
     public void onDraggablePOIItemMoved(MapView mapView, MapPOIItem mapPOIItem, MapPoint mapPoint) {
+        MapPoint.GeoCoordinate mapPointGeo = mapPoint.getMapPointGeoCoord();
+        mSearchName = "드래그한 장소";
+        mSearchLng = mapPointGeo.longitude;
+        mSearchLat = mapPointGeo.latitude;
+        mMapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(mSearchLat, mSearchLng), true);
+        searchMarker.setItemName(mSearchName);
+        MapPoint mapPoint2 = MapPoint.mapPointWithGeoCoord(mSearchLat, mSearchLng);
+        searchMarker.setMapPoint(mapPoint2);
+        searchMarker.setMarkerType(MapPOIItem.MarkerType.BluePin); // 기본으로 제공하는 BluePin 마커 모양.
+        searchMarker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
+        searchMarker.setDraggable(true);
+        mMapView.addPOIItem(searchMarker);
 
     }
 
 
      //검색예시 클릭시 이벤트 오토버스
-    public void search(Document document) {//public항상 붙여줘야함
+    @Subscribe
+    public void search(Document document){
+        //public항상 붙여줘야함
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
         mSearchName = document.getPlaceName();
         mSearchLng = Double.parseDouble(document.getX());
@@ -331,6 +354,25 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         //마커 드래그 가능하게 설정
         searchMarker.setDraggable(true);
         mMapView.addPOIItem(searchMarker);
+
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        bus.unregister(this); //이액티비티 떠나면 정류소 해제해줌
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
+        mMapView.setShowCurrentLocationMarker(false);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
 }

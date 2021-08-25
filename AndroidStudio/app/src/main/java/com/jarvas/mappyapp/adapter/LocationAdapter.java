@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.utils.BusProvider;
 
 import java.util.ArrayList;
 
@@ -71,7 +72,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
             public void onClick(View view) {
                 editText.setText(model.getPlaceName());
                 recyclerView.setVisibility(View.GONE);
-                //BusProvider.getInstance().post(model);
+                BusProvider.getInstance().post(model);
             }
         });
     }
