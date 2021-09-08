@@ -51,7 +51,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener{
 
     final static String TAG = "MapTAG";
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     EditText mSearchEdit;
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
-    private FloatingActionButton fab, fab1, fab2, fab3, searchDetailFab, stopTrackingFab;
+    private FloatingActionButton fab, fab1, fab2, fab3, searchDetailFab, stopTrackingFab, fab_input;
 
     MapPoint currentMapPoint;
     private double mCurrentLng; //Long = X, Lat = Yㅌ
@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         // 바인딩하기
         mSearchEdit = findViewById(R.id.map_et_search);
         fab1 = findViewById(R.id.fab1);
+        fab_input = findViewById(R.id.fab_input);
+
         stopTrackingFab = findViewById(R.id.fab_stop_tracking);
         mMapView = new MapView(this);
         mMapViewContainer = findViewById(R.id.map_view);
@@ -117,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         mMapView.setOpenAPIKeyAuthenticationResultListener(this);
 
         //버튼리스너
-        //fab1.setOnClickListener(this);
+        fab1.setOnClickListener(this);
+        fab_input.setOnClickListener(this);
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
@@ -373,6 +376,25 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onClick(View v){
+        int id = v.getId();
+        switch (id){
+            case R.id.fab1:
+                Toast.makeText(this, "1번 버튼: 검색좌표 기준으로 1km 검색" +
+                        "\n2번 버튼: 현재위치 기준으로 주변환경 검색" +
+                        "\n3번 버튼: 현재위치 추적 및 업데이트", Toast.LENGTH_SHORT).show();
+                //anim();
+                break;
+
+            case R.id.fab_input:
+                Intent intent = new Intent(getApplicationContext(),InputActivity.class);
+                startActivity(intent);
+
+
+        }
     }
 
 }

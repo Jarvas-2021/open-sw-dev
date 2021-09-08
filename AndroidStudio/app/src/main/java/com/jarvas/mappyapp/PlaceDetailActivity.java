@@ -15,6 +15,7 @@ public class PlaceDetailActivity extends AppCompatActivity {
     TextView categoryText;
     TextView urlText;
     TextView phoneText;
+    Intent i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
