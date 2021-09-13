@@ -1,8 +1,10 @@
-package com.jarvas.mappyapp;
+package com.jarvas.mappyapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.jarvas.mappyapp.R;
 
 public class OutputActivity extends AppCompatActivity {
 

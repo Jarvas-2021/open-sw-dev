@@ -1,9 +1,6 @@
-package com.jarvas.mappyapp;
+package com.jarvas.mappyapp.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,18 +13,15 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
@@ -390,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.fab_input:
-                Intent intent = new Intent(getApplicationContext(),InputActivity.class);
+                Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 startActivity(intent);
 
 

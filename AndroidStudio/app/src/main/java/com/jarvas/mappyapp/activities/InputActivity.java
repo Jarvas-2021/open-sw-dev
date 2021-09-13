@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp;
+package com.jarvas.mappyapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;

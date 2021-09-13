@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp;
+package com.jarvas.mappyapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.IntentKey;
 
