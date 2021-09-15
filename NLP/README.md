@@ -10,3 +10,5 @@
 ## NLP Model
 
 `BERT` [Pytorch_BERT_CRF_NER](https://github.com/eagle705/pytorch-bert-crf-ner)
+
+`CNN-BiLSTM` [CNN-BiLSTM model for Korean NER](https://github.com/eagle705/korean-ner-cnn-bilstm)
