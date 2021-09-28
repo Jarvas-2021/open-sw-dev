@@ -30,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class InputActivity extends AppCompatActivity {
+public class                             InputActivity extends AppCompatActivity {
     RecyclerView recyclerView1;
     RecyclerView recyclerView2;
     RecyclerView recyclerView3;
@@ -142,6 +142,10 @@ public class InputActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "검색리스트에서 장소를 선택해주세요", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+
+
 
         // editText2(도착지) 검색 텍스처이벤트
         searchEdit2.addTextChangedListener(new TextWatcher() {
