@@ -34,34 +34,10 @@
         android:layout_height="400dp"
         android:visibility="gone"/>
     <LinearLayout>
-<!--    <TableRow-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_marginTop="10dp">-->
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/string_st" />
-
-        <EditText
-            android:id="@+id/editText2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_span="3"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            tools:targetApi="o" />
-<!--    </TableRow>-->
-    </LinearLayout>
-
-    <LinearLayout>
-<!--    <TableRow-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_marginTop="40dp">-->
+        <!--    <TableRow-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:layout_marginTop="40dp">-->
 
         <TextView
             android:id="@+id/textView3"
@@ -78,36 +54,20 @@
             android:importantForAutofill="no"
             android:inputType="text"
             tools:targetApi="o" />
-<!--    </TableRow>-->
+        <!--    </TableRow>-->
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview2"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:visibility="gone"/>
-
     <LinearLayout>
-<!--    <TableRow-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_marginTop="10dp">-->
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/string_dt" />
-
-        <EditText
-            android:id="@+id/editText4"
+        <Button
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_span="3"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            tools:targetApi="o" />
-<!--    </TableRow>-->
+            android:layout_height="match_parent"
+            android:id="@+id/timeButton"
+            android:text="Time">
+        </Button>
     </LinearLayout>
     <LinearLayout>
 <!--    <TableRow-->
