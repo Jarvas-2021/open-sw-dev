@@ -1,10 +1,16 @@
 package com.jarvas.mappyapp.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class                             InputActivity extends AppCompatActivity {
+public class InputActivity extends AppCompatActivity {
     RecyclerView recyclerView1;
     RecyclerView recyclerView2;
     RecyclerView recyclerView3;
@@ -38,13 +44,43 @@ public class                             InputActivity extends AppCompatActivity
     EditText searchEdit2;
     EditText searchEdit3;
     Bus bus = BusProvider.getInstance();
+    private ActivityResultLauncher<Intent> resultLauncher;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
         initView();
+        //액티비티 콜백 함수
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if(result.getResultCode() == RESULT_OK){
+                            Intent intent = result.getData();
+                            int CallType = intent.getIntExtra("CallType", 0);
+                            if(CallType == 0){
+                                //실행될 코드
+                            }else if(CallType == 1){
+                                //실행될 코드
+                            }else if(CallType == 2){
+                                //실행될 코드
+                            }
+                        }
+                    }
+                });
+
     }
+    public void mOnPopupClick(View v){
+        //데이터 담아서 팝업(액티비티) 호출
+        Intent intent = new Intent(getApplicationContext(), TimePopupActivity.class);
+        intent.putExtra("CallType", 1);
+        resultLauncher.launch(intent);
+
+    }
+
     private void initView() {
         //바인딩
 
