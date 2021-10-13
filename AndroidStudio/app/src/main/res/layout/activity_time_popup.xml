@@ -35,6 +35,12 @@
             android:layout_height="match_parent"
             android:text="@string/string_st"
             ></Button>
+        <TextView
+            android:id="@+id/textView_st"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="출발시간" />
 
     </LinearLayout>
     <!-- Notice -->
@@ -49,6 +55,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/string_dt"></Button>
+        <TextView
+            android:id="@+id/textView_dt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="도착시간" />
     </LinearLayout>
 
     <!-- 닫기 버튼 -->
