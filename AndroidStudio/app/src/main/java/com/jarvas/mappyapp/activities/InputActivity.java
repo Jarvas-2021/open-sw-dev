@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jarvas.mappyapp.R;
@@ -26,6 +27,7 @@ import com.jarvas.mappyapp.api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +47,8 @@ public class InputActivity extends AppCompatActivity {
     EditText searchEdit3;
     Bus bus = BusProvider.getInstance();
     private ActivityResultLauncher<Intent> resultLauncher;
+
+    String startAddressText;
 
 
     @Override
@@ -90,6 +94,7 @@ public class InputActivity extends AppCompatActivity {
         recyclerView1 = findViewById(R.id.recyclerview1);
         recyclerView2 = findViewById(R.id.recyclerview2);
         recyclerView3 = findViewById(R.id.recyclerview3);
+        processIntentStarting();
 
         ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
         LocationAdapter locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
@@ -323,6 +328,13 @@ public class InputActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void processIntentStarting(){
+        Intent processIntent = getIntent();
+        Document document = processIntent.getParcelableExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA);
+        searchEdit1.setText(document.getPlaceName());
+        startAddressText = document.getAddressName();
     }
 
 

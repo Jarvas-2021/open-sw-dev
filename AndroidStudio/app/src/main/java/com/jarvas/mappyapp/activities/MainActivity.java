@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         builder.setTitle("선택해주세요");
-        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기"}, 2, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기: 출발지로 설정"}, 2, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int index) {
                 if (index == 0) {
@@ -299,7 +299,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     });
                 } else if (index == 1) {
-                    showMap(Uri.parse("daummaps://route?sp=" + mCurrentLat + "," + mCurrentLng + "&ep=" + lat + "," + lng + "&by=FOOT"));
+                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(getString(R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            if (response.isSuccessful()) {
+                                Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                                assert response.body() != null;
+                                intent.putExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA, response.body().getDocuments().get(0));
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CategoryResult> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "해당장소에 대한 상세정보는 없습니다.", Toast.LENGTH_SHORT).show();
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                            startActivity(intent);
+                        }
+                    });
                 }
             }
         });
