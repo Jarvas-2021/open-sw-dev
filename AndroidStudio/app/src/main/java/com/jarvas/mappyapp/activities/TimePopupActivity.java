@@ -30,6 +30,11 @@ public class TimePopupActivity extends Activity {
         textview_st = findViewById(R.id.textView_st);
         textview_dt = findViewById(R.id.textView_dt);
 
+        Calendar calendar = Calendar.getInstance();
+        String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String current_min = String.valueOf(calendar.get(Calendar.MINUTE));
+        textview_st.setText(current_hour+"시"+current_min+"분");
+
         Button stButton = findViewById(R.id.stButton);
         stButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +57,10 @@ public class TimePopupActivity extends Activity {
 
 
     void showTime(TextView tv) {
+        Calendar calendar = Calendar.getInstance();
+        String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String current_min = String.valueOf(calendar.get(Calendar.MINUTE));
+
         TimePickerDialog.OnTimeSetListener mTimeSetListener =
                 new TimePickerDialog.OnTimeSetListener() {
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -63,7 +72,7 @@ public class TimePopupActivity extends Activity {
                 };
         TimePickerDialog oDialog = new TimePickerDialog(this,
                 android.R.style.Theme_DeviceDefault_Light_Dialog,
-                mTimeSetListener, 0, 0, false);
+                mTimeSetListener, Integer.parseInt(current_hour), Integer.parseInt(current_min), false);
         oDialog.show();
     }
 
