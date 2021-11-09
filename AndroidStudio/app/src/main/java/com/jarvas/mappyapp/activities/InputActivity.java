@@ -49,7 +49,7 @@ public class InputActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> resultLauncher;
 
     String startAddressText;
-
+    String destinationAddressText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,39 +62,38 @@ public class InputActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
-                        if(result.getResultCode() == RESULT_OK){
+                        if (result.getResultCode() == RESULT_OK) {
                             Intent intent = result.getData();
                             int CallType = intent.getIntExtra("CallType", 0);
-                            if(CallType == 0){
+                            if (CallType == 0) {
                                 //실행될 코드
-                            }else if(CallType == 1){
+                            } else if (CallType == 1) {
                                 //실행될 코드
-                            }else if(CallType == 2){
+                            } else if (CallType == 2) {
                                 //실행될 코드
                             }
                         }
                     }
                 });
-
+        Intent processIntent = getIntent();
+        processIntentStarting(processIntent);
     }
-    public void mOnPopupClick(View v){
+
+    public void mOnPopupClick(View v) {
         //데이터 담아서 팝업(액티비티) 호출
         Intent intent = new Intent(getApplicationContext(), TimePopupActivity.class);
         intent.putExtra("CallType", 1);
         resultLauncher.launch(intent);
-
     }
 
     private void initView() {
         //바인딩
-
         searchEdit1 = findViewById(R.id.editText);  //출발지
         searchEdit2 = findViewById(R.id.editText3); //도착지
         searchEdit3 = findViewById(R.id.editText5); //경유지
         recyclerView1 = findViewById(R.id.recyclerview1);
         recyclerView2 = findViewById(R.id.recyclerview2);
         recyclerView3 = findViewById(R.id.recyclerview3);
-        processIntentStarting();
 
         ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
         LocationAdapter locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
@@ -142,9 +141,8 @@ public class InputActivity extends AppCompatActivity {
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -184,10 +182,6 @@ public class InputActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
         // editText2(도착지) 검색 텍스처이벤트
         searchEdit2.addTextChangedListener(new TextWatcher() {
             @Override
@@ -214,9 +208,8 @@ public class InputActivity extends AppCompatActivity {
                                     locationAdapter2.addItem(document);
                                 }
                                 locationAdapter2.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -256,7 +249,6 @@ public class InputActivity extends AppCompatActivity {
             }
         });
 
-
         // editText3(경유지) 검색 텍스처이벤트
         searchEdit3.addTextChangedListener(new TextWatcher() {
             @Override
@@ -283,9 +275,8 @@ public class InputActivity extends AppCompatActivity {
                                     locationAdapter3.addItem(document);
                                 }
                                 locationAdapter3.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -325,19 +316,23 @@ public class InputActivity extends AppCompatActivity {
             }
         });
 
-
-
-
     }
 
-    private void processIntentStarting(){
+    private void processIntentStarting(Intent intent) {
+        if (intent != null) {
+            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA);
+            if (document != null) {
+                searchEdit1.setText(document.getPlaceName());
+                startAddressText = document.getAddressName();
+            }
+        }
+    }
+
+    private void processIntentDestination() {
         Intent processIntent = getIntent();
         Document document = processIntent.getParcelableExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA);
-        searchEdit1.setText(document.getPlaceName());
-        startAddressText = document.getAddressName();
+        searchEdit2.setText(document.getPlaceName());
+        destinationAddressText = document.getAddressName();
     }
 
-
-
-
-    }
+}

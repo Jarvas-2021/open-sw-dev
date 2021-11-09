@@ -45,8 +45,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener{
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener {
     final static String TAG = "MapTAG";
 
     MapView mMapView;
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
     MapPOIItem searchMarker = new MapPOIItem();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL)); //아래구분선 세팅
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationAdapter);
-
 
         // 맵 리스너
         mMapView.setMapViewEventListener(this);
@@ -149,9 +146,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -192,17 +188,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-
-
     @Override
     public void onMapViewInitialized(MapView mapView) {
     }
+
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
     }
+
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int i) {
     }
+
     //맵 한번 클릭시 호출
     @Override
     public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
@@ -234,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
 
     }
+
     @Override
     public void onDaumMapOpenAPIKeyAuthenticationResult(MapView mapView, int i, String s) {
 
@@ -243,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem) {
 
     }
+
     // 길찾기 카카오맵 호출( 카카오맵앱이 없을 경우 플레이스토어 링크로 이동)
     public void showMap(Uri geoLocation) {
         Intent intent;
@@ -252,19 +251,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "길찾기에는 카카오맵이 필요합니다. 다운받아주시길 바랍니다.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "길찾기에는 카카오맵이 필요합니다. 다운받아주시길 바랍니다.", Toast.LENGTH_SHORT).show();
             intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://play.google.com/store/apps/details?id=net.daum.android.map&hl=ko"));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
     }
+
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem) {
     }
 
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
-        Log.e("test","test : Call POI");
+        Log.e("test", "test : Call POI");
         double lat = mapPOIItem.getMapPoint().getMapPointGeoCoord().latitude;
         double lng = mapPOIItem.getMapPoint().getMapPointGeoCoord().longitude;
         Toast.makeText(this, mapPOIItem.getItemName(), Toast.LENGTH_SHORT).show();
@@ -323,6 +323,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     });
                 }
+
             }
         });
         builder.addButton("취소", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
@@ -332,8 +333,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         builder.show();
-
-
     }
 
     @Override
@@ -350,13 +349,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         searchMarker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
         searchMarker.setDraggable(true);
         mMapView.addPOIItem(searchMarker);
-
     }
 
-
-     //검색예시 클릭시 이벤트 오토버스
+    //검색예시 클릭시 이벤트 오토버스
     @Subscribe
-    public void search(Document document){
+    public void search(Document document) {
         //public항상 붙여줘야함
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
         mSearchName = document.getPlaceName();
@@ -373,7 +370,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //마커 드래그 가능하게 설정
         searchMarker.setDraggable(true);
         mMapView.addPOIItem(searchMarker);
-
     }
 
     @Override
@@ -395,9 +391,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
         int id = v.getId();
-        switch (id){
+        switch (id) {
             case R.id.fab1:
                 Toast.makeText(this, "1번 버튼: 검색좌표 기준으로 1km 검색" +
                         "\n2번 버튼: 현재위치 기준으로 주변환경 검색" +
@@ -408,9 +404,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fab_input:
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 startActivity(intent);
-
-
         }
     }
-
 }
