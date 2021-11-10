@@ -33,6 +33,7 @@ import com.squareup.otto.Bus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,8 +76,20 @@ public class InputActivity extends AppCompatActivity {
                         }
                     }
                 });
+        //Intent 받아오기
         Intent processIntent = getIntent();
-        processIntentStarting(processIntent);
+        Bundle b = processIntent.getExtras();
+        //Key 값 받기
+        Iterator<String> iter = b.keySet().iterator();
+        String key="";
+        while(iter.hasNext()){
+            key = iter.next();
+        }
+        if (key.equals(IntentKey.PLACE_SEARCH_SET_STARTING)) {
+            processIntentStarting(processIntent);
+        } else if (key.equals(IntentKey.PLACE_SEARCH_SET_DESTINATION)) {
+            processIntentDestination(processIntent);
+        }
     }
 
     public void mOnPopupClick(View v) {
@@ -145,7 +158,6 @@ public class InputActivity extends AppCompatActivity {
                                 Log.e("test", response.message());
                             }
                         }
-
                         @Override
                         public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
 
@@ -320,7 +332,7 @@ public class InputActivity extends AppCompatActivity {
 
     private void processIntentStarting(Intent intent) {
         if (intent != null) {
-            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA);
+            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_STARTING);
             if (document != null) {
                 searchEdit1.setText(document.getPlaceName());
                 startAddressText = document.getAddressName();
@@ -328,11 +340,13 @@ public class InputActivity extends AppCompatActivity {
         }
     }
 
-    private void processIntentDestination() {
-        Intent processIntent = getIntent();
-        Document document = processIntent.getParcelableExtra(IntentKey.PLACE_SEARCH_DETAIL_EXTRA);
-        searchEdit2.setText(document.getPlaceName());
-        destinationAddressText = document.getAddressName();
+    private void processIntentDestination(Intent intent) {
+        if (intent != null) {
+            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_DESTINATION);
+            if (document != null) {
+                searchEdit2.setText(document.getPlaceName());
+                destinationAddressText = document.getAddressName();
+            }
+        }
     }
-
 }
