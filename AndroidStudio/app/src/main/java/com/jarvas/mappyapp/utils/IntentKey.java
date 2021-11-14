@@ -15,6 +15,7 @@ public class IntentKey {
     public static final String PLACE_SEARCH_DETAIL_EXTRA = "PLACE_SEARCH_DETAIL_EXTRA";
     public static final String PLACE_SEARCH_SET_STARTING = "PLACE_SEARCH_SET_STARTING";
     public static final String PLACE_SEARCH_SET_DESTINATION = "PLACE_SEARCH_SET_DESTINATION";
+    public static final String PLACE_SEARCH_SET_WAYPOINT = "PLACE_SEARCH_SET_WAYPOINT";
 
 
 }

@@ -51,6 +51,7 @@ public class InputActivity extends AppCompatActivity {
 
     String startAddressText;
     String destinationAddressText;
+    String WayPointAddressText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,9 @@ public class InputActivity extends AppCompatActivity {
             processIntentStarting(processIntent);
         } else if (key.equals(IntentKey.PLACE_SEARCH_SET_DESTINATION)) {
             processIntentDestination(processIntent);
+        }
+        else if (key.equals(IntentKey.PLACE_SEARCH_SET_WAYPOINT)) {
+            processIntentWayPoint(processIntent);
         }
     }
 
@@ -346,6 +350,15 @@ public class InputActivity extends AppCompatActivity {
             if (document != null) {
                 searchEdit2.setText(document.getPlaceName());
                 destinationAddressText = document.getAddressName();
+            }
+        }
+    }
+    private void processIntentWayPoint(Intent intent) {
+        if (intent != null) {
+            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT);
+            if (document != null) {
+                searchEdit3.setText(document.getPlaceName());
+                WayPointAddressText = document.getAddressName();
             }
         }
     }
