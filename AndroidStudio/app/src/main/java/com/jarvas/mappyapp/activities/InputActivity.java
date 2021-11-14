@@ -81,18 +81,19 @@ public class InputActivity extends AppCompatActivity {
         Intent processIntent = getIntent();
         Bundle b = processIntent.getExtras();
         //Key 값 받기
-        Iterator<String> iter = b.keySet().iterator();
-        String key="";
-        while(iter.hasNext()){
-            key = iter.next();
-        }
-        if (key.equals(IntentKey.PLACE_SEARCH_SET_STARTING)) {
-            processIntentStarting(processIntent);
-        } else if (key.equals(IntentKey.PLACE_SEARCH_SET_DESTINATION)) {
-            processIntentDestination(processIntent);
-        }
-        else if (key.equals(IntentKey.PLACE_SEARCH_SET_WAYPOINT)) {
-            processIntentWayPoint(processIntent);
+        if (b!=null) {
+            Iterator<String> iter = b.keySet().iterator();
+            String key = "";
+            while (iter.hasNext()) {
+                key = iter.next();
+            }
+            if (key.equals(IntentKey.PLACE_SEARCH_SET_STARTING)) {
+                processIntentStarting(processIntent);
+            } else if (key.equals(IntentKey.PLACE_SEARCH_SET_DESTINATION)) {
+                processIntentDestination(processIntent);
+            } else if (key.equals(IntentKey.PLACE_SEARCH_SET_WAYPOINT)) {
+                processIntentWayPoint(processIntent);
+            }
         }
     }
 
