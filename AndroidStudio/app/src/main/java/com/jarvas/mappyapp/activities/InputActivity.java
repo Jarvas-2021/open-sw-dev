@@ -1,16 +1,23 @@
 package com.jarvas.mappyapp.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jarvas.mappyapp.R;
@@ -20,17 +27,19 @@ import com.jarvas.mappyapp.api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class                             InputActivity extends AppCompatActivity {
+public class InputActivity extends AppCompatActivity {
     RecyclerView recyclerView1;
     RecyclerView recyclerView2;
     RecyclerView recyclerView3;
@@ -38,16 +47,60 @@ public class                             InputActivity extends AppCompatActivity
     EditText searchEdit2;
     EditText searchEdit3;
     Bus bus = BusProvider.getInstance();
+    private ActivityResultLauncher<Intent> resultLauncher;
+
+    String startAddressText;
+    String destinationAddressText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
         initView();
+        //액티비티 콜백 함수
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK) {
+                            Intent intent = result.getData();
+                            int CallType = intent.getIntExtra("CallType", 0);
+                            if (CallType == 0) {
+                                //실행될 코드
+                            } else if (CallType == 1) {
+                                //실행될 코드
+                            } else if (CallType == 2) {
+                                //실행될 코드
+                            }
+                        }
+                    }
+                });
+        //Intent 받아오기
+        Intent processIntent = getIntent();
+        Bundle b = processIntent.getExtras();
+        //Key 값 받기
+        Iterator<String> iter = b.keySet().iterator();
+        String key="";
+        while(iter.hasNext()){
+            key = iter.next();
+        }
+        if (key.equals(IntentKey.PLACE_SEARCH_SET_STARTING)) {
+            processIntentStarting(processIntent);
+        } else if (key.equals(IntentKey.PLACE_SEARCH_SET_DESTINATION)) {
+            processIntentDestination(processIntent);
+        }
     }
+
+    public void mOnPopupClick(View v) {
+        //데이터 담아서 팝업(액티비티) 호출
+        Intent intent = new Intent(getApplicationContext(), TimePopupActivity.class);
+        intent.putExtra("CallType", 1);
+        resultLauncher.launch(intent);
+    }
+
     private void initView() {
         //바인딩
-
         searchEdit1 = findViewById(R.id.editText);  //출발지
         searchEdit2 = findViewById(R.id.editText3); //도착지
         searchEdit3 = findViewById(R.id.editText5); //경유지
@@ -101,12 +154,10 @@ public class                             InputActivity extends AppCompatActivity
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
-
                         @Override
                         public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
 
@@ -143,10 +194,6 @@ public class                             InputActivity extends AppCompatActivity
             }
         });
 
-
-
-
-
         // editText2(도착지) 검색 텍스처이벤트
         searchEdit2.addTextChangedListener(new TextWatcher() {
             @Override
@@ -173,9 +220,8 @@ public class                             InputActivity extends AppCompatActivity
                                     locationAdapter2.addItem(document);
                                 }
                                 locationAdapter2.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -215,7 +261,6 @@ public class                             InputActivity extends AppCompatActivity
             }
         });
 
-
         // editText3(경유지) 검색 텍스처이벤트
         searchEdit3.addTextChangedListener(new TextWatcher() {
             @Override
@@ -242,9 +287,8 @@ public class                             InputActivity extends AppCompatActivity
                                     locationAdapter3.addItem(document);
                                 }
                                 locationAdapter3.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -284,12 +328,25 @@ public class                             InputActivity extends AppCompatActivity
             }
         });
 
-
-
-
     }
 
-
-
-
+    private void processIntentStarting(Intent intent) {
+        if (intent != null) {
+            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_STARTING);
+            if (document != null) {
+                searchEdit1.setText(document.getPlaceName());
+                startAddressText = document.getAddressName();
+            }
+        }
     }
+
+    private void processIntentDestination(Intent intent) {
+        if (intent != null) {
+            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_DESTINATION);
+            if (document != null) {
+                searchEdit2.setText(document.getPlaceName());
+                destinationAddressText = document.getAddressName();
+            }
+        }
+    }
+}

@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class Document implements Parcelable {
     @SerializedName("place_name")
     @Expose
-    private String placeName;
+    private String placeName = ".";
     @SerializedName("distance")
     @Expose
     private String distance;
@@ -21,7 +21,7 @@ public class Document implements Parcelable {
     private String categoryName;
     @SerializedName("address_name")
     @Expose
-    private String addressName;
+    private String addressName = ".";
     @SerializedName("road_address_name")
     @Expose
     private String roadAddressName;
