@@ -24,11 +24,16 @@ import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
+import com.jarvas.mappyapp.api.Config;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
+import net.daum.mf.map.api.MapPOIItem;
+import net.daum.mf.map.api.MapPoint;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -53,10 +58,15 @@ public class InputActivity extends AppCompatActivity {
     String destinationAddressText;
     String WayPointAddressText;
 
+    String searchAddressText;
+
+    Bus bus2 = BusProvider.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_input);
+        bus2.register(this);
         initView();
         //액티비티 콜백 함수
         resultLauncher = registerForActivityResult(
@@ -95,6 +105,9 @@ public class InputActivity extends AppCompatActivity {
                 processIntentWayPoint(processIntent);
             }
         }
+        //MainActivity mainActivity = new MainActivity();
+        //searchAddressText = mainActivity.mSearchAddress;
+        //System.out.println("searchaddress"+searchAddressText);
     }
 
     public void mOnPopupClick(View v) {
@@ -149,7 +162,7 @@ public class InputActivity extends AppCompatActivity {
                     locationAdapter.clear();
                     locationAdapter.notifyDataSetChanged();
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(getString(R.string.restapi_key), charSequence.toString(), 15);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(Config.restapi_key, charSequence.toString(), 15);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -159,6 +172,7 @@ public class InputActivity extends AppCompatActivity {
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
+
                             } else {
                                 Log.e("test", response.message());
                             }
@@ -215,7 +229,7 @@ public class InputActivity extends AppCompatActivity {
                     locationAdapter2.clear();
                     locationAdapter2.notifyDataSetChanged();
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(getString(R.string.restapi_key), charSequence.toString(), 15);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(Config.restapi_key, charSequence.toString(), 15);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -225,6 +239,7 @@ public class InputActivity extends AppCompatActivity {
                                     locationAdapter2.addItem(document);
                                 }
                                 locationAdapter2.notifyDataSetChanged();
+
                             } else {
                                 Log.e("test", response.message());
                             }
@@ -282,7 +297,7 @@ public class InputActivity extends AppCompatActivity {
                     locationAdapter3.clear();
                     locationAdapter3.notifyDataSetChanged();
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(getString(R.string.restapi_key), charSequence.toString(), 15);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(Config.restapi_key, charSequence.toString(), 15);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -334,13 +349,34 @@ public class InputActivity extends AppCompatActivity {
         });
 
     }
+    //검색예시 클릭시 이벤트 오토버스
+    @Subscribe
+    public void search(Document document) {
+        //public항상 붙여줘야함
+        Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
+        System.out.println("input search 이벤트 오토버스 실행");
+        //mSearchAddress = document.getAddressName();
+        searchAddressText = document.getAddressName();
+        System.out.println("searchAddressText:"+searchAddressText);
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        bus2.unregister(this); //이액티비티 떠나면 정류소 해제해줌
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
     private void processIntentStarting(Intent intent) {
         if (intent != null) {
             Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_STARTING);
             if (document != null) {
                 searchEdit1.setText(document.getPlaceName());
                 startAddressText = document.getAddressName();
+                System.out.println("process Intent"+startAddressText);
+
             }
         }
     }
