@@ -374,7 +374,7 @@ public class InputActivity extends AppCompatActivity {
                 searchEdit1.setText(document.getPlaceName());
                 startAddressText = document.getAddressName();
                 System.out.println("process Intent"+startAddressText);
-
+                recyclerView1.setVisibility(View.GONE);
             }
         }
     }
@@ -385,6 +385,7 @@ public class InputActivity extends AppCompatActivity {
             if (document != null) {
                 searchEdit2.setText(document.getPlaceName());
                 destinationAddressText = document.getAddressName();
+                recyclerView2.setVisibility(View.GONE);
             }
         }
     }
@@ -394,6 +395,7 @@ public class InputActivity extends AppCompatActivity {
             if (document != null) {
                 searchEdit3.setText(document.getPlaceName());
                 WayPointAddressText = document.getAddressName();
+                recyclerView3.setVisibility(View.GONE);
             }
         }
     }
