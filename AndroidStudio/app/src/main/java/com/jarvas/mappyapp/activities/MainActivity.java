@@ -28,7 +28,9 @@ import com.jarvas.mappyapp.api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
+import com.jarvas.mappyapp.utils.StringResource;
 import com.squareup.otto.Subscribe;
 import com.squareup.otto.Bus;
 
@@ -61,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double mCurrentLat;
     private double mSearchLng = -1;
     private double mSearchLat = -1;
-    private String mSearchName;
+    public String mSearchName;
+    public String mSearchAddress;
     boolean isTrackingMode = false; //트래킹 모드인지 (3번째 버튼 현재위치 추적 눌렀을 경우 true되고 stop 버튼 누르면 false로 된다)
     Bus bus = BusProvider.getInstance();
 
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     locationAdapter.clear();
                     locationAdapter.notifyDataSetChanged();
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(getString(R.string.restapi_key), charSequence.toString(), 15);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), charSequence.toString(), 15);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -271,13 +274,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         builder.setTitle("선택해주세요");
-        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기: 출발지로 설정","길찾기: 도착지로 설정"}, 3, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기: 출발지로 설정","길찾기: 도착지로 설정","길찾기: 경유지로 설정"}, 4, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int index) {
                 if (index == 0) {
                     //mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(getString(R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -301,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } else if (index == 1) {
                     //mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(getString(R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -326,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else if (index == 2 ){
                     //mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(getString(R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -342,6 +345,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call<CategoryResult> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "해당장소에 대해 도착지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
+                }
+                else if (index == 3 ){
+                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            if (response.isSuccessful()) {
+                                Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                                assert response.body() != null;
+                                intent.putExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT, response.body().getDocuments().get(0));
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CategoryResult> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "해당장소에 대해 경유지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
                             //mLoaderLayout.setVisibility(View.GONE);
                             Intent intent = new Intent(MainActivity.this, InputActivity.class);
                             startActivity(intent);
@@ -382,6 +411,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void search(Document document) {
         //public항상 붙여줘야함
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
+        System.out.println("search 이벤트 오토버스 실행");
+        mSearchAddress = document.getAddressName();
         mSearchName = document.getPlaceName();
         mSearchLng = Double.parseDouble(document.getX());
         mSearchLat = Double.parseDouble(document.getY());

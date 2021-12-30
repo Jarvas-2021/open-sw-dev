@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.jarvas.mappyapp.R;
 
+import org.w3c.dom.Text;
+
 import java.util.Calendar;
 
 public class TimePopupActivity extends Activity {
@@ -22,6 +24,9 @@ public class TimePopupActivity extends Activity {
     int h=0, mi=0;
     private TextView textview_st;
     private TextView textview_dt;
+    private String startingTime;
+    private String destinationTime;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +58,9 @@ public class TimePopupActivity extends Activity {
             }
         });
 
+        startingTime = textview_st.getText().toString();
+        destinationTime = textview_dt.getText().toString();
+
     }
 
 
@@ -80,9 +88,9 @@ public class TimePopupActivity extends Activity {
     public void mOnClose(View v){
         //데이터 전달하기
         Intent intent = new Intent();
-        intent.putExtra("result", "Close Popup");
+        intent.putExtra("startingTime",startingTime);
+        intent.putExtra("destinationTime",destinationTime);
         setResult(RESULT_OK, intent);
-
         //액티비티(팝업) 닫기
         finish();
     }
