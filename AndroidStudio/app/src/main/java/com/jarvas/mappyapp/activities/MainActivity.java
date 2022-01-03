@@ -1,13 +1,15 @@
 package com.jarvas.mappyapp.activities;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,27 +19,20 @@ import android.view.animation.Animation;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
-import com.jarvas.mappyapp.api.NaverRecognizer;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
-import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
-import com.naver.speech.clientapi.SpeechConfig;
-import com.naver.speech.clientapi.SpeechRecognitionResult;
-import com.squareup.otto.Bus;
+import com.jarvas.mappyapp.utils.StringResource;
 import com.squareup.otto.Subscribe;
+import com.squareup.otto.Bus;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -45,27 +40,14 @@ import net.daum.mf.map.api.MapView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.WeakReference;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener{
-
-    // Naver CSR Variable
-    private static final String NAVER_TAG = MainActivity.class.getSimpleName();
-    private static final String CLIENT_ID = "n9a2bacryq";
-    private RecognitionHandler handler;
-    private NaverRecognizer naverRecognizer;
-    private AudioWriterPCM writer;
-    private FloatingActionButton action_mic;
-    private boolean isEpdTypeSelected;
-    private SpeechConfig.EndPointDetectType currentEpdType;
-
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener {
     final static String TAG = "MapTAG";
 
     MapView mMapView;
@@ -81,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double mCurrentLat;
     private double mSearchLng = -1;
     private double mSearchLat = -1;
-    private String mSearchName;
+    public String mSearchName;
+    public String mSearchAddress;
     boolean isTrackingMode = false; //트래킹 모드인지 (3번째 버튼 현재위치 추적 눌렀을 경우 true되고 stop 버튼 누르면 false로 된다)
     Bus bus = BusProvider.getInstance();
 
@@ -98,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
     MapPOIItem searchMarker = new MapPOIItem();
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,17 +88,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
         initView();
-
-        handler = new RecognitionHandler(this);
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
-
     }
 
     private void initView() {
         // 바인딩하기
         mSearchEdit = findViewById(R.id.map_et_search);
         fab1 = findViewById(R.id.fab1);
-        action_mic = findViewById(R.id.Action_Mic);
         fab_input = findViewById(R.id.fab_input);
 
         stopTrackingFab = findViewById(R.id.fab_stop_tracking);
@@ -130,7 +107,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationAdapter);
 
-
         // 맵 리스너
         mMapView.setMapViewEventListener(this);
         mMapView.setPOIItemEventListener(this);
@@ -139,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //버튼리스너
         fab1.setOnClickListener(this);
         fab_input.setOnClickListener(this);
-        action_mic.setOnClickListener(this);
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
@@ -164,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     locationAdapter.clear();
                     locationAdapter.notifyDataSetChanged();
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(getString(R.string.restapi_key), charSequence.toString(), 15);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), charSequence.toString(), 15);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -174,9 +149,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
-                            }
-                            else{
-                                Log.e("test",response.message());
+                            } else {
+                                Log.e("test", response.message());
                             }
                         }
 
@@ -215,20 +189,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(), "검색리스트에서 장소를 선택해주세요", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
-
-
 
     @Override
     public void onMapViewInitialized(MapView mapView) {
     }
+
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
     }
+
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int i) {
     }
+
     //맵 한번 클릭시 호출
     @Override
     public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
@@ -260,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
 
     }
+
     @Override
     public void onDaumMapOpenAPIKeyAuthenticationResult(MapView mapView, int i, String s) {
 
@@ -269,6 +244,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem) {
 
     }
+
     // 길찾기 카카오맵 호출( 카카오맵앱이 없을 경우 플레이스토어 링크로 이동)
     public void showMap(Uri geoLocation) {
         Intent intent;
@@ -278,32 +254,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "길찾기에는 카카오맵이 필요합니다. 다운받아주시길 바랍니다.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "길찾기에는 카카오맵이 필요합니다. 다운받아주시길 바랍니다.", Toast.LENGTH_SHORT).show();
             intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://play.google.com/store/apps/details?id=net.daum.android.map&hl=ko"));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         }
     }
+
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem) {
     }
 
     @Override
     public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
-        Log.e("test","test : Call POI");
+        Log.e("test", "test : Call POI");
         double lat = mapPOIItem.getMapPoint().getMapPointGeoCoord().latitude;
         double lng = mapPOIItem.getMapPoint().getMapPointGeoCoord().longitude;
         Toast.makeText(this, mapPOIItem.getItemName(), Toast.LENGTH_SHORT).show();
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         builder.setTitle("선택해주세요");
-        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기"}, 2, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기: 출발지로 설정","길찾기: 도착지로 설정","길찾기: 경유지로 설정"}, 4, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int index) {
                 if (index == 0) {
                     //mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(getString(R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
@@ -325,8 +302,83 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     });
                 } else if (index == 1) {
-                    showMap(Uri.parse("daummaps://route?sp=" + mCurrentLat + "," + mCurrentLng + "&ep=" + lat + "," + lng + "&by=FOOT"));
+                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            if (response.isSuccessful()) {
+                                Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                                assert response.body() != null;
+                                intent.putExtra(IntentKey.PLACE_SEARCH_SET_STARTING, response.body().getDocuments().get(0));
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CategoryResult> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "해당장소에 대해 출발지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                            startActivity(intent);
+                        }
+                    });
                 }
+                else if (index == 2 ){
+                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            if (response.isSuccessful()) {
+                                Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                                assert response.body() != null;
+                                intent.putExtra(IntentKey.PLACE_SEARCH_SET_DESTINATION, response.body().getDocuments().get(0));
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CategoryResult> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "해당장소에 대해 도착지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
+                }
+                else if (index == 3 ){
+                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            if (response.isSuccessful()) {
+                                Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                                assert response.body() != null;
+                                intent.putExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT, response.body().getDocuments().get(0));
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CategoryResult> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "해당장소에 대해 경유지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                            //mLoaderLayout.setVisibility(View.GONE);
+                            Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
+                }
+
             }
         });
         builder.addButton("취소", -1, -1, CFAlertDialog.CFAlertActionStyle.POSITIVE, CFAlertDialog.CFAlertActionAlignment.END, new DialogInterface.OnClickListener() {
@@ -336,8 +388,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         builder.show();
-
-
     }
 
     @Override
@@ -354,15 +404,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         searchMarker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
         searchMarker.setDraggable(true);
         mMapView.addPOIItem(searchMarker);
-
     }
 
-
-     //검색예시 클릭시 이벤트 오토버스
+    //검색예시 클릭시 이벤트 오토버스
     @Subscribe
-    public void search(Document document){
+    public void search(Document document) {
         //public항상 붙여줘야함
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
+        System.out.println("search 이벤트 오토버스 실행");
+        mSearchAddress = document.getAddressName();
         mSearchName = document.getPlaceName();
         mSearchLng = Double.parseDouble(document.getX());
         mSearchLat = Double.parseDouble(document.getY());
@@ -377,7 +427,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //마커 드래그 가능하게 설정
         searchMarker.setDraggable(true);
         mMapView.addPOIItem(searchMarker);
-
     }
 
     @Override
@@ -389,8 +438,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
-        mMapView.setShowCurrentLocationMarker(false);
+        //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
+        //mMapView.setShowCurrentLocationMarker(false);
     }
 
     @Override
@@ -399,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v){
+    public void onClick(View v) {
         int id = v.getId();
         switch (id) {
             case R.id.fab1:
@@ -412,113 +461,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fab_input:
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 startActivity(intent);
-
-            case R.id.Action_Mic:
-                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                    // Run SpeechRecongizer by calling recognize().
-
-                    currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
-                    isEpdTypeSelected = false;
-                    naverRecognizer.recognize();
-                }
-                if (!isEpdTypeSelected) {
-                    if (naverRecognizer.getSpeechRecognizer().isRunning()) {
-                        naverRecognizer.getSpeechRecognizer().selectEPDTypeInHybrid(SpeechConfig.EndPointDetectType.AUTO);
-                    }
-                } else {
-                    if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                        Log.e(NAVER_TAG, "Recognition is already finished.");
-                    } else {
-                        naverRecognizer.getSpeechRecognizer().stop();
-                    }
-                }
         }
     }
-
-    static class RecognitionHandler extends Handler {
-        private final WeakReference<MainActivity> mActivity;
-
-        RecognitionHandler(MainActivity activity) {
-            mActivity = new WeakReference<MainActivity>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            MainActivity activity = mActivity.get();
-            if (activity != null) {
-            }
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // NOTE : initialize() must be called on start time.
-        //naverRecognizer.getSpeechRecognizer().initialize();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        action_mic.setEnabled(true);
-    }
-
-    // Handle speech recognition Messages.
-    private void handleMessage(Message msg) {
-        switch (msg.what) {
-            case R.id.clientReady:
-                // Now an user can speak.
-                writer = new AudioWriterPCM(
-                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                writer.open("Test");
-                break;
-
-            case R.id.audioRecording:
-                writer.write((short[]) msg.obj);
-                break;
-
-            case R.id.partialResult:
-                // Extract obj property typed with String.
-                break;
-
-            case R.id.finalResult:
-                // Extract obj property typed with String array.
-                // The first element is recognition result for speech.
-                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
-                List<String> results = speechRecognitionResult.getResults();
-                StringBuilder strBuf = new StringBuilder();
-                for(String result : results) {
-                    strBuf.append(result);
-                    strBuf.append("\n");
-                }
-                break;
-
-            case R.id.recognitionError:
-                if (writer != null) {
-                    writer.close();
-                }
-
-                action_mic.setEnabled(true);
-                break;
-
-            case R.id.clientInactive:
-                if (writer != null) {
-                    writer.close();
-                }
-                action_mic.setEnabled(true);
-                break;
-
-            case R.id.endPointDetectTypeSelected:
-                isEpdTypeSelected = true;
-                currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
-                if(currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
-                    Toast.makeText(this, "AUTO epd type is selected.", Toast.LENGTH_SHORT).show();
-                } else if(currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
-                    Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
 }

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="350dp"
+    android:background="#eeeeee"
+    android:orientation="vertical">
+
+    <!-- 타이틀바 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="53dp"
+            android:background="#ff7a00"
+            android:gravity="center"
+            android:text="Time Settings"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <!-- //end 타이틀바 -->
+
+    <!-- Notice -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <Button
+            android:id="@+id/stButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/string_st"
+            ></Button>
+        <TextView
+            android:id="@+id/textView_st"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="출발시간" />
+
+    </LinearLayout>
+    <!-- Notice -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <Button
+            android:id="@+id/dtButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/string_dt"></Button>
+        <TextView
+            android:id="@+id/textView_dt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="도착시간" />
+    </LinearLayout>
+
+    <!-- 닫기 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:gravity="center"
+            android:onClick="mOnClose"
+            android:padding="16dp"
+            android:text="확인"
+            android:textColor="#ff7a00"
+            android:textSize="15sp" />
+    </LinearLayout>
+    <!--// 닫기 버튼 -->
+</LinearLayout>
