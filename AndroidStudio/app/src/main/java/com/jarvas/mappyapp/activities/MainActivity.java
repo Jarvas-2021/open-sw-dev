@@ -1,15 +1,23 @@
 package com.jarvas.mappyapp.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -17,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
@@ -36,6 +45,7 @@ import com.squareup.otto.Bus;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
+import net.daum.mf.map.api.MapReverseGeoCoder;
 import net.daum.mf.map.api.MapView;
 
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +57,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener,MapView.CurrentLocationEventListener {
     final static String TAG = "MapTAG";
 
     MapView mMapView;
@@ -56,7 +66,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText mSearchEdit;
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
-    private FloatingActionButton fab, fab1, fab2, fab3, searchDetailFab, stopTrackingFab, fab_input;
+    private FloatingActionButton fab1,fab_input;
+    RelativeLayout mLoaderLayout;
 
     MapPoint currentMapPoint;
     private double mCurrentLng; //Long = X, Lat = Yㅌ
@@ -68,18 +79,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     boolean isTrackingMode = false; //트래킹 모드인지 (3번째 버튼 현재위치 추적 눌렀을 경우 true되고 stop 버튼 누르면 false로 된다)
     Bus bus = BusProvider.getInstance();
 
-    ArrayList<Document> bigMartList = new ArrayList<>(); //대형마트 MT1
-    ArrayList<Document> gs24List = new ArrayList<>(); //편의점 CS2
-    ArrayList<Document> schoolList = new ArrayList<>(); //학교 SC4
-    ArrayList<Document> academyList = new ArrayList<>(); //학원 AC5
-    ArrayList<Document> subwayList = new ArrayList<>(); //지하철 SW8
-    ArrayList<Document> bankList = new ArrayList<>(); //은행 BK9
-    ArrayList<Document> hospitalList = new ArrayList<>(); //병원 HP8
-    ArrayList<Document> pharmacyList = new ArrayList<>(); //약국 PM9
-    ArrayList<Document> cafeList = new ArrayList<>(); //카페
-
     ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
     MapPOIItem searchMarker = new MapPOIItem();
+
+    private static final int GPS_ENABLE_REQUEST_CODE = 2001;
+    private static final int PERMISSIONS_REQUEST_CODE = 100;
+    String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab1 = findViewById(R.id.fab1);
         fab_input = findViewById(R.id.fab_input);
 
-        stopTrackingFab = findViewById(R.id.fab_stop_tracking);
+        //stopTrackingFab = findViewById(R.id.fab_stop_tracking);
+        mLoaderLayout = findViewById(R.id.loaderLayout);
         mMapView = new MapView(this);
         mMapViewContainer = findViewById(R.id.map_view);
         mMapViewContainer.addView(mMapView);
@@ -118,10 +124,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
-        //mMapView.setCurrentLocationEventListener(this);
+        mMapView.setCurrentLocationEventListener(this);
+        if (!checkLocationServiceStatus()){
+            showDialogForLocationServiceSetting();}
+        else{
+            checkRunTimePermission();
+        }
+
         //setCurrentLocationTrackingMode (지도랑 현재위치 좌표 찍어주고 따라다닌다.)
-        //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
-        //mLoaderLayout.setVisibility(View.VISIBLE);
+        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+        mLoaderLayout.setVisibility(View.VISIBLE);
+
 
         // editText 검색 텍스처이벤트
         mSearchEdit.addTextChangedListener(new TextWatcher() {
@@ -190,6 +203,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.id.fab1:
+                Toast.makeText(this, "현재위치로 이동", Toast.LENGTH_SHORT).show();
+                //searchDetailFab.setVisibility(View.GONE);
+                mLoaderLayout.setVisibility(View.VISIBLE);
+                mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithHeading);
+                //stopTrackingFab.setVisibility(View.VISIBLE);
+                mLoaderLayout.setVisibility(View.GONE);
+                break;
+
+            case R.id.fab_input:
+                Intent intent = new Intent(getApplicationContext(), InputActivity.class);
+                startActivity(intent);
+        }
+    }
+
 
     @Override
     public void onMapViewInitialized(MapView mapView) {
@@ -284,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             if (response.isSuccessful()) {
                                 Intent intent = new Intent(MainActivity.this, PlaceDetailActivity.class);
                                 assert response.body() != null;
@@ -296,19 +329,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call<CategoryResult> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "해당장소에 대한 상세정보는 없습니다.", Toast.LENGTH_SHORT).show();
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             Intent intent = new Intent(MainActivity.this, PlaceDetailActivity.class);
                             startActivity(intent);
                         }
                     });
                 } else if (index == 1) {
-                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                     Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             if (response.isSuccessful()) {
                                 Intent intent = new Intent(MainActivity.this, InputActivity.class);
                                 assert response.body() != null;
@@ -320,20 +353,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call<CategoryResult> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "해당장소에 대해 출발지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             Intent intent = new Intent(MainActivity.this, InputActivity.class);
                             startActivity(intent);
                         }
                     });
                 }
                 else if (index == 2 ){
-                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                     Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             if (response.isSuccessful()) {
                                 Intent intent = new Intent(MainActivity.this, InputActivity.class);
                                 assert response.body() != null;
@@ -345,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call<CategoryResult> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "해당장소에 대해 도착지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             Intent intent = new Intent(MainActivity.this, InputActivity.class);
                             startActivity(intent);
                         }
@@ -353,13 +386,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 }
                 else if (index == 3 ){
-                    //mLoaderLayout.setVisibility(View.VISIBLE);
+                    mLoaderLayout.setVisibility(View.VISIBLE);
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
                     Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
                         public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             if (response.isSuccessful()) {
                                 Intent intent = new Intent(MainActivity.this, InputActivity.class);
                                 assert response.body() != null;
@@ -371,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call<CategoryResult> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "해당장소에 대해 경유지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                            //mLoaderLayout.setVisibility(View.GONE);
+                            mLoaderLayout.setVisibility(View.GONE);
                             Intent intent = new Intent(MainActivity.this, InputActivity.class);
                             startActivity(intent);
                         }
@@ -429,6 +462,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mMapView.addPOIItem(searchMarker);
     }
 
+    // 현재 위치 업데이트 setCurrentLocationEventListener
+    @Override
+    public void onCurrentLocationUpdate(MapView mapView, MapPoint mapPoint, float accuracyInMeters) {
+        MapPoint.GeoCoordinate mapPointGeo = mapPoint.getMapPointGeoCoord();
+        Log.i(TAG, String.format("MapView onCurrentLocationUpdate (%f,%f) accuracy (%f)", mapPointGeo.latitude, mapPointGeo.longitude, accuracyInMeters));
+        currentMapPoint = MapPoint.mapPointWithGeoCoord(mapPointGeo.latitude, mapPointGeo.longitude);
+        //이 좌표로 지도 중심 이동
+        mMapView.setMapCenterPoint(currentMapPoint, true);
+        //전역변수로 현재 좌표 저장
+        mCurrentLat = mapPointGeo.latitude;
+        mCurrentLng = mapPointGeo.longitude;
+        Log.d(TAG, "현재위치 => " + mCurrentLat + "  " + mCurrentLng);
+        mLoaderLayout.setVisibility(View.GONE);
+        //트래킹 모드가 아닌 단순 현재위치 업데이트일 경우, 한번만 위치 업데이트하고 트래킹을 중단시키기 위한 로직
+        if (!isTrackingMode) {
+            mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
+        }
+    }
+
+    @Override
+    public void onCurrentLocationDeviceHeadingUpdate(MapView mapView, float v) {
+
+    }
+
+    @Override
+    public void onCurrentLocationUpdateFailed(MapView mapView) {
+        Log.i(TAG, "onCurrentLocationUpdateFailed");
+        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+    }
+
+    @Override
+    public void onCurrentLocationUpdateCancelled(MapView mapView) {
+        Log.i(TAG, "onCurrentLocationUpdateCancelled");
+        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
+    }
+
+    void checkRunTimePermission() {
+        int hasFineLocationPermission = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.ACCESS_FINE_LOCATION);
+        if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED){
+            mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithHeading);
+        }else{
+            if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,REQUIRED_PERMISSIONS[0])){
+                Toast.makeText(MainActivity.this,"이 앱을 실행하려면 위치 접근 권한이 필요합니다.",Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(MainActivity.this,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE);
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE);
+            }
+        }
+    }
+
+    private void showDialogForLocationServiceSetting(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("위치 서비스 비활성화");
+        builder.setMessage("앱을 사용하기 위해 위치 서비스가 필요합니다.");
+        builder.setCancelable(true);
+        builder.setPositiveButton("설정",new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent callGPSSettingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivityForResult(callGPSSettingIntent,GPS_ENABLE_REQUEST_CODE);
+            }
+        });
+        builder.create().show();
+    }
+
+    public boolean checkLocationServiceStatus(){
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+
+
+
     @Override
     public void finish() {
         super.finish();
@@ -438,8 +544,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
-        //mMapView.setShowCurrentLocationMarker(false);
+        mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
+        mMapView.setShowCurrentLocationMarker(false);
     }
 
     @Override
@@ -447,20 +553,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onBackPressed();
     }
 
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.fab1:
-                Toast.makeText(this, "1번 버튼: 검색좌표 기준으로 1km 검색" +
-                        "\n2번 버튼: 현재위치 기준으로 주변환경 검색" +
-                        "\n3번 버튼: 현재위치 추적 및 업데이트", Toast.LENGTH_SHORT).show();
-                //anim();
-                break;
 
-            case R.id.fab_input:
-                Intent intent = new Intent(getApplicationContext(), InputActivity.class);
-                startActivity(intent);
-        }
-    }
 }
