@@ -1,22 +1,16 @@
 package com.jarvas.mappyapp.activities;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,30 +22,42 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
+import com.jarvas.mappyapp.api.NaverRecognizer;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
-import com.squareup.otto.Subscribe;
+import com.naver.speech.clientapi.SpeechConfig;
+import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
-import net.daum.mf.map.api.MapReverseGeoCoder;
 import net.daum.mf.map.api.MapView;
 
 import org.jetbrains.annotations.NotNull;
 
-
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,6 +65,16 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener,MapView.CurrentLocationEventListener {
     final static String TAG = "MapTAG";
+
+    // Naver CSR Variable
+    private static final String NAVER_TAG = MainActivity.class.getSimpleName();
+    private static final String CLIENT_ID = "n9a2bacryq";
+    private RecognitionHandler handler;
+    private NaverRecognizer naverRecognizer;
+    private AudioWriterPCM writer;
+    private FloatingActionButton action_mic;
+    private boolean isEpdTypeSelected;
+    private SpeechConfig.EndPointDetectType currentEpdType;
 
     MapView mMapView;
     ViewGroup mMapViewContainer;
@@ -93,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
         initView();
+
+        handler = new RecognitionHandler(this);
+        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
     }
 
     private void initView() {
@@ -100,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSearchEdit = findViewById(R.id.map_et_search);
         fab1 = findViewById(R.id.fab1);
         fab_input = findViewById(R.id.fab_input);
+        action_mic = findViewById(R.id.Action_Mic);
 
         //stopTrackingFab = findViewById(R.id.fab_stop_tracking);
         mLoaderLayout = findViewById(R.id.loaderLayout);
@@ -121,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //버튼리스너
         fab1.setOnClickListener(this);
         fab_input.setOnClickListener(this);
+        action_mic.setOnClickListener(this);
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
@@ -220,6 +241,114 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fab_input:
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 startActivity(intent);
+                break;
+
+            case R.id.Action_Mic:
+                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+                if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
+                    // Run SpeechRecongizer by calling recognize().
+
+                    currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
+                    isEpdTypeSelected = false;
+                    naverRecognizer.recognize();
+                }
+                if (!isEpdTypeSelected) {
+                    if (naverRecognizer.getSpeechRecognizer().isRunning()) {
+                        naverRecognizer.getSpeechRecognizer().selectEPDTypeInHybrid(SpeechConfig.EndPointDetectType.AUTO);
+                    }
+                } else {
+                    if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
+                        Log.e(NAVER_TAG, "Recognition is already finished.");
+                    } else {
+                        naverRecognizer.getSpeechRecognizer().stop();
+                    }
+                }
+                break;
+        }
+    }
+
+    static class RecognitionHandler extends Handler {
+        private final WeakReference<MainActivity> mActivity;
+
+        RecognitionHandler(MainActivity activity) {
+            mActivity = new WeakReference<MainActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity activity = mActivity.get();
+            if (activity != null) {
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // NOTE : initialize() must be called on start time.
+        naverRecognizer.getSpeechRecognizer().initialize();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        action_mic.setEnabled(true);
+    }
+
+    // Handle speech recognition Messages.
+    private void handleMessage(Message msg) {
+        switch (msg.what) {
+            case R.id.clientReady:
+                // Now an user can speak.
+                writer = new AudioWriterPCM(
+                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+                writer.open("Test");
+                break;
+
+            case R.id.audioRecording:
+                writer.write((short[]) msg.obj);
+                break;
+
+            case R.id.partialResult:
+                // Extract obj property typed with String.
+                break;
+
+            case R.id.finalResult:
+                // Extract obj property typed with String array.
+                // The first element is recognition result for speech.
+                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
+                List<String> results = speechRecognitionResult.getResults();
+                StringBuilder strBuf = new StringBuilder();
+                for(String result : results) {
+                    strBuf.append(result);
+                    strBuf.append("\n");
+                }
+                break;
+
+            case R.id.recognitionError:
+                if (writer != null) {
+                    writer.close();
+                }
+
+                action_mic.setEnabled(true);
+                break;
+
+            case R.id.clientInactive:
+                if (writer != null) {
+                    writer.close();
+                }
+                action_mic.setEnabled(true);
+                break;
+
+            case R.id.endPointDetectTypeSelected:
+                isEpdTypeSelected = true;
+                currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
+                if(currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
+                    Toast.makeText(this, "AUTO epd type is selected.", Toast.LENGTH_SHORT).show();
+                } else if(currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
+                    Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
