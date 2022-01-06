@@ -8,10 +8,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +45,7 @@ import net.daum.mf.map.api.MapView;
 import org.jetbrains.annotations.NotNull;
 
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -89,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bus.register(this); //정류소 등록
         initView();
     }
-
     private void initView() {
         // 바인딩하기
         mSearchEdit = findViewById(R.id.map_et_search);
