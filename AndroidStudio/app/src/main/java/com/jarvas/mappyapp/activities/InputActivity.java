@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -11,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -32,10 +35,18 @@ import com.jarvas.mappyapp.utils.StringResource;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import net.daum.mf.map.api.MapPOIItem;
+import net.daum.mf.map.api.MapPoint;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,14 +59,20 @@ public class InputActivity extends AppCompatActivity {
     EditText searchEdit1;
     EditText searchEdit2;
     EditText searchEdit3;
+    Button okButton;
     Bus bus = BusProvider.getInstance();
     private ActivityResultLauncher<Intent> resultLauncher;
 
     String startAddressText;
     String destinationAddressText;
     String WayPointAddressText;
+    String mAddressText;
+    String mPlaceNameText;
 
     String searchAddressText;
+
+    Map<String, String> map = new HashMap<String, String>();
+    Set<String> set = map.keySet();
 
     Bus bus2 = BusProvider.getInstance();
 
@@ -122,6 +139,7 @@ public class InputActivity extends AppCompatActivity {
         recyclerView1 = findViewById(R.id.recyclerview1);
         recyclerView2 = findViewById(R.id.recyclerview2);
         recyclerView3 = findViewById(R.id.recyclerview3);
+        okButton = findViewById(R.id.okButton);
 
         ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
         LocationAdapter locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
@@ -346,17 +364,43 @@ public class InputActivity extends AppCompatActivity {
             }
         });
 
+        okButton.setOnClickListener(new View.OnClickListener(){
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onClick(View view){
+                Log.i("BUTTON","okButton click");
+                for(String str:set){
+                    //출발지
+                    if (Objects.equals(map.get(str),searchEdit1.getText().toString())){
+                        startAddressText = str;
+                    }
+                    //도착지
+                    if (Objects.equals(map.get(str),searchEdit2.getText().toString())){
+                        destinationAddressText = str;
+                    }
+                    //경유지
+                    if (Objects.equals(map.get(str),searchEdit3.getText().toString())){
+                        WayPointAddressText = str;
+                    }
+                }
+                System.out.println("StartAddress: "+startAddressText+"DestAddress: "+destinationAddressText+"WayAddress: "+WayPointAddressText);
+            }
+        });
     }
     //검색예시 클릭시 이벤트 오토버스
     @Subscribe
     public void search(Document document) {
         //public항상 붙여줘야함
+        Log.i("OTTO","ottobus event input activity");
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
-        System.out.println("input search 이벤트 오토버스 실행");
-        //mSearchAddress = document.getAddressName();
-        searchAddressText = document.getAddressName();
-        System.out.println("searchAddressText:"+searchAddressText);
+        System.out.println("search 이벤트 오토버스 실행 input");
+        mAddressText = document.getAddressName();
+        mPlaceNameText = document.getPlaceName();
+        map.put(mAddressText, mPlaceNameText);
+
     }
+
+
     @Override
     public void finish() {
         super.finish();
