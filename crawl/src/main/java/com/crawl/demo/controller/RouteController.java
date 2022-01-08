@@ -1,16 +1,12 @@
 package com.crawl.demo.controller;
 
-import com.crawl.demo.Crawlling;
 import com.crawl.demo.Input.InputRoad;
-import com.crawl.demo.TestCrawling;
 import com.crawl.demo.domain.Route;
 import com.crawl.demo.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
