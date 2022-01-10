@@ -5,6 +5,8 @@ from time import sleep
 from tqdm import tqdm
 import socket, threading
 
+import socket, threading
+
 def binder(client_socket, addr):
 
     print('Connected by', addr)
@@ -22,8 +24,6 @@ def binder(client_socket, addr):
 
             print('Received from', addr, msg)
 
-            msg = "echo : " + msg
-
             data = msg.encode()
 
             length = len(data)
@@ -31,6 +31,32 @@ def binder(client_socket, addr):
             client_socket.sendall(length.to_bytes(4, byteorder='little'))
 
             client_socket.sendall(data)
+            
+            
+            #################################################
+            
+            if data != "":
+            
+                socket_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+                socket_.connect((Server_IP, Sever_port))
+
+                socket_.sendall(length.to_bytes(4, byteorder="little"))
+
+                socket_.sendall(data)
+
+                data = socket_.recv(4)
+
+                length = int.from_bytes(data, "little")
+
+                data = socket_.recv(length)
+
+                msg = data.decode()
+
+                print(msg)
+
+                socket_.close()
+            
     except:
         print("except : " , addr)
     finally:
@@ -40,6 +66,9 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind(('', port))
 server_socket.listen()
+
+Server_IP = 
+Sever_port = 
 
 try:
     while True:
