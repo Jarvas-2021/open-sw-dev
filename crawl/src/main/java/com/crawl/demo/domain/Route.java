@@ -5,14 +5,6 @@ public class Route {
     private String walkTime;
     private String path;
 
-    public Route() {}
-
-    public Route(String time, String walkTime, String path) {
-        this.time = time;
-        this.walkTime = walkTime;
-        this.path = path;
-    }
-
     public String getTime() {
         return time;
     }
