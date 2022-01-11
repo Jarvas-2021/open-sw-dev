@@ -138,8 +138,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // ==== for SR ====
         if ( Build.VERSION.SDK_INT >= 23 ){
             // 퍼미션 체크
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO},PERMISSION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
+                    Manifest.permission.RECORD_AUDIO},PERMISSION);
         }
+
         textView = (TextView)findViewById(R.id.sttResult);
         sttBtn = (Button) findViewById(R.id.sttStart);
 
@@ -157,10 +159,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     // ==== for SR ====
-    private RecognitionListener listener = new RecognitionListener() {
+        private RecognitionListener listener = new RecognitionListener() {
         @Override
         public void onReadyForSpeech(Bundle params) {
-            Toast.makeText(getApplicationContext(),"음성인식을 시작합니다.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"음성인식을 시작합니다.",
+                    Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onBeginningOfSpeech() {}
@@ -211,13 +214,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
             }
 
-            Toast.makeText(getApplicationContext(), "에러가 발생하였습니다. : " + message,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),
+                    "에러가 발생하였습니다. : " + message,Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onResults(Bundle results) {
             // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
-            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            ArrayList<String> matches =
+                    results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
             for(int i = 0; i < matches.size() ; i++){
                 textView.setText(matches.get(i));
             }
@@ -226,7 +232,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onPartialResults(Bundle partialResults) {}
 
-        @Override public void onEvent(int eventType, Bundle params) {}
+        @Override
+        public void onEvent(int eventType, Bundle params) {}
     };
 
     // ==== /for SR ====
