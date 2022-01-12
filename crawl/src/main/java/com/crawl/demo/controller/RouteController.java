@@ -5,7 +5,6 @@ import com.crawl.demo.domain.Route;
 import com.crawl.demo.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,9 +33,9 @@ public class RouteController {
     public List<Route> androidPage(HttpServletRequest req) {
         System.out.println("서버에서 안드로이드 접속 요청함");
         try {
-            String start = req.getParameter("출발지");
+            String start = req.getParameter("startAddressText");
             InputRoad.setStart(start);
-            String end = req.getParameter("도착지");
+            String end = req.getParameter("destinationAddressText");
             InputRoad.setEnd(end);
             System.out.println("안드로이드에서 받아온 출발지 : " + start);
             System.out.println("안드로이드에서 받아온 도착지" + end);
