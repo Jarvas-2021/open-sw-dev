@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
-    String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION};
+    String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO};
 
     // ==== for SR ====
     Intent intent;
@@ -277,6 +277,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else{
             checkRunTimePermission();
         }
+
+        // 마이크 권한 확인
+        checkRecordPermission();
 
         //setCurrentLocationTrackingMode (지도랑 현재위치 좌표 찍어주고 따라다닌다.)
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
@@ -752,7 +755,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i(TAG, "onCurrentLocationUpdateCancelled");
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
     }
-
+    // 위치 권한 획득 함수
     void checkRunTimePermission() {
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.ACCESS_FINE_LOCATION);
         if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED){
@@ -760,6 +763,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else{
             if(ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,REQUIRED_PERMISSIONS[0])){
                 Toast.makeText(MainActivity.this,"이 앱을 실행하려면 위치 접근 권한이 필요합니다.",Toast.LENGTH_LONG).show();
+                ActivityCompat.requestPermissions(MainActivity.this,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE);
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE);
+            }
+        }
+    }
+    // 마이크 권한 획득 함수
+    void checkRecordPermission() {
+        int hasFineRecordPermission = ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.RECORD_AUDIO);
+        if (hasFineRecordPermission == PackageManager.PERMISSION_GRANTED){
+            if(!ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,REQUIRED_PERMISSIONS[1])){
+                Toast.makeText(MainActivity.this,"이 앱을 실행하려면 마이크 접근 권한이 필요합니다.",Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(MainActivity.this,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE);
             }else{
                 ActivityCompat.requestPermissions(MainActivity.this,REQUIRED_PERMISSIONS,PERMISSIONS_REQUEST_CODE);
