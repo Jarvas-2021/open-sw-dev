@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FloatingActionButton action_mic;
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
+    //private TextView textViewCheckSR;
 
     MapView mMapView;
     ViewGroup mMapViewContainer;
@@ -143,6 +144,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         textView = (TextView)findViewById(R.id.sttResult);
+
+        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getPackageName());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
+        mRecognizer.setRecognitionListener(listener);
+        mRecognizer.startListening(intent);
+
+
+        /*
+        textView = (TextView)findViewById(R.id.sttResult);
         sttBtn = (Button) findViewById(R.id.sttStart);
 
         intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -153,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
             mRecognizer.setRecognitionListener(listener);
             mRecognizer.startListening(intent);
-        });
+        });*/
         // ==== /for SR ====
 
     }
@@ -235,7 +247,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onEvent(int eventType, Bundle params) {}
     };
-
     // ==== /for SR ====
 
 
@@ -246,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab1 = findViewById(R.id.fab1);
         fab_input = findViewById(R.id.fab_input);
         action_mic = findViewById(R.id.Action_Mic);
+        //textViewCheckSR = findViewById(R.id.sttResult);
 
         //stopTrackingFab = findViewById(R.id.fab_stop_tracking);
         mLoaderLayout = findViewById(R.id.loaderLayout);
