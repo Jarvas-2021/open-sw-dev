@@ -39,7 +39,7 @@ public class RouteController {
             String end = req.getParameter("destinationAddressText");
             InputRoad.setEnd(end);
             System.out.println("안드로이드에서 받아온 출발지 : " + start);
-            System.out.println("안드로이드에서 받아온 도착지" + end);
+            System.out.println("안드로이드에서 받아온 도착지 : " + end);
         }catch (Exception e) {
             e.printStackTrace();
         }
