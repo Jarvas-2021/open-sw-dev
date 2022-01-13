@@ -21,17 +21,15 @@ public class RouteController {
     }
 
     //@GetMapping("android-api")
-    @RequestMapping(value = "android-api", method = RequestMethod.GET)
+    @RequestMapping(value = "/android/api", method = RequestMethod.GET)
     @ResponseBody
     public List<Route> routeList() {
-        InputRoad.setStart("인천대입구역");
-        InputRoad.setEnd("인천대학교 정보기술대학");
         routeService.crawling();
         return routeService.findRoutes();
     }
 
     @RequestMapping(value = "/android", method = RequestMethod.POST)
-    public List<Route> androidPage(HttpServletRequest req) {
+    public String androidPage(HttpServletRequest req) {
         System.out.println("서버에서 안드로이드 접속 요청함");
         try {
             String start = req.getParameter("startAddressText");
@@ -43,7 +41,6 @@ public class RouteController {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        routeService.crawling();
-        return routeService.findRoutes();
+        return "/android/api";
     }
 }
