@@ -59,7 +59,7 @@ public class RouteService {
 
         //Driver SetUp
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--start-maximized");
+        options.addArguments("--window-size=300,600");
         options.addArguments("--disable-popup-blocking");
         driver = new ChromeDriver(options);
 
