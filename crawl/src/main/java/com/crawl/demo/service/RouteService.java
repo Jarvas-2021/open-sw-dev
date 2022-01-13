@@ -75,18 +75,18 @@ public class RouteService {
             startingPoint.sendKeys(InputRoad.getStart());
             startingPoint.sendKeys(Keys.ENTER);
 
-            Thread.sleep(500);
+            Thread.sleep(300);
 
             destination = driver.findElement(By.id("info.route.waypointSuggest.input1"));
             destination.clear();
             destination.sendKeys(InputRoad.getEnd());
             destination.sendKeys(Keys.ENTER);
-            Thread.sleep(500);
+            Thread.sleep(300);
 
             element = driver.findElement(By.cssSelector("#transittab"));
             element.sendKeys(Keys.ENTER);
             System.out.println(element);
-            Thread.sleep(1000);
+            Thread.sleep(300);
 
         }catch (Exception e) {
             e.printStackTrace();
