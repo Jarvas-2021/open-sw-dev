@@ -73,21 +73,6 @@
         android:layout_margin="15sp"
         android:src="@drawable/ic_baseline_stop_24"
         />
-    <include
-        layout="@layout/view_loader"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/Action_Mic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="15sp"
-        android:layout_marginBottom="155dp"
-        android:clickable="true"
-        app:backgroundTint="#FFFFFF"
-        app:srcCompat="@android:drawable/ic_btn_speak_now" />
 
 
 
