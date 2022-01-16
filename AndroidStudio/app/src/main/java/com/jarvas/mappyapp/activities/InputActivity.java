@@ -35,15 +35,11 @@ import com.jarvas.mappyapp.utils.StringResource;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import net.daum.mf.map.api.MapPOIItem;
-import net.daum.mf.map.api.MapPoint;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -51,6 +47,11 @@ import java.util.Set;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.POST;
 
 public class InputActivity extends AppCompatActivity {
     RecyclerView recyclerView1;
@@ -384,9 +385,17 @@ public class InputActivity extends AppCompatActivity {
                     }
                 }
                 System.out.println("StartAddress: "+startAddressText+"DestAddress: "+destinationAddressText+"WayAddress: "+WayPointAddressText);
+
+                Intent intent = new Intent(InputActivity.this, ResultActivity.class);
+                intent.putExtra("startAddressText",startAddressText);
+                intent.putExtra("destinationAddressText",destinationAddressText);
+                startActivity(intent);
+
             }
         });
     }
+
+
     //검색예시 클릭시 이벤트 오토버스
     @Subscribe
     public void search(Document document) {
