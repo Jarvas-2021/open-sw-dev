@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jarvas.mappyapp.Network.Route;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.utils.ContextStorage;
+import com.jarvas.mappyapp.utils.StringResource;
 //import com.jarvas.mappyapp.api.RestApi;
 
 import java.util.List;
@@ -29,6 +31,7 @@ import retrofit2.http.POST;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textViewResult;
+    final static private String ServerUrl = StringResource.getStringResource(ContextStorage.getCtx(), R.string.ServerUrl);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +114,7 @@ public class ResultActivity extends AppCompatActivity {
     static class RetrofitServiceImplFactory{
         private static Retrofit getretrofit(){
             return new Retrofit.Builder()
-                    .baseUrl("http://192.168.0.17:8082")
+                    .baseUrl(ServerUrl)
                     .addConverterFactory(ScalarsConverterFactory.create()).build();
         }
 
@@ -128,7 +131,7 @@ public class ResultActivity extends AppCompatActivity {
                     .setLenient()
                     .create();
             return new Retrofit.Builder()
-                    .baseUrl("http://192.168.0.17:8082")
+                    .baseUrl(ServerUrl)
                     .addConverterFactory(GsonConverterFactory.create(gson)).build();
         }
 
