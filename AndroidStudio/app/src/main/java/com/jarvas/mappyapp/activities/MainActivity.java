@@ -15,6 +15,9 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -112,6 +115,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.main_menu, menu);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item)
+    {
+        Toast toast = Toast.makeText(getApplicationContext(),"", Toast.LENGTH_LONG);
+
+        switch(item.getItemId())
+        {
+            case R.id.menu1:
+                Intent intent = new Intent(getApplicationContext(), StarActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu2:
+                Intent intent2 = new Intent(getApplicationContext(), SettingActivity.class);
+                startActivity(intent2);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initView() {
