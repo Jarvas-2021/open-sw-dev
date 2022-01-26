@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.speech.RecognitionService;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -87,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
     //private TextView textViewCheckSR;
+    public static final String CHANEL_ID="ServiceChannel";
 
     MapView mMapView;
     ViewGroup mMapViewContainer;
@@ -129,33 +131,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
+
         initView();
+        /*SRR srr = new SRR();
+        textView = (TextView)findViewById(R.id.sttResult);
+        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
+        Thread thread = new Thread(srr);
+        thread.start();*/
 
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
         setContentView(R.layout.activity_main);
 
-        // ==== for SR ====
-        if ( Build.VERSION.SDK_INT >= 23 ){
-            // 퍼미션 체크
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET,
-                    Manifest.permission.RECORD_AUDIO},PERMISSION);
-        }
 
-        textView = (TextView)findViewById(R.id.sttResult);
-
-        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
-
-        /*SRR srr = new SRR();
-        Thread thread = new Thread(srr);
-        thread.start();*/
 
     }
-
-
-
 
 
     private void initView() {
