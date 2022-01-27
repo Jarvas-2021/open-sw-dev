@@ -44,6 +44,7 @@ import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
 import com.jarvas.mappyapp.api.NaverRecognizer;
+import com.jarvas.mappyapp.api.ServiceRecognition;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
@@ -263,11 +264,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(getApplicationContext(), "검색리스트에서 장소를 선택해주세요", Toast.LENGTH_SHORT).show();
             }
         });
+
+        findViewById(R.id.main_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startService(new Intent(MainActivity.this,ServiceRecognition.class));
+            }
+        });
+
+        findViewById(R.id.main_delete_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopService(new Intent(MainActivity.this,ServiceRecognition.class));
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
+
         switch (id) {
             case R.id.fab1:
                 Toast.makeText(this, "현재위치로 이동", Toast.LENGTH_SHORT).show();
