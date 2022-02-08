@@ -575,6 +575,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Subscribe
     public void search(Document document) {
         //public항상 붙여줘야함
+        Log.i("OTTO","ottobus event");
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
         System.out.println("search 이벤트 오토버스 실행");
         mSearchAddress = document.getAddressName();
@@ -677,12 +678,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
     @Override
     public void finish() {
         super.finish();
-        bus.unregister(this); //이액티비티 떠나면 정류소 해제해줌
+        bus.unregister(this);//이액티비티 떠나면 정류소 해제해줌
     }
 
     @Override

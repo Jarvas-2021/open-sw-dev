@@ -20,6 +20,7 @@ public class RouteController {
         this.routeService = routeService;
     }
 
+    //@GetMapping("android-api")
     @RequestMapping(value = "/android/api", method = RequestMethod.GET)
     @ResponseBody
     public List<Route> routeList() {
