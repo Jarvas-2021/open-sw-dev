@@ -28,7 +28,9 @@ public class RouteController {
     }
 
     @RequestMapping(value = "/android", method = RequestMethod.POST)
+    @ResponseBody
     public String androidPage(HttpServletRequest req) {
+        routeService.setClear();
         System.out.println("서버에서 안드로이드 접속 요청함");
         try {
             String start = req.getParameter("startAddressText");
@@ -40,6 +42,6 @@ public class RouteController {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return "/android/api";
+        return "android/api";
     }
 }
