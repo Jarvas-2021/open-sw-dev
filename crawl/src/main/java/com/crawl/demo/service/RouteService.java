@@ -39,6 +39,10 @@ public class RouteService {
         return routeRepository.findAll();
     }
 
+    public void setClear() {
+        routeRepository.clearRoutes();
+    }
+
     private Route createRoute(int index) {
         Route route = new Route();
 
@@ -59,7 +63,8 @@ public class RouteService {
 
         //Driver SetUp
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
+        //options.addArguments("headless");
+        options.addArguments("--window-size=300,600");
         options.addArguments("--disable-popup-blocking");
         driver = new ChromeDriver(options);
 
@@ -75,26 +80,34 @@ public class RouteService {
             startingPoint.sendKeys(InputRoad.getStart());
             startingPoint.sendKeys(Keys.ENTER);
 
-            Thread.sleep(300);
+            Thread.sleep(500);
 
             destination = driver.findElement(By.id("info.route.waypointSuggest.input1"));
             destination.clear();
             destination.sendKeys(InputRoad.getEnd());
             destination.sendKeys(Keys.ENTER);
-            Thread.sleep(300);
+            Thread.sleep(500);
 
             element = driver.findElement(By.cssSelector("#transittab"));
             element.sendKeys(Keys.ENTER);
             System.out.println(element);
-            Thread.sleep(300);
+            Thread.sleep(2000);
 
         }catch (Exception e) {
             e.printStackTrace();
         }
 
-        road = driver.findElements(By.className("SummaryDetail"));
-        time = driver.findElements(By.className("time"));
-        walkTime = driver.findElements(By.className("walkTime"));
+        Boolean isCity = driver.findElements(By.className("walkTime")).size() > 0;
+
+        if (isCity) {
+            road = driver.findElements(By.className("SummaryDetail"));
+            time = driver.findElements(By.className("time"));
+            walkTime = driver.findElements(By.className("walkTime"));
+        } else {
+            road = driver.findElements(By.className("SummaryDetail"));
+            time = driver.findElements(By.className("time"));
+            walkTime = driver.findElements(By.className("trans_type"));
+        }
 
         for (int i = 0; i < walkTime.size(); i++) {
             routeRepository.save(createRoute(i));
