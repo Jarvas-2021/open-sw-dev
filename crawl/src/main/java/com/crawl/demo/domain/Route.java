@@ -5,6 +5,16 @@ public class Route {
     private String walkTime;
     private String path;
 
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    private String price;
+
     public String getTime() {
         return time;
     }

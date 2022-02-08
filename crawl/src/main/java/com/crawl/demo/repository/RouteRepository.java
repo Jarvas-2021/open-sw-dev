@@ -11,4 +11,5 @@ public interface RouteRepository {
     Optional<Route> findByWalkTime(String walkTime);
     Optional<Route> findByPath(String path);
     List<Route> findAll();
+    void clearRoutes();
 }
