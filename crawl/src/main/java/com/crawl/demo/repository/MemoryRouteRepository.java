@@ -41,4 +41,8 @@ public class MemoryRouteRepository implements RouteRepository{
     public List<Route> findAll() {
         return new ArrayList<>(routes);
     }
+
+    public void clearRoutes() {
+        routes.clear();
+    }
 }
