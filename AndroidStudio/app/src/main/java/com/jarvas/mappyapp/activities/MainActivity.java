@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
-
         txtInMsg = (EditText) findViewById(R.id.txtInMsg);
         txtSystem = (EditText) findViewById(R.id.txtSystem);
         sttBtn = (Button)findViewById(R.id.sttStart);
@@ -199,8 +198,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         },1000);
 
     }
-
-    public RecognitionListener listener=new RecognitionListener() {
+        public RecognitionListener listener=new RecognitionListener() {
         @Override
         public void onReadyForSpeech(Bundle bundle) {
             System.out.println("onREADY");
@@ -755,6 +753,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Subscribe
     public void search(Document document) {
         //public항상 붙여줘야함
+        Log.i("OTTO","ottobus event");
         Toast.makeText(getApplicationContext(), document.getPlaceName() + " 검색", Toast.LENGTH_SHORT).show();
         System.out.println("search 이벤트 오토버스 실행");
         mSearchAddress = document.getAddressName();
@@ -857,12 +856,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
     @Override
     public void finish() {
         super.finish();
-        bus.unregister(this); //이액티비티 떠나면 정류소 해제해줌
+        bus.unregister(this);//이액티비티 떠나면 정류소 해제해줌
     }
 
     @Override
