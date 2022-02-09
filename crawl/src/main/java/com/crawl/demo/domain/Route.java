@@ -2,16 +2,26 @@ package com.crawl.demo.domain;
 
 public class Route {
 
+    private int id;
+
     private String time;
     private String path;
     private String price;
 
     private String walkTime;
     private String transfer;
-    private String km;
+    private String distance;
 
     private String transType;
     private String interTime;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public String getTime() {
         return time;
@@ -53,12 +63,12 @@ public class Route {
         this.transfer = transfer;
     }
 
-    public String getKm() {
-        return km;
+    public String getDistance() {
+        return distance;
     }
 
-    public void setKm(String km) {
-        this.km = km;
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
     public String getTransType() {
