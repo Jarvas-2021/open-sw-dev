@@ -17,9 +17,10 @@ public class RouteService {
 
     private static WebDriver driver;
 
-    private static List<WebElement> road;
+    private static List<WebElement> path;
     private static List<WebElement> time;
-    private static List<WebElement> walkTime;
+    private static List<WebElement> transType;
+    private static List<WebElement> elements;
 
     private static WebElement clear;
     private static WebElement startingPoint;
