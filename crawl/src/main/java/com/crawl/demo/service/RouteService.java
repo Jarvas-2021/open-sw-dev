@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class RouteService {
     private final RouteRepository routeRepository;
@@ -59,6 +60,37 @@ public class RouteService {
         route.setPath(road.get(index).getText());
 
         return route;
+    }
+
+    private void splitDowntownElements(int index) {
+        StringTokenizer stringTokenizer = new StringTokenizer(elements.get(index).getText(), "도보환승요금원", false);
+
+        if (stringTokenizer.hasMoreTokens()) {
+            walkTime = stringTokenizer.nextToken();
+            transfer = stringTokenizer.nextToken();
+            if (stringTokenizer.countTokens() == 3) {
+                price = stringTokenizer.nextToken() + "원" + stringTokenizer.nextToken() + "원";
+                distance = stringTokenizer.nextToken();
+            } else {
+                price = stringTokenizer.nextToken("요금원음");
+                if (price.contains("없")) {
+                    price += "음";
+                } else {
+                    price += "원";
+                }
+                distance = stringTokenizer.nextToken();
+            }
+
+        }
+    }
+
+    private void splitOutOfTownElements(int index) {
+        StringTokenizer stringTokenizer = new StringTokenizer(elements.get(index).getText(), "요금", false);
+
+        if (stringTokenizer.hasMoreTokens()) {
+            interTime = stringTokenizer.nextToken();
+            price = stringTokenizer.nextToken();
+        }
     }
 
     public void crawling() {
