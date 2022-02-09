@@ -56,8 +56,28 @@ public class RouteService {
         Route route = new Route();
 
         route.setTime(time.get(index).getText());
-        route.setWalkTime(walkTime.get(index).getText());
-        route.setPath(road.get(index).getText());
+        route.setPath(path.get(index).getText());
+        route.setPrice(price);
+
+        route.setWalkTime(walkTime);
+        route.setTransfer(transfer);
+        route.setDistance(distance);
+
+        route.setId(0);
+        if (transType != null) {
+            route.setId(1);
+            route.setTransType(transType.get(index).getText());
+        }
+        route.setInterTime(interTime);
+
+        System.out.println(price);
+
+        price = null;
+        walkTime = null;
+        transfer = null;
+        distance = null;
+        interTime = null;
+
 
         return route;
     }
