@@ -128,9 +128,9 @@ public class RouteService {
             destination.sendKeys(Keys.ENTER);
             Thread.sleep(500);
 
-            element = driver.findElement(By.cssSelector("#transittab"));
-            element.sendKeys(Keys.ENTER);
-            System.out.println(element);
+            busImage = driver.findElement(By.cssSelector("#transittab"));
+            busImage.sendKeys(Keys.ENTER);
+            System.out.println(busImage);
             Thread.sleep(2000);
 
         }catch (Exception e) {
@@ -139,17 +139,23 @@ public class RouteService {
 
         Boolean isCity = driver.findElements(By.className("walkTime")).size() > 0;
 
+        path = driver.findElements(By.className("SummaryDetail"));
+        time = driver.findElements(By.className("time"));
+
         if (isCity) {
-            road = driver.findElements(By.className("SummaryDetail"));
-            time = driver.findElements(By.className("time"));
-            walkTime = driver.findElements(By.className("walkTime"));
+            elements = driver.findElements(By.className("walkTime"));
         } else {
-            road = driver.findElements(By.className("SummaryDetail"));
-            time = driver.findElements(By.className("time"));
-            walkTime = driver.findElements(By.className("trans_type"));
+            transType = driver.findElements(By.className("trans_type"));
+            elements = driver.findElements(By.className("inter_time"));
         }
 
-        for (int i = 0; i < walkTime.size(); i++) {
+        for (int i = 0; i < elements.size(); i++) {
+            if (isCity) {
+                splitDowntownElements(i);
+            } else {
+                splitOutOfTownElements(i);
+            }
+
             routeRepository.save(createRoute(i));
         }
 
