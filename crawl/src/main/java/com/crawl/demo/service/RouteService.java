@@ -25,12 +25,19 @@ public class RouteService {
     private static WebElement clear;
     private static WebElement startingPoint;
     private static WebElement destination;
-    private static WebElement element;
+    private static WebElement busImage;
 
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     public static String WEB_DRIVER_PATH = "C:/chromedriver/chromedriver(3).exe";
     public static String TEST_URL = "https://map.kakao.com/?map_type=TYPE_MAP&target=transportation&rt=%2C%2C523953%2C1084098&rt1=%20&rt2=%20&rtIds=%2C&rtTypes=%2C#";
 
+    private String price;
+
+    private String walkTime;
+    private String transfer;
+    private String distance;
+
+    private String interTime;
 
     public RouteService(RouteRepository routeRepository) {
         this.routeRepository = routeRepository;
