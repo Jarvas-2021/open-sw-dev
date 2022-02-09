@@ -50,7 +50,6 @@ import com.jarvas.mappyapp.api.NaverRecognizer;
 import com.jarvas.mappyapp.api.ServiceRecognition;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
-import com.jarvas.mappyapp.thread.RecognizerThread;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
@@ -141,33 +140,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
 
-
-        //SRR srr = new SRR();
         txtInMsg = (EditText) findViewById(R.id.txtInMsg);
         txtSystem = (EditText) findViewById(R.id.txtSystem);
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis=this;
 
-        //intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        //mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
-        //Thread thread = new Thread(srr);
-        //thread.start();
-        //startRecognizer();
         initView();
-        //RecognizerThread rt = new RecognizerThread();
-        //rt.start();
 
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                startRecognizer();
-//            }
-//        }).start();
-
-//        View v = findViewById(R.id.speechView);
-//        //final SpeechClass c = new SpeechClass();
-//        v.post(new Runnable() { public void run() {startRecognizer();}});
-//
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
@@ -218,12 +197,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sttBtn.performClick();
             }
         },1000);
-
-        //setContentView(R.layout.activity_main);
-
-    }
-
-    public void startRecognizer() {
 
     }
 
