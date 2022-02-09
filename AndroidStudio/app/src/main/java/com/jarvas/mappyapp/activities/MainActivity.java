@@ -1,6 +1,7 @@
 package com.jarvas.mappyapp.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.speech.RecognitionService;
+import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
@@ -40,6 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.SpeechClass;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
@@ -47,6 +50,7 @@ import com.jarvas.mappyapp.api.NaverRecognizer;
 import com.jarvas.mappyapp.api.ServiceRecognition;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.thread.RecognizerThread;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
@@ -67,6 +71,7 @@ import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -118,10 +123,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO};
 
     // ==== for SR ====
-    Intent intent;
+    Intent sttIntent;
     SpeechRecognizer mRecognizer;
+    TextToSpeech tts;
     Button sttBtn;
-    TextView textView;
+    EditText txtSystem;
+    EditText txtInMsg;
+    Context cThis;
     final int PERMISSION = 1;
     // ==== /for SR ====
 
@@ -133,22 +141,181 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
 
-        initView();
-        /*SRR srr = new SRR();
-        textView = (TextView)findViewById(R.id.sttResult);
-        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
-        Thread thread = new Thread(srr);
-        thread.start();*/
 
+        //SRR srr = new SRR();
+        txtInMsg = (EditText) findViewById(R.id.txtInMsg);
+        txtSystem = (EditText) findViewById(R.id.txtSystem);
+        sttBtn = (Button)findViewById(R.id.sttStart);
+        cThis=this;
+
+        //intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        //mRecognizer=SpeechRecognizer.createSpeechRecognizer(this);
+        //Thread thread = new Thread(srr);
+        //thread.start();
+        //startRecognizer();
+        initView();
+        //RecognizerThread rt = new RecognizerThread();
+        //rt.start();
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                startRecognizer();
+//            }
+//        }).start();
+
+//        View v = findViewById(R.id.speechView);
+//        //final SpeechClass c = new SpeechClass();
+//        v.post(new Runnable() { public void run() {startRecognizer();}});
+//
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
-        setContentView(R.layout.activity_main);
+        //음성인식
+        System.out.println("startRecognizer");
+        Log.i("Re","start함수");
+        sttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
+        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");//한국어 사용
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
+        mRecognizer.setRecognitionListener(listener);
+        System.out.println("startRecognizer");
+        //음성출력 생성, 리스너 초기화
+        tts=new TextToSpeech(cThis, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status!=android.speech.tts.TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                    System.out.println("Init");
+                }
+            }
+        });
 
+        //버튼설정
+        sttBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("음성인식 시작!");
+                if(ContextCompat.checkSelfPermission(cThis, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},1);
+                    //권한을 허용하지 않는 경우
+                }else{
+                    //권한을 허용한 경우
+                    try {
+                        mRecognizer.startListening(sttIntent);
+                        System.out.println("권한 허용");
+                    }catch (SecurityException e){e.printStackTrace();}
+                }
+            }
+        });
 
+        //어플이 실행되면 자동으로 1초뒤에 음성 인식 시작
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("자동 음성 인식 시작");
+                txtSystem.setText("어플 실행됨--자동 실행-----------"+"\r\n"+txtSystem.getText());
+                sttBtn.performClick();
+            }
+        },1000);
+
+        //setContentView(R.layout.activity_main);
 
     }
+
+    public void startRecognizer() {
+
+    }
+
+    public RecognitionListener listener=new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle bundle) {
+            System.out.println("onREADY");
+            txtSystem.setText("onReadyForSpeech..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+            System.out.println("onBEGINNING");
+            txtSystem.setText("지금부터 말을 해주세요..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onRmsChanged(float v) {
+            System.out.println("onRms");
+        }
+
+        @Override
+        public void onBufferReceived(byte[] bytes) {
+            txtSystem.setText("onBufferReceived..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            txtSystem.setText("onEndOfSpeech..........."+"\r\n"+txtSystem.getText());
+            System.out.println("onEndOfSpeech");
+        }
+
+        @Override
+        public void onError(int i) {
+            txtSystem.setText("천천히 다시 말해 주세요..........."+"\r\n"+txtSystem.getText());
+            System.out.println("onError"+i);
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            String key= "";
+            key = SpeechRecognizer.RESULTS_RECOGNITION;
+            ArrayList<String> mResult =results.getStringArrayList(key);
+            String[] rs = new String[mResult.size()];
+            mResult.toArray(rs);
+            txtInMsg.setText(rs[0]+"\r\n"+txtInMsg.getText());
+            FuncVoiceOrderCheck(rs[0]);
+            mRecognizer.startListening(sttIntent);
+
+        }
+
+        @Override
+        public void onPartialResults(Bundle bundle) {
+            txtSystem.setText("onPartialResults..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onEvent(int i, Bundle bundle) {
+            txtSystem.setText("onEvent..........."+"\r\n"+txtSystem.getText());
+        }
+    };
+    //입력된 음성 메세지 확인 후 동작 처리
+    private void FuncVoiceOrderCheck(String VoiceMsg){
+        if(VoiceMsg.length()<1)return;
+
+        VoiceMsg=VoiceMsg.replace(" ","");//공백제거
+
+        if(VoiceMsg.indexOf("카카오톡")>-1 || VoiceMsg.indexOf("카톡")>-1){
+            Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.kakao.talk");
+            startActivity(launchIntent);
+            onDestroy();
+        }//카카오톡 어플로 이동
+        if(VoiceMsg.indexOf("전동꺼")>-1 || VoiceMsg.indexOf("불꺼")>-1){
+            FuncVoiceOut("전등을 끕니다");//전등을 끕니다 라는 음성 출력
+        }
+    }
+
+
+
+    //음성 메세지 출력용
+    private void FuncVoiceOut(String OutMsg){
+        if(OutMsg.length()<1)return;
+
+        tts.setPitch(1.0f);//목소리 톤1.0
+        tts.setSpeechRate(1.0f);//목소리 속도
+        tts.speak(OutMsg,TextToSpeech.QUEUE_FLUSH,null);
+
+        //어플이 종료할때는 완전히 제거
+
+    }
+
+
 
 
     private void initView() {
@@ -265,19 +432,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        findViewById(R.id.main_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startService(new Intent(MainActivity.this,ServiceRecognition.class));
-            }
-        });
-
-        findViewById(R.id.main_delete_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopService(new Intent(MainActivity.this,ServiceRecognition.class));
-            }
-        });
     }
 
     @Override
@@ -743,6 +897,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
         mMapView.setShowCurrentLocationMarker(false);
+
+        //카톡으로 이동을 했는데 음성인식 어플이 종료되지 않아 계속 실행되는 경우를 막기위해 어플 종료 함수
+        if(tts!=null){
+            tts.stop();
+            tts.shutdown();
+            tts=null;
+        }
+        if(mRecognizer!=null){
+            mRecognizer.destroy();
+            mRecognizer.cancel();
+            mRecognizer=null;
+        }
     }
 
     @Override
@@ -751,94 +917,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    class SRR implements Runnable{
-        SRR(){}
 
-        public void run(){
-            intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getPackageName());
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
-            mRecognizer.setRecognitionListener(listener);
-            mRecognizer.startListening(intent);
-        }
-        // ==== for SR ====
-        private RecognitionListener listener = new RecognitionListener() {
-            @Override
-            public void onReadyForSpeech(Bundle params) {
-                Toast.makeText(getApplicationContext(),"음성인식을 시작합니다.",
-                        Toast.LENGTH_SHORT).show();
-            }
-            @Override
-            public void onBeginningOfSpeech() {}
 
-            @Override
-            public void onRmsChanged(float rmsdB) {}
-
-            @Override
-            public void onBufferReceived(byte[] buffer) {}
-
-            @Override
-            public void onEndOfSpeech() {}
-
-            @Override
-            public void onError(int error) {
-                String message;
-
-                switch (error) {
-                    case SpeechRecognizer.ERROR_AUDIO:
-                        message = "오디오 에러";
-                        break;
-                    case SpeechRecognizer.ERROR_CLIENT:
-                        message = "클라이언트 에러";
-                        break;
-                    case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                        message = "퍼미션 없음";
-                        break;
-                    case SpeechRecognizer.ERROR_NETWORK:
-                        message = "네트워크 에러";
-                        break;
-                    case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                        message = "네트웍 타임아웃";
-                        break;
-                    case SpeechRecognizer.ERROR_NO_MATCH:
-                        message = "찾을 수 없음";
-                        break;
-                    case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-                        message = "RECOGNIZER가 바쁨";
-                        break;
-                    case SpeechRecognizer.ERROR_SERVER:
-                        message = "서버가 이상함";
-                        break;
-                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                        message = "말하는 시간초과";
-                        break;
-                    default:
-                        message = "알 수 없는 오류임";
-                        break;
-                }
-
-            /*Toast.makeText(getApplicationContext(),
-                    "에러가 발생하였습니다. : " + message,Toast.LENGTH_SHORT).show();*/
-            }
-
-            @Override
-            public void onResults(Bundle results) {
-                // 말을 하면 ArrayList에 단어를 넣고 textView에 단어를 이어줍니다.
-                ArrayList<String> matches =
-                        results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-                for(int i = 0; i < matches.size() ; i++){
-                    textView.setText(matches.get(i));
-                }
-            }
-
-            @Override
-            public void onPartialResults(Bundle partialResults) {}
-
-            @Override
-            public void onEvent(int eventType, Bundle params) {}
-        };
-        // ==== /for SR ====
-    }
 
 }
 

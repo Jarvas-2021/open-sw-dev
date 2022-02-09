@@ -6,70 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        tools:context=".MainActivity">
-        <TextView
-            android:id="@+id/sttResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="음성인식 결과가 여기에 표시됩니다." />
-        <Button
-            android:id="@+id/sttStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="음성인식 시작" />
-    </LinearLayout>-->
-
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        tools:context=".MainActivity">
-        <TextView
-            android:id="@+id/sttResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="음성인식 결과가 여기에 표시됩니다." />
-    </LinearLayout>-->
-
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/speechView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
         tools:context=".MainActivity">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="main_btn"
-            android:id="@+id/main_btn"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+    </LinearLayout>
+
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
+        <TextView
+            android:id="@+id/sttResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="main_delete_btn"
-            android:id="@+id/main_delete_btn"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </LinearLayout>
+            android:text="음성인식 결과가 여기에 표시됩니다." />
+    </LinearLayout>-->
 
 
     <LinearLayout
@@ -106,6 +68,21 @@
             android:layout_height="match_parent"/>
 
     </LinearLayout>
+
+    <EditText
+        android:id="@+id/txtInMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <EditText
+        android:id="@+id/txtSystem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
+    <Button
+        android:id="@+id/sttStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="음성인식 시작" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
