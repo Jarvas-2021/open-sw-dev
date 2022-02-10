@@ -23,6 +23,8 @@
         <activity android:name=".activities.PlaceDetailActivity" />
         <activity android:name=".activities.OutputActivity" />
         <activity android:name=".activities.InputActivity" />
+        <activity android:name=".activities.SettingActivity"/>
+        <activity android:name=".activities.StarActivity"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
