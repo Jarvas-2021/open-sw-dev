@@ -14,7 +14,8 @@
             android:id="@+id/text_view_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:background="@drawable/text_background"/>
 
     </androidx.core.widget.NestedScrollView>
 
