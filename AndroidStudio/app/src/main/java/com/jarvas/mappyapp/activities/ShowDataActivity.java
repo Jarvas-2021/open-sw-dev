@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.api.NaverRecognizer;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.naver.speech.clientapi.SpeechConfig;
@@ -46,7 +47,7 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         /* initiate adapter */
-        MyRecyclerAdapter mRecyclerAdapter = new MyRecyclerAdapter();
+        TextDataAdapter mRecyclerAdapter = new TextDataAdapter();
 
         /* initiate recyclerview */
         mRecyclerView.setAdapter(mRecyclerAdapter);
