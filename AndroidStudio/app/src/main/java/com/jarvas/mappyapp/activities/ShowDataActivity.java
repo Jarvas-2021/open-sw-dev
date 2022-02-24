@@ -1,7 +1,5 @@
 package com.jarvas.mappyapp.activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -23,8 +21,6 @@ import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechRecognitionResult;
 
-import net.daum.mf.map.api.MapView;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +35,9 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     private AudioWriterPCM writer;
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
-    private FloatingActionButton action_mic;
-    private ArrayList<TextDataItem> mTextDataItems;
+    private FloatingActionButton floatingActionButton;
+    private ArrayList<TextDataItem> mTextDataItems = new ArrayList<>();
+    private TextDataAdapter mTextDataAdapter = new TextDataAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,23 +48,17 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
 
         /* initiate adapter */
 
-        //TextDataAdapter mRecyclerAdapter = new TextDataAdapter();
-        TextDataAdapter mTextDataAdapter = new TextDataAdapter();
-
         /* initiate recyclerview */
         mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        action_mic = findViewById(R.id.floatingActionButton);
-
+        floatingActionButton = findViewById(R.id.floatingActionButton);
+        floatingActionButton.setOnClickListener(this);
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
         /* adapt data */
-        mTextDataItems = new ArrayList<>();
-        for(int i=1;i<=10;i++){
-            mTextDataItems.add(new TextDataItem("예제 데이터"+i));
-        }
+        mTextDataItems.add(new TextDataItem("예제 데이터"));
         mTextDataAdapter.setFriendList(mTextDataItems);
 
     }
@@ -91,9 +82,11 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         int id = v.getId();
         switch (id) {
-            case R.id.Action_Mic:
+            case R.id.floatingActionButton:
+                System.out.println("case 들어옴");
                 writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
                 if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
+                    System.out.println("음성인식 실행됨");
                     // Run SpeechRecongizer by calling recognize().
                     currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
                     isEpdTypeSelected = false;
@@ -124,7 +117,7 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        action_mic.setEnabled(true);
+        floatingActionButton.setEnabled(true);
     }
 
     // Handle speech recognition Messages.
@@ -151,33 +144,38 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
                 SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
                 List<String> results = speechRecognitionResult.getResults();
                 StringBuilder strBuf = new StringBuilder();
-                for(String result : results) {
+                for (String result : results) {
                     strBuf.append(result);
                     strBuf.append("\n");
+                    System.out.println("RESULT : "+result);
                 }
+                // todo - 이부분 고치기
+                System.out.println("strBuf"+strBuf);
+                mTextDataItems.add(new TextDataItem(strBuf.toString()));
+                System.out.println(mTextDataItems);
+                mTextDataAdapter.setFriendList(mTextDataItems);
                 break;
 
             case R.id.recognitionError:
                 if (writer != null) {
                     writer.close();
                 }
-
-                action_mic.setEnabled(true);
+                floatingActionButton.setEnabled(true);
                 break;
 
             case R.id.clientInactive:
                 if (writer != null) {
                     writer.close();
                 }
-                action_mic.setEnabled(true);
+                floatingActionButton.setEnabled(true);
                 break;
 
             case R.id.endPointDetectTypeSelected:
                 isEpdTypeSelected = true;
                 currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
-                if(currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
+                if (currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
                     Toast.makeText(this, "AUTO epd type is selected.", Toast.LENGTH_SHORT).show();
-                } else if(currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
+                } else if (currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
                     Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
                 }
                 break;
