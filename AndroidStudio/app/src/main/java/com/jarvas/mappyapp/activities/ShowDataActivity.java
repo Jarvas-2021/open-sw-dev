@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.api.NaverRecognizer;
+import com.jarvas.mappyapp.model.category_search.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechRecognitionResult;
@@ -25,6 +26,7 @@ import com.naver.speech.clientapi.SpeechRecognitionResult;
 import net.daum.mf.map.api.MapView;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShowDataActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,6 +40,7 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
     private FloatingActionButton action_mic;
+    private ArrayList<TextDataItem> mTextDataItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +50,25 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         /* initiate adapter */
-        TextDataAdapter mRecyclerAdapter = new TextDataAdapter();
+
+        //TextDataAdapter mRecyclerAdapter = new TextDataAdapter();
+        TextDataAdapter mTextDataAdapter = new TextDataAdapter();
 
         /* initiate recyclerview */
-        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         action_mic = findViewById(R.id.floatingActionButton);
 
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+
+        /* adapt data */
+        mTextDataItems = new ArrayList<>();
+        for(int i=1;i<=10;i++){
+            mTextDataItems.add(new TextDataItem("예제 데이터"+i));
+        }
+        mTextDataAdapter.setFriendList(mTextDataItems);
 
     }
 
