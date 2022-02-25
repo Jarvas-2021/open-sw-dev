@@ -19,10 +19,11 @@
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/navi_header.xml" value="0.2713541666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/navi_menu.xml" value="0.2713541666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/menu/main_menu.xml" value="0.24270833333333333" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.2595108695652174" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
