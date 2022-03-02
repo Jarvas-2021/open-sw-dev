@@ -119,13 +119,17 @@ public class InputActivity extends AppCompatActivity {
             while (iter.hasNext()) {
                 key = iter.next();
             }
-            if (key.equals(IntentKey.PLACE_SEARCH_SET_STARTING)) {
-                processIntentStarting(processIntent);
-            } else if (key.equals(IntentKey.PLACE_SEARCH_SET_DESTINATION)) {
-                processIntentDestination(processIntent);
-            } else if (key.equals(IntentKey.PLACE_SEARCH_SET_WAYPOINT)) {
-                processIntentWayPoint(processIntent);
+
+            switch (key) {
+                case IntentKey.PLACE_SEARCH_SET_STARTING:
+                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_STARTING, searchEdit1, startAddressText, recyclerView1);
+                    break;
+                case IntentKey.PLACE_SEARCH_SET_DESTINATION:
+                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_DESTINATION, searchEdit2, destinationAddressText, recyclerView2);
+                    break;
             }
+
+
         }
     }
 
@@ -140,19 +144,19 @@ public class InputActivity extends AppCompatActivity {
         //바인딩
         searchEdit1 = findViewById(R.id.editText);  //출발지
         searchEdit2 = findViewById(R.id.editText3); //도착지
-        searchEdit3 = findViewById(R.id.editText5); //경유지
+        //searchEdit3 = findViewById(R.id.editText5); //경유지
         recyclerView1 = findViewById(R.id.recyclerview1);
         recyclerView2 = findViewById(R.id.recyclerview2);
-        recyclerView3 = findViewById(R.id.recyclerview3);
+        //recyclerView3 = findViewById(R.id.recyclerview3);
         okButton = findViewById(R.id.okButton);
 
         ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
         LocationAdapter locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
         LocationAdapter locationAdapter2 = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit2, recyclerView2);
-        LocationAdapter locationAdapter3 = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit3, recyclerView3);
+        //LocationAdapter locationAdapter3 = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit3, recyclerView3);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false); //레이아웃매니저
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false); //레이아웃매니저
-        LinearLayoutManager layoutManager3 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false); //레이아웃매니저
+        //LinearLayoutManager layoutManager3 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false); //레이아웃매니저
 
         recyclerView1.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL)); //아래구분선 세팅
         recyclerView1.setLayoutManager(layoutManager);
@@ -162,24 +166,24 @@ public class InputActivity extends AppCompatActivity {
         recyclerView2.setLayoutManager(layoutManager2);
         recyclerView2.setAdapter(locationAdapter2);
 
-        recyclerView3.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL)); //아래구분선 세팅
-        recyclerView3.setLayoutManager(layoutManager3);
-        recyclerView3.setAdapter(locationAdapter3);
+//        recyclerView3.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL)); //아래구분선 세팅
+//        recyclerView3.setLayoutManager(layoutManager3);
+//        recyclerView3.setAdapter(locationAdapter3);
 
         // 검색 텍스처 Listener
         eventListener.addTextChangedListenerEvent(searchEdit1, recyclerView1, documentArrayList, locationAdapter);
         eventListener.addTextChangedListenerEvent(searchEdit2,recyclerView2,documentArrayList,locationAdapter2);
-        eventListener.addTextChangedListenerEvent(searchEdit3,recyclerView3,documentArrayList,locationAdapter3);
+        //eventListener.addTextChangedListenerEvent(searchEdit3,recyclerView3,documentArrayList,locationAdapter3);
 
         // setOnFocusChangeListener
         eventListener.setOnFocusChangeListenerEvent(searchEdit1,recyclerView1);
         eventListener.setOnFocusChangeListenerEvent(searchEdit2,recyclerView2);
-        eventListener.setOnFocusChangeListenerEvent(searchEdit3,recyclerView3);
+        //eventListener.setOnFocusChangeListenerEvent(searchEdit3,recyclerView3);
 
         // setOnClickListener
         eventListener.setOnClickListenerEvent(searchEdit1);
         eventListener.setOnClickListenerEvent(searchEdit2);
-        eventListener.setOnClickListenerEvent(searchEdit3);
+        //eventListener.setOnClickListenerEvent(searchEdit3);
 
         okButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -203,9 +207,9 @@ public class InputActivity extends AppCompatActivity {
                 destinationAddressText = str;
             }
             //경유지
-            if (Objects.equals(map.get(str),searchEdit3.getText().toString())){
-                wayPointAddressText = str;
-            }
+//            if (Objects.equals(map.get(str),searchEdit3.getText().toString())){
+//                wayPointAddressText = str;
+//            }
         }
     }
 
@@ -240,6 +244,7 @@ public class InputActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
     private void processIntentStarting(Intent intent) {
         if (intent != null) {
             Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_STARTING);
@@ -257,11 +262,20 @@ public class InputActivity extends AppCompatActivity {
             }
         }
     }
-    private void processIntentWayPoint(Intent intent) {
+//    private void processIntentWayPoint(Intent intent) {
+//        if (intent != null) {
+//            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT);
+//            if (document != null) {
+//                getDocumentValues(document,searchEdit3, wayPointAddressText, recyclerView3);
+//            }
+//        }
+//    }
+
+    private void processIntent(Intent intent,String key, EditText searchEdit, String addressText, RecyclerView recyclerView) {
         if (intent != null) {
-            Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT);
+            Document document = intent.getParcelableExtra(key);
             if (document != null) {
-                getDocumentValues(document,searchEdit3, wayPointAddressText, recyclerView3);
+                getDocumentValues(document,searchEdit, addressText, recyclerView);
             }
         }
     }
