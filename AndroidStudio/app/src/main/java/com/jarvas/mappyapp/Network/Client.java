@@ -13,8 +13,8 @@ import java.nio.ByteOrder;
 
 public class Client extends Thread {
 
-    private String IP = "@string/Server_IP";
-    private int portNum = Integer.parseInt("@string/Server_Port");
+    private String IP = "@string/AI_Server_IP";
+    private int portNum = Integer.parseInt("@string/AI_Server_Port");
     private String msg;
 
     public Client(@NonNull String name, String msg) {

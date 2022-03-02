@@ -92,8 +92,9 @@ public class NaverRecognizer implements SpeechRecognitionListener {
     @WorkerThread
     public void onResult(SpeechRecognitionResult result) {
         Log.d(TAG, "Final Result!! (" + result.getResults().get(0) + ")");
-        Client sendobj = new Client("Thread", result.getResults().get(0));
-        sendobj.start();
+        // todo - 나중에 이거 주석 풀기
+        //Client sendobj = new Client("Thread", result.getResults().get(0));
+        //sendobj.start();
         Message msg = Message.obtain(mHandler, R.id.finalResult, result);
         msg.sendToTarget();
     }
