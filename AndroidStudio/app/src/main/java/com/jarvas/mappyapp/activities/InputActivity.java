@@ -47,11 +47,6 @@ import java.util.Set;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.POST;
 
 public class InputActivity extends AppCompatActivity {
     RecyclerView recyclerView1;
@@ -66,7 +61,7 @@ public class InputActivity extends AppCompatActivity {
 
     String startAddressText;
     String destinationAddressText;
-    String WayPointAddressText;
+    String wayPointAddressText;
     String mAddressText;
     String mPlaceNameText;
 
@@ -367,7 +362,7 @@ public class InputActivity extends AppCompatActivity {
             public void onClick(View view){
                 Log.i("BUTTON","okButton click");
                 getAddressText();
-                System.out.println("StartAddress: "+startAddressText+"DestAddress: "+destinationAddressText+"WayAddress: "+WayPointAddressText);
+                System.out.println("StartAddress: "+startAddressText+"DestAddress: "+destinationAddressText+"WayAddress: "+ wayPointAddressText);
                 putIntentAndStartActivity();
             }
         });
@@ -385,7 +380,7 @@ public class InputActivity extends AppCompatActivity {
             }
             //경유지
             if (Objects.equals(map.get(str),searchEdit3.getText().toString())){
-                WayPointAddressText = str;
+                wayPointAddressText = str;
             }
         }
     }
@@ -426,10 +421,7 @@ public class InputActivity extends AppCompatActivity {
         if (intent != null) {
             Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_STARTING);
             if (document != null) {
-                searchEdit1.setText(document.getPlaceName());
-                startAddressText = document.getAddressName();
-                System.out.println("process Intent"+startAddressText);
-                recyclerView1.setVisibility(View.GONE);
+                getDocumentValues(document,searchEdit1, startAddressText, recyclerView1);
             }
         }
     }
@@ -438,9 +430,7 @@ public class InputActivity extends AppCompatActivity {
         if (intent != null) {
             Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_DESTINATION);
             if (document != null) {
-                searchEdit2.setText(document.getPlaceName());
-                destinationAddressText = document.getAddressName();
-                recyclerView2.setVisibility(View.GONE);
+                getDocumentValues(document,searchEdit2, destinationAddressText, recyclerView2);
             }
         }
     }
@@ -448,10 +438,14 @@ public class InputActivity extends AppCompatActivity {
         if (intent != null) {
             Document document = intent.getParcelableExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT);
             if (document != null) {
-                searchEdit3.setText(document.getPlaceName());
-                WayPointAddressText = document.getAddressName();
-                recyclerView3.setVisibility(View.GONE);
+                getDocumentValues(document,searchEdit3, wayPointAddressText, recyclerView3);
             }
         }
+    }
+
+    private void getDocumentValues(Document document, EditText searchEdit, String addressText, RecyclerView recyclerView) {
+        searchEdit.setText(document.getPlaceName());
+        addressText = document.getAddressName();
+        recyclerView.setVisibility(View.GONE);
     }
 }
