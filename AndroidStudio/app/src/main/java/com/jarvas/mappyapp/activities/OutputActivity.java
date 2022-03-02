@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.jarvas.mappyapp.R;
 
 public class OutputActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

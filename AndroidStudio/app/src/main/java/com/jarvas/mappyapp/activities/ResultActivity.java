@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jarvas.mappyapp.Network.Route;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;
+import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.StringResource;
 //import com.jarvas.mappyapp.api.RestApi;
@@ -23,17 +25,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.POST;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textViewResult;
-
-    final static private String ServerUrl = StringResource.getStringResource(ContextStorage.getCtx(), R.string.ServerUrl);
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +38,12 @@ public class ResultActivity extends AppCompatActivity {
         String startAddressText = secondIntent.getStringExtra("startAddressText");
         String destinationAddressText = secondIntent.getStringExtra("destinationAddressText");
 
-        Call<String> m = ResultActivity.RetrofitServiceImplFactory.serverPost().sendAddress(startAddressText,destinationAddressText);
+        Call<String> m = RetrofitServiceImplFactoryPostServer.serverPost().sendAddress(startAddressText,destinationAddressText);
         m.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Toast.makeText(getApplicationContext(), "서버에 값을 전달했습니다 : " , Toast.LENGTH_SHORT).show();
-                Call<List<Route>> m2 = ResultActivity.RetrofitServiceImplFactory2.serverCon2().getMlist();
+                Call<List<Route>> m2 = RetrofitServiceImplFactoryGetServer.serverCon2().getMlist();
                 System.out.println("여기까지 됨");
                 m2.enqueue(new Callback<List<Route>>(){
                     @Override
@@ -61,32 +56,9 @@ public class ResultActivity extends AppCompatActivity {
                             return;
                         }
 
-                        //todo - if문으로 구분해서 시내버스일때 / 시외버스일때 구분
                         List<Route> routes = response.body();
-                        Log.i("RESPONSE","route");
                         Log.i("RESPONSE",routes.toString());
-                        // if (routes의 앞에있는 부분이 0이면 시내버스 )
-                        for (Route route : routes) {
-                            if (route.getId() == 0) {
-                                String content = "";
-                                content += "시간 : " + route.getTime() + "\n";
-                                content += "경로 : " + route.getPath() + "\n";
-                                content += "요금 : " + route.getPrice() + "\n";
-                                content += "도보 시간 : " + route.getWalkTime() + "\n";
-                                content += "환승 : " + route.getTransfer() + "\n";
-                                content += "거리 : " + route.getDistance() + "\n\n";
-                                textViewResult.append(content);
-                            }
-                            else {
-                                String content = "";
-                                content += "시간 : " + route.getTime() + "\n";
-                                content += "경로 : " + route.getPath() + "\n";
-                                content += "요금 : " + route.getPrice() + "\n";
-                                content += "교통수단 : " + route.getTransType() + "\n";
-                                content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
-                                textViewResult.append(content);
-                            }
-                        }
+                        getRouteValues(routes);
                     }
 
                     @Override
@@ -104,46 +76,30 @@ public class ResultActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "서버와 통신중 에러가 발생했습니다", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-    public interface ServerPost{
-        @FormUrlEncoded
-        @POST("/android")
-        Call <String> sendAddress(@Field("startAddressText") String startAddressText, @Field("destinationAddressText") String destinationAddressText);
-    }
-
-    static class RetrofitServiceImplFactory{
-        private static Retrofit getretrofit(){
-            return new Retrofit.Builder()
-                    .baseUrl(ServerUrl)
-                    .addConverterFactory(ScalarsConverterFactory.create()).build();
+    private void getRouteValues(List<Route> routes) {
+        // if (routes의 앞에있는 부분이 0이면 시내버스 )
+        for (Route route : routes) {
+            if (route.getId() == 0) {
+                String content = "";
+                content += "시간 : " + route.getTime() + "\n";
+                content += "경로 : " + route.getPath() + "\n";
+                content += "요금 : " + route.getPrice() + "\n";
+                content += "도보 시간 : " + route.getWalkTime() + "\n";
+                content += "환승 : " + route.getTransfer() + "\n";
+                content += "거리 : " + route.getDistance() + "\n\n";
+                textViewResult.append(content);
+            }
+            else {
+                String content = "";
+                content += "시간 : " + route.getTime() + "\n";
+                content += "경로 : " + route.getPath() + "\n";
+                content += "요금 : " + route.getPrice() + "\n";
+                content += "교통수단 : " + route.getTransType() + "\n";
+                content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
+                textViewResult.append(content);
+            }
         }
-
-        public static ServerPost serverPost(){
-            return getretrofit().create(ServerPost.class);
-        }
     }
-
-
-
-    static class RetrofitServiceImplFactory2{
-        private static Retrofit getretrofit2(){
-            Gson gson = new GsonBuilder()
-                    .setLenient()
-                    .create();
-            return new Retrofit.Builder()
-                    .baseUrl(ServerUrl)
-                    .addConverterFactory(GsonConverterFactory.create(gson)).build();
-        }
-
-        public static Server serverCon2() { return getretrofit2().create(Server.class);}
-    }
-
-
-    public interface Server {
-        @GET("/android/api")
-        Call<List<Route>> getMlist();
-    }
-
 }
