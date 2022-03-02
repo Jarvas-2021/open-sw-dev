@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
-        //txtInMsg = (EditText) findViewById(R.id.txtInMsg);
+        txtInMsg = (EditText) findViewById(R.id.txtInMsg);
         txtSystem = (EditText) findViewById(R.id.txtSystem);
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
@@ -234,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] rs = new String[mResult.size()];
             if (checkTriggerWord(mResult)) trigger = true;
             mResult.toArray(rs);
-            //txtInMsg.setText(rs[0]+"\r\n"+txtInMsg.getText()+trigger);
-            System.out.println(rs[0]+"\r\n"+trigger+"stt result");
+            //System.out.println(rs[0]+"\r\n"+txtInMsg.getText()+trigger+"stt result");
+            txtInMsg.setText(rs[0]+"\r\n"+txtInMsg.getText()+trigger);
             FuncVoiceOrderCheck(rs[0]);
             mRecognizer.startListening(sttIntent);
 
@@ -247,17 +247,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (v.equals("맵피")) return true;
                 if (v.equals("해피")) return true;
                 if (v.equals("웨피")) return true;
+                if (v.equals("웹피")) return true;
+
                 if (v.equals("매피야")) return true;
                 if (v.equals("맵피야")) return true;
                 if (v.equals("해피야")) return true;
                 if (v.equals("웨피야")) return true;
+                if (v.equals("웹피야")) return true;
+
                 if (v.equals("웨피아")) return true;
                 if (v.equals("웨피아")) return true;
                 if (v.equals("웨피아")) return true;
                 if (v.equals("웨피아")) return true;
+                if (v.equals("웹피아")) return true;
+
                 if (v.equals("매피 야")) return true;
                 if (v.equals("맵피 야")) return true;
                 if (v.equals("해피 야")) return true;
+                if (v.equals("웨피 야")) return true;
+                if (v.equals("웹피 야")) return true;
+
                 if (v.equals("웨피 아")) return true;
                 if (v.equals("웨피 아")) return true;
                 if (v.equals("웨피 아")) return true;
