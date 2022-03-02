@@ -74,8 +74,11 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         public void handleMessage(Message msg) {
             ShowDataActivity activity = mActivity.get();
             if (activity != null) {
+                activity.handleMessage(msg);
             }
         }
+
+
     }
 
     @Override
@@ -146,9 +149,9 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
                 StringBuilder strBuf = new StringBuilder();
                 for (String result : results) {
                     strBuf.append(result);
-                    strBuf.append("\n");
-                    System.out.println("RESULT : "+result);
+                    break;
                 }
+                System.out.println("results:"+results);
                 // todo - 이부분 고치기
                 System.out.println("strBuf"+strBuf);
                 mTextDataItems.add(new TextDataItem(strBuf.toString()));
