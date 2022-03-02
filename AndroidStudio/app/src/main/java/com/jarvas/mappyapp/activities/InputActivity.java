@@ -83,6 +83,11 @@ public class InputActivity extends AppCompatActivity {
         setContentView(R.layout.activity_input);
         bus2.register(this);
         initView();
+        callbackActivity();
+        getProcessIntentAndKey();
+    }
+
+    public void callbackActivity() {
         //액티비티 콜백 함수
         resultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -102,9 +107,13 @@ public class InputActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void getProcessIntentAndKey() {
         //Intent 받아오기
         Intent processIntent = getIntent();
         Bundle b = processIntent.getExtras();
+
         //Key 값 받기
         if (b!=null) {
             Iterator<String> iter = b.keySet().iterator();
@@ -120,9 +129,6 @@ public class InputActivity extends AppCompatActivity {
                 processIntentWayPoint(processIntent);
             }
         }
-        //MainActivity mainActivity = new MainActivity();
-        //searchAddressText = mainActivity.mSearchAddress;
-        //System.out.println("searchaddress"+searchAddressText);
     }
 
     public void mOnPopupClick(View v) {
@@ -173,12 +179,10 @@ public class InputActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (charSequence.length() >= 1) {
-                    // if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
                     documentArrayList.clear();
                     locationAdapter.clear();
                     locationAdapter.notifyDataSetChanged();
                     ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    //Call<CategoryResult> call = apiInterface.getSearchLocation(, charSequence.toString(), 15);
                     Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), charSequence.toString(), 15);
                     call.enqueue(new Callback<CategoryResult>() {
                         @Override
@@ -199,8 +203,6 @@ public class InputActivity extends AppCompatActivity {
 
                         }
                     });
-                    //}
-                    //mLastClickTime = SystemClock.elapsedRealtime();
                 } else {
                     if (charSequence.length() <= 0) {
                         recyclerView1.setVisibility(View.GONE);
@@ -241,7 +243,6 @@ public class InputActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (charSequence.length() >= 1) {
-                    // if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
                     documentArrayList.clear();
                     locationAdapter2.clear();
                     locationAdapter2.notifyDataSetChanged();
@@ -267,8 +268,6 @@ public class InputActivity extends AppCompatActivity {
 
                         }
                     });
-                    //}
-                    //mLastClickTime = SystemClock.elapsedRealtime();
                 } else {
                     if (charSequence.length() <= 0) {
                         recyclerView2.setVisibility(View.GONE);
@@ -309,7 +308,6 @@ public class InputActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if (charSequence.length() >= 1) {
-                    // if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
                     documentArrayList.clear();
                     locationAdapter3.clear();
                     locationAdapter3.notifyDataSetChanged();
@@ -334,8 +332,6 @@ public class InputActivity extends AppCompatActivity {
 
                         }
                     });
-                    //}
-                    //mLastClickTime = SystemClock.elapsedRealtime();
                 } else {
                     if (charSequence.length() <= 0) {
                         recyclerView3.setVisibility(View.GONE);
@@ -370,29 +366,35 @@ public class InputActivity extends AppCompatActivity {
             @Override
             public void onClick(View view){
                 Log.i("BUTTON","okButton click");
-                for(String str:set){
-                    //출발지
-                    if (Objects.equals(map.get(str),searchEdit1.getText().toString())){
-                        startAddressText = str;
-                    }
-                    //도착지
-                    if (Objects.equals(map.get(str),searchEdit2.getText().toString())){
-                        destinationAddressText = str;
-                    }
-                    //경유지
-                    if (Objects.equals(map.get(str),searchEdit3.getText().toString())){
-                        WayPointAddressText = str;
-                    }
-                }
+                getAddressText();
                 System.out.println("StartAddress: "+startAddressText+"DestAddress: "+destinationAddressText+"WayAddress: "+WayPointAddressText);
-
-                Intent intent = new Intent(InputActivity.this, ResultActivity.class);
-                intent.putExtra("startAddressText",startAddressText);
-                intent.putExtra("destinationAddressText",destinationAddressText);
-                startActivity(intent);
-
+                putIntentAndStartActivity();
             }
         });
+    }
+
+    public void getAddressText() {
+        for(String str:set){
+            //출발지
+            if (Objects.equals(map.get(str),searchEdit1.getText().toString())){
+                startAddressText = str;
+            }
+            //도착지
+            if (Objects.equals(map.get(str),searchEdit2.getText().toString())){
+                destinationAddressText = str;
+            }
+            //경유지
+            if (Objects.equals(map.get(str),searchEdit3.getText().toString())){
+                WayPointAddressText = str;
+            }
+        }
+    }
+
+    public void putIntentAndStartActivity() {
+        Intent intent = new Intent(InputActivity.this, ResultActivity.class);
+        intent.putExtra("startAddressText",startAddressText);
+        intent.putExtra("destinationAddressText",destinationAddressText);
+        startActivity(intent);
     }
 
 
