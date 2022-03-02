@@ -41,6 +41,23 @@
 
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/txtInMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
+    <EditText
+        android:id="@+id/txtSystem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"/>
+    <Button
+        android:id="@+id/sttStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="음성인식 시작"
+        android:visibility="invisible"/>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab1"
