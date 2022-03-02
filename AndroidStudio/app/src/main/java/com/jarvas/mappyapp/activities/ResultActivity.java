@@ -61,32 +61,10 @@ public class ResultActivity extends AppCompatActivity {
                             return;
                         }
 
-                        //todo - if문으로 구분해서 시내버스일때 / 시외버스일때 구분
                         List<Route> routes = response.body();
                         Log.i("RESPONSE","route");
                         Log.i("RESPONSE",routes.toString());
-                        // if (routes의 앞에있는 부분이 0이면 시내버스 )
-                        for (Route route : routes) {
-                            if (route.getId() == 0) {
-                                String content = "";
-                                content += "시간 : " + route.getTime() + "\n";
-                                content += "경로 : " + route.getPath() + "\n";
-                                content += "요금 : " + route.getPrice() + "\n";
-                                content += "도보 시간 : " + route.getWalkTime() + "\n";
-                                content += "환승 : " + route.getTransfer() + "\n";
-                                content += "거리 : " + route.getDistance() + "\n\n";
-                                textViewResult.append(content);
-                            }
-                            else {
-                                String content = "";
-                                content += "시간 : " + route.getTime() + "\n";
-                                content += "경로 : " + route.getPath() + "\n";
-                                content += "요금 : " + route.getPrice() + "\n";
-                                content += "교통수단 : " + route.getTransType() + "\n";
-                                content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
-                                textViewResult.append(content);
-                            }
-                        }
+                        getRouteValues(routes);
                     }
 
                     @Override
@@ -104,7 +82,31 @@ public class ResultActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "서버와 통신중 에러가 발생했습니다", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void getRouteValues(List<Route> routes) {
+        // if (routes의 앞에있는 부분이 0이면 시내버스 )
+        for (Route route : routes) {
+            if (route.getId() == 0) {
+                String content = "";
+                content += "시간 : " + route.getTime() + "\n";
+                content += "경로 : " + route.getPath() + "\n";
+                content += "요금 : " + route.getPrice() + "\n";
+                content += "도보 시간 : " + route.getWalkTime() + "\n";
+                content += "환승 : " + route.getTransfer() + "\n";
+                content += "거리 : " + route.getDistance() + "\n\n";
+                textViewResult.append(content);
+            }
+            else {
+                String content = "";
+                content += "시간 : " + route.getTime() + "\n";
+                content += "경로 : " + route.getPath() + "\n";
+                content += "요금 : " + route.getPrice() + "\n";
+                content += "교통수단 : " + route.getTransType() + "\n";
+                content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
+                textViewResult.append(content);
+            }
+        }
     }
 
     public interface ServerPost{
