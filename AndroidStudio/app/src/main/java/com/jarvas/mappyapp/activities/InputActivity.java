@@ -26,6 +26,7 @@ import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.api.ApiClient;
 import com.jarvas.mappyapp.api.ApiInterface;
+import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
@@ -71,6 +72,8 @@ public class InputActivity extends AppCompatActivity {
     Set<String> set = map.keySet();
 
     Bus bus2 = BusProvider.getInstance();
+
+    EventListener eventListener = new EventListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,201 +166,22 @@ public class InputActivity extends AppCompatActivity {
         recyclerView3.setLayoutManager(layoutManager3);
         recyclerView3.setAdapter(locationAdapter3);
 
-        // editText1(출발지) 검색 텍스처이벤트
-        searchEdit1.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // 입력하기 전에
-                recyclerView1.setVisibility(View.VISIBLE);
-            }
+        // 검색 텍스처 Listener
+        eventListener.addTextChangedListenerEvent(searchEdit1, recyclerView1, documentArrayList, locationAdapter);
+        eventListener.addTextChangedListenerEvent(searchEdit2,recyclerView2,documentArrayList,locationAdapter2);
+        eventListener.addTextChangedListenerEvent(searchEdit3,recyclerView3,documentArrayList,locationAdapter3);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                if (charSequence.length() >= 1) {
-                    documentArrayList.clear();
-                    locationAdapter.clear();
-                    locationAdapter.notifyDataSetChanged();
-                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), charSequence.toString(), 15);
-                    call.enqueue(new Callback<CategoryResult>() {
-                        @Override
-                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            if (response.isSuccessful()) {
-                                assert response.body() != null;
-                                for (Document document : response.body().getDocuments()) {
-                                    locationAdapter.addItem(document);
-                                }
-                                locationAdapter.notifyDataSetChanged();
+        // setOnFocusChangeListener
+        eventListener.setOnFocusChangeListenerEvent(searchEdit1,recyclerView1);
+        eventListener.setOnFocusChangeListenerEvent(searchEdit2,recyclerView2);
+        eventListener.setOnFocusChangeListenerEvent(searchEdit3,recyclerView3);
 
-                            } else {
-                                Log.e("test", response.message());
-                            }
-                        }
-                        @Override
-                        public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
-
-                        }
-                    });
-                } else {
-                    if (charSequence.length() <= 0) {
-                        recyclerView1.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // 입력이 끝났을 때
-            }
-        });
-
-        searchEdit1.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                } else {
-                    recyclerView1.setVisibility(View.GONE);
-                }
-            }
-        });
-        searchEdit1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "검색리스트에서 장소를 선택해주세요", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // editText2(도착지) 검색 텍스처이벤트
-        searchEdit2.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // 입력하기 전에
-                recyclerView2.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                if (charSequence.length() >= 1) {
-                    documentArrayList.clear();
-                    locationAdapter2.clear();
-                    locationAdapter2.notifyDataSetChanged();
-                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), charSequence.toString(), 15);
-                    call.enqueue(new Callback<CategoryResult>() {
-                        @Override
-                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            if (response.isSuccessful()) {
-                                assert response.body() != null;
-                                for (Document document : response.body().getDocuments()) {
-                                    locationAdapter2.addItem(document);
-                                }
-                                locationAdapter2.notifyDataSetChanged();
-
-                            } else {
-                                Log.e("test", response.message());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
-
-                        }
-                    });
-                } else {
-                    if (charSequence.length() <= 0) {
-                        recyclerView2.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // 입력이 끝났을 때
-            }
-        });
-
-        searchEdit2.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                } else {
-                    recyclerView2.setVisibility(View.GONE);
-                }
-            }
-        });
-        searchEdit2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "검색리스트에서 장소를 선택해주세요", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // editText3(경유지) 검색 텍스처이벤트
-        searchEdit3.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-                // 입력하기 전에
-                recyclerView3.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                if (charSequence.length() >= 1) {
-                    documentArrayList.clear();
-                    locationAdapter3.clear();
-                    locationAdapter3.notifyDataSetChanged();
-                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), charSequence.toString(), 15);
-                    call.enqueue(new Callback<CategoryResult>() {
-                        @Override
-                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            if (response.isSuccessful()) {
-                                assert response.body() != null;
-                                for (Document document : response.body().getDocuments()) {
-                                    locationAdapter3.addItem(document);
-                                }
-                                locationAdapter3.notifyDataSetChanged();
-                            } else {
-                                Log.e("test", response.message());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
-
-                        }
-                    });
-                } else {
-                    if (charSequence.length() <= 0) {
-                        recyclerView3.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                // 입력이 끝났을 때
-            }
-        });
-
-        searchEdit3.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                } else {
-                    recyclerView3.setVisibility(View.GONE);
-                }
-            }
-        });
-        searchEdit3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "검색리스트에서 장소를 선택해주세요", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // setOnClickListener
+        eventListener.setOnClickListenerEvent(searchEdit1);
+        eventListener.setOnClickListenerEvent(searchEdit2);
+        eventListener.setOnClickListenerEvent(searchEdit3);
 
         okButton.setOnClickListener(new View.OnClickListener(){
-            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view){
                 Log.i("BUTTON","okButton click");
@@ -403,7 +227,6 @@ public class InputActivity extends AppCompatActivity {
         mAddressText = document.getAddressName();
         mPlaceNameText = document.getPlaceName();
         map.put(mAddressText, mPlaceNameText);
-
     }
 
 
@@ -448,4 +271,5 @@ public class InputActivity extends AppCompatActivity {
         addressText = document.getAddressName();
         recyclerView.setVisibility(View.GONE);
     }
+
 }
