@@ -1,7 +1,10 @@
 package com.jarvas.mappyapp.activities;
 
+import static android.net.wifi.p2p.WifiP2pManager.ERROR;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +20,7 @@ import com.jarvas.mappyapp.utils.StringResource;
 //import com.jarvas.mappyapp.api.RestApi;
 
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +35,7 @@ import retrofit2.http.POST;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textViewResult;
+    private TextToSpeech tts;
 
     final static private String ServerUrl = StringResource.getStringResource(ContextStorage.getCtx(), R.string.ServerUrl);
 
@@ -42,6 +47,17 @@ public class ResultActivity extends AppCompatActivity {
         Intent secondIntent = getIntent();
         String startAddressText = secondIntent.getStringExtra("startAddressText");
         String destinationAddressText = secondIntent.getStringExtra("destinationAddressText");
+
+        // TTS를 생성하고 OnInitListener로 초기화 한다.
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != ERROR) {
+                    // 언어를 선택한다.
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
         Call<String> m = ResultActivity.RetrofitServiceImplFactory.serverPost().sendAddress(startAddressText,destinationAddressText);
         m.enqueue(new Callback<String>() {
@@ -87,6 +103,7 @@ public class ResultActivity extends AppCompatActivity {
                                 textViewResult.append(content);
                             }
                         }
+                        tts.speak(textViewResult.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
                     }
 
                     @Override
@@ -105,6 +122,17 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // TTS 객체가 남아있다면 실행을 중지하고 메모리에서 제거한다.
+        if(tts != null){
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+        }
     }
 
     public interface ServerPost{
