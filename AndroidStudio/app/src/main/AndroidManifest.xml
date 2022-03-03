@@ -25,6 +25,7 @@
         <activity android:name=".activities.InputActivity" />
         <activity android:name=".activities.SettingActivity"/>
         <activity android:name=".activities.StarActivity"/>
+        <activity android:name=".activities.ShowDataActivity"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
