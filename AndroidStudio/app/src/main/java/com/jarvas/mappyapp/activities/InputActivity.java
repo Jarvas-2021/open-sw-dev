@@ -1,20 +1,18 @@
 package com.jarvas.mappyapp.activities;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +27,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -52,7 +51,12 @@ public class InputActivity extends Activity {
     String mAddressText;
     String mPlaceNameText;
 
+    String startTimeText;
+    String destinationTimeText;
+
     String searchAddressText;
+
+    Integer checkTime;
 
     Map<String, String> map = new HashMap<String, String>();
     Set<String> set = map.keySet();
@@ -71,6 +75,98 @@ public class InputActivity extends Activity {
         // todo - 서버 확인 후 callbackActivity 함수 제거
         //callbackActivity();
         getProcessIntentAndKey();
+
+        Calendar calendar = Calendar.getInstance();
+        String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String current_min = String.valueOf(calendar.get(Calendar.MINUTE));
+
+        Button stButton = findViewById(R.id.startTimeButton);
+        stButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //출발시간 TimePickerDialog 띄우기
+                showStartTime();
+            }
+        });
+
+        Button dtButton = findViewById(R.id.destinationTimeButton);
+        dtButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //출발시간 TimePickerDialog 띄우기
+                showDestinationTime();
+            }
+        });
+
+    }
+    void showStartTime() {
+        Calendar calendar = Calendar.getInstance();
+        String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String current_min = String.valueOf(calendar.get(Calendar.MINUTE));
+        checkTime = 1;
+
+        TimePickerDialog.OnTimeSetListener mTimeSetListener =
+                new TimePickerDialog.OnTimeSetListener() {
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        //tv.setText(hourOfDay+"시"+minute+"분");
+                        startTimeText = hourOfDay+":"+minute;
+                        Toast.makeText(getApplicationContext(),
+                                startTimeText, Toast.LENGTH_SHORT)
+                                .show();
+
+                    }
+                };
+        TimePickerDialog oDialog = new TimePickerDialog(this,
+                android.R.style.Theme_DeviceDefault_Light_Dialog,
+                mTimeSetListener, Integer.parseInt(current_hour), Integer.parseInt(current_min), false);
+        oDialog.show();
+    }
+
+    void showDestinationTime() {
+        Calendar calendar = Calendar.getInstance();
+        String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+        String current_min = String.valueOf(calendar.get(Calendar.MINUTE));
+        checkTime = 2;
+
+        TimePickerDialog.OnTimeSetListener mTimeSetListener =
+                new TimePickerDialog.OnTimeSetListener() {
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        //tv.setText(hourOfDay+"시"+minute+"분");
+                        destinationTimeText = hourOfDay+":"+minute;
+                        Toast.makeText(getApplicationContext(),
+                                destinationTimeText, Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                };
+        TimePickerDialog oDialog = new TimePickerDialog(this,
+                android.R.style.Theme_DeviceDefault_Light_Dialog,
+                mTimeSetListener, Integer.parseInt(current_hour), Integer.parseInt(current_min), false);
+        oDialog.show();
+    }
+
+    //확인 버튼 클릭
+    public void mOnClose(View v){
+        //데이터 전달하기
+        Intent intent = new Intent();
+        intent.putExtra("startingTime",startTimeText);
+        intent.putExtra("destinationTime", destinationTimeText);
+        setResult(RESULT_OK, intent);
+        //액티비티(팝업) 닫기
+        finish();
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //바깥레이어 클릭시 안닫히게
+        if(event.getAction()== MotionEvent.ACTION_OUTSIDE){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        //안드로이드 백버튼 막기
+        return;
     }
 
 //    public void callbackActivity() {
