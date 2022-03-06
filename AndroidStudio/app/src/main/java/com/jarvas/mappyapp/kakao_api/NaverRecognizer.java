@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp.api;
+package com.jarvas.mappyapp.kakao_api;
 
 import android.content.Context;
 import android.os.Handler;
@@ -7,7 +7,6 @@ import android.util.Log;
 
 import androidx.annotation.WorkerThread;
 
-import com.jarvas.mappyapp.Network.Client;
 import com.jarvas.mappyapp.R;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechConfig.EndPointDetectType;

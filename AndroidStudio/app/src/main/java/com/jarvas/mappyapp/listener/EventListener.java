@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
-import com.jarvas.mappyapp.api.ApiClient;
-import com.jarvas.mappyapp.api.ApiInterface;
+import com.jarvas.mappyapp.kakao_api.ApiClient;
+import com.jarvas.mappyapp.kakao_api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.ContextStorage;
