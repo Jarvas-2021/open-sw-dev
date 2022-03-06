@@ -164,8 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-
-
         //어플이 실행되면 자동으로 1초뒤에 음성 인식 시작
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
