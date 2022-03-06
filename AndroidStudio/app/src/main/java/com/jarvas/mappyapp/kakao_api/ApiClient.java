@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp.api;
+package com.jarvas.mappyapp.kakao_api;
 
 
 import retrofit2.Retrofit;

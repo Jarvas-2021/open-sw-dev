@@ -9,9 +9,6 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -43,18 +40,14 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
-import com.jarvas.mappyapp.api.ApiClient;
-import com.jarvas.mappyapp.api.ApiInterface;
-import com.jarvas.mappyapp.api.NaverRecognizer;
+import com.jarvas.mappyapp.kakao_api.ApiClient;
+import com.jarvas.mappyapp.kakao_api.ApiInterface;
 import com.jarvas.mappyapp.model.category_search.CategoryResult;
 import com.jarvas.mappyapp.model.category_search.Document;
-import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
-import com.naver.speech.clientapi.SpeechConfig;
-import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -64,9 +57,7 @@ import net.daum.mf.map.api.MapView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;

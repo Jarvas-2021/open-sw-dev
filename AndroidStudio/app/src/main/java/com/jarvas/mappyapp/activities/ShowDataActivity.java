@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
-import com.jarvas.mappyapp.api.NaverRecognizer;
+import com.jarvas.mappyapp.kakao_api.NaverRecognizer;
 import com.jarvas.mappyapp.model.category_search.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.naver.speech.clientapi.SpeechConfig;
