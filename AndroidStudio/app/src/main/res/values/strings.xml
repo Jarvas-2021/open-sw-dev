@@ -6,4 +6,6 @@
     <string name="string_st">출발시간</string>
     <string name="string_w">경유지</string>
     <string name="string_wt">경유시간</string>
+    <string name="string_st_hint">출발할 장소를 입력 후 선택해주세요</string>
+    <string name="string_dt_hint">도착할 장소를 입력 후 선택해주세요</string>
 </resources>
