@@ -1,5 +1,7 @@
 package com.jarvas.mappyapp.activities;
 
+import static com.jarvas.mappyapp.activities.ServerThreadMock.mRecyclerAdapter;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,11 +9,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jarvas.mappyapp.Network.Route;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.ResultRecyclerAdapter;
 import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;
 import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.utils.ContextStorage;
@@ -29,77 +34,19 @@ import retrofit2.http.GET;
 
 public class ResultActivity extends AppCompatActivity {
     private TextView textViewResult;
+    private RecyclerView mRecyclerView;
+    //private ResultRecyclerAdapter mRecyclerAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        textViewResult = findViewById(R.id.text_view_result);
-        Intent secondIntent = getIntent();
-        String startAddressText = secondIntent.getStringExtra("startAddressText");
-        String destinationAddressText = secondIntent.getStringExtra("destinationAddressText");
+        mRecyclerView = findViewById(R.id.result_recyclerView);
 
-        Call<String> m = RetrofitServiceImplFactoryPostServer.serverPost().sendAddress(startAddressText,destinationAddressText);
-        m.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                Toast.makeText(getApplicationContext(), "서버에 값을 전달했습니다 : " , Toast.LENGTH_SHORT).show();
-                Call<List<Route>> m2 = RetrofitServiceImplFactoryGetServer.serverCon2().getMlist();
-                System.out.println("여기까지 됨");
-                m2.enqueue(new Callback<List<Route>>(){
-                    @Override
-                    public void onResponse(Call<List<Route>> call, Response<List<Route>> response) {
-                        Log.i("RESPONSE","onResponse");
-                        if (!response.isSuccessful()) {
-                            Log.i("RESPONSE","if문");
-                            textViewResult.setText("Code: " + response.code());
-                            System.out.println(response.message());
-                            return;
-                        }
+        //mRecyclerAdapter = new ResultRecyclerAdapter();
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        //mRecyclerAdapter.setResultList(mResultItems);
 
-                        List<Route> routes = response.body();
-                        Log.i("RESPONSE",routes.toString());
-                        getRouteValues(routes);
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<Route>> call, Throwable t) {
-                        textViewResult.setText(t.getMessage());
-                        t.printStackTrace();
-                    }
-
-                });
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                t.printStackTrace();
-                Toast.makeText(getApplicationContext(), "서버와 통신중 에러가 발생했습니다", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
-    private void getRouteValues(List<Route> routes) {
-        // if (routes의 앞에있는 부분이 0이면 시내버스 )
-        for (Route route : routes) {
-            if (route.getId() == 0) {
-                String content = "";
-                content += "시간 : " + route.getTime() + "\n";
-                content += "경로 : " + route.getPath() + "\n";
-                content += "요금 : " + route.getPrice() + "\n";
-                content += "도보 시간 : " + route.getWalkTime() + "\n";
-                content += "환승 : " + route.getTransfer() + "\n";
-                content += "거리 : " + route.getDistance() + "\n\n";
-                textViewResult.append(content);
-            }
-            else {
-                String content = "";
-                content += "시간 : " + route.getTime() + "\n";
-                content += "경로 : " + route.getPath() + "\n";
-                content += "요금 : " + route.getPrice() + "\n";
-                content += "교통수단 : " + route.getTransType() + "\n";
-                content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
-                textViewResult.append(content);
-            }
-        }
-    }
 }

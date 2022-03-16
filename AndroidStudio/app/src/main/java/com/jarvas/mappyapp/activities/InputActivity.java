@@ -1,7 +1,10 @@
 package com.jarvas.mappyapp.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +25,7 @@ import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -65,6 +69,8 @@ public class InputActivity extends Activity {
 
     EventListener eventListener = new EventListener();
 
+    ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +105,7 @@ public class InputActivity extends Activity {
         });
 
     }
+
     void showStartTime() {
         Calendar calendar = Calendar.getInstance();
         String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
@@ -109,7 +116,7 @@ public class InputActivity extends Activity {
                 new TimePickerDialog.OnTimeSetListener() {
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         //tv.setText(hourOfDay+"시"+minute+"분");
-                        startTimeText = hourOfDay+":"+minute;
+                        startTimeText = hourOfDay + ":" + minute;
                         Toast.makeText(getApplicationContext(),
                                 startTimeText, Toast.LENGTH_SHORT)
                                 .show();
@@ -132,7 +139,7 @@ public class InputActivity extends Activity {
                 new TimePickerDialog.OnTimeSetListener() {
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         //tv.setText(hourOfDay+"시"+minute+"분");
-                        destinationTimeText = hourOfDay+":"+minute;
+                        destinationTimeText = hourOfDay + ":" + minute;
                         Toast.makeText(getApplicationContext(),
                                 destinationTimeText, Toast.LENGTH_SHORT)
                                 .show();
@@ -145,19 +152,20 @@ public class InputActivity extends Activity {
     }
 
     //확인 버튼 클릭
-    public void mOnClose(View v){
+    public void mOnClose(View v) {
         //데이터 전달하기
         Intent intent = new Intent();
-        intent.putExtra("startingTime",startTimeText);
+        intent.putExtra("startingTime", startTimeText);
         intent.putExtra("destinationTime", destinationTimeText);
         setResult(RESULT_OK, intent);
         //액티비티(팝업) 닫기
         finish();
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //바깥레이어 클릭시 안닫히게
-        if(event.getAction()== MotionEvent.ACTION_OUTSIDE){
+        if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
             return false;
         }
         return true;
@@ -165,7 +173,7 @@ public class InputActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        //안드로이드 백버튼 막기
+        super.onBackPressed();
         return;
     }
 
@@ -236,7 +244,49 @@ public class InputActivity extends Activity {
                 Log.i("BUTTON", "okButton click");
                 getAddressText();
                 System.out.println("StartAddress: " + startAddressText + "DestAddress: " + destinationAddressText + "WayAddress: " + wayPointAddressText);
-                putIntentAndStartActivity();
+
+                // todo - 서버 연결시 주석 해제 후 밑에 3줄 주석처리하기
+                //ServerThread serverThread = new ServerThread(startAddressText,destinationAddressText);
+                //serverThread.run();
+                //Thread.State state = serverThread.getState();
+                ServerThreadMock serverThreadMock = new ServerThreadMock(startAddressText, destinationAddressText);
+                serverThreadMock.run();
+                Thread.State state = serverThreadMock.getState();
+                Toast.makeText(InputActivity.this, "끄애애애앵앵ㄹ", Toast.LENGTH_SHORT).show();
+
+                AlertDialog.Builder msgBuilder = new AlertDialog.Builder(InputActivity.this)
+                        .setTitle("확인")
+                        .setMessage(startAddressText + " 에서 " + destinationAddressText + " 검색을 시작하시겠습니까?")
+                        .setPositiveButton("예",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                System.out.println("onclick들어옴");
+                                Toast.makeText(InputActivity.this, "검색을 시작합니다.", Toast.LENGTH_SHORT).show();
+                                if (serverThreadMock.isAlive() == false) {
+                                    System.out.println("if문 isAlive false");
+                                    // Thread 종료 되었을 때만 ResultActivity 실행
+                                    startResultActivity();
+                                } else {
+                                    progressDialog.show();
+                                    while (true) {
+                                        System.out.println("while loof");
+                                        if (serverThreadMock.isAlive() == false) {
+                                            System.out.println("else안에 if문 isAlive false");
+                                            progressDialog.dismiss();
+                                            startResultActivity();
+                                        }
+                                    }
+                                }
+                            }
+                        })
+                        .setNegativeButton("아니오",new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(InputActivity.this, "검색을 취소합니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                AlertDialog msgDlg = msgBuilder.create();
+                msgDlg.show();
             }
         });
     }
@@ -277,10 +327,10 @@ public class InputActivity extends Activity {
         }
     }
 
-    public void putIntentAndStartActivity() {
+    public void startResultActivity() {
         Intent intent = new Intent(InputActivity.this, ResultActivity.class);
-        intent.putExtra("startAddressText", startAddressText);
-        intent.putExtra("destinationAddressText", destinationAddressText);
+        //intent.putExtra("startAddressText", startAddressText);
+        //intent.putExtra("destinationAddressText", destinationAddressText);
         startActivity(intent);
     }
 
