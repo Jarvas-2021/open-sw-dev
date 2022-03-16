@@ -33,6 +33,7 @@ public class ServerThreadMock extends Thread {
         System.out.println("지금 content: " + content);
         mResultItems.add(new ResultItem(content));
 
+        content = "";
         content += "시간 : " + "1시간 50분" + "\n";
         content += "경로 : " + "경로는 좌짜짜짜짜자자자자자잦쿠카쿠카쿠켘켘어쩌구저쩌구" + "\n";
         content += "요금 : " + "1350원" + "\n";
