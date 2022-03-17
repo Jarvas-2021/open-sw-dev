@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText txtInMsg;
     Context cThis;
     final int PERMISSION = 1;
-    private Boolean trigger = false;
+    public static Boolean trigger = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
