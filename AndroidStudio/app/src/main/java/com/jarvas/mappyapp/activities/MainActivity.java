@@ -126,35 +126,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
         mRecognizer.setRecognitionListener(listener);
         System.out.println("startRecognizer");
-        //음성출력 생성, 리스너 초기화
-        tts=new TextToSpeech(cThis, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status!=android.speech.tts.TextToSpeech.ERROR){
-                    tts.setLanguage(Locale.KOREAN);
-                    System.out.println("Init");
-                }
-            }
-        });
 
-        //버튼설정
-        sttBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("음성인식 시작!");
-                if(ContextCompat.checkSelfPermission(cThis, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},1);
-                    //권한을 허용하지 않는 경우
-                }else{
-                    //권한을 허용한 경우
-                    try {
-                        mRecognizer.startListening(sttIntent);
-                        System.out.println("권한 허용");
-                    }catch (SecurityException e){e.printStackTrace();}
-                }
-            }
-        });
+        startWithTD();
+    }
 
+    public void startWithTD(){
         //어플이 실행되면 자동으로 1초뒤에 음성 인식 시작
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
@@ -320,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab1.setOnClickListener(this);
         fab_input.setOnClickListener(this);
         action_mic.setOnClickListener(this);
+        sttBtn.setOnClickListener(this);
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
@@ -429,6 +406,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.Action_Mic:
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
+                break;
+
+            case R.id.sttStart:
+                System.out.println("음성인식 시작!");
+                if(ContextCompat.checkSelfPermission(cThis, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},1);
+                    //권한을 허용하지 않는 경우
+                }else{
+                    //권한을 허용한 경우
+                    try {
+                        mRecognizer.startListening(sttIntent);
+                        System.out.println("권한 허용");
+                    }catch (SecurityException e){e.printStackTrace();}
+                }
                 break;
         }
     }
