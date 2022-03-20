@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="270dp"
     android:layout_height="250dp"
+    tools:context=".activities.InputActivity"
     android:background="@drawable/input_background"
-    android:stretchColumns="0,1,2"
-    tools:context=".activities.InputActivity">
+    android:orientation="vertical">
 
-    <LinearLayout>
-
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent">
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
@@ -20,8 +19,7 @@
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <LinearLayout android:orientation="horizontal">
-
+    <LinearLayout android:orientation="horizontal" android:layout_height="wrap_content" android:layout_width="match_parent">
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
@@ -44,8 +42,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_baseline_access_time_24"
-            android:onClick="mOnPopupClick" />
+            android:background="@drawable/icon_inactive_time" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -54,7 +51,7 @@
         android:layout_height="400dp"
         android:visibility="gone" />
 
-    <LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent">
 
         <TextView
             android:id="@+id/textView3"
@@ -68,7 +65,7 @@
 
     </LinearLayout>
 
-    <LinearLayout android:orientation="horizontal">
+    <LinearLayout android:orientation="horizontal" android:layout_height="wrap_content" android:layout_width="match_parent">
 
         <EditText
             android:id="@+id/editText3"
@@ -92,8 +89,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_baseline_access_time_24"
-            android:onClick="mOnPopupClick" />
+            android:background="@drawable/icon_inactive_time" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -102,7 +98,7 @@
         android:layout_height="400dp"
         android:visibility="gone" />
 
-    <LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent">
 
         <Button
             android:id="@+id/okButton"
@@ -115,4 +111,4 @@
             android:textColor="@color/black"
             android:textSize="14dp" />
     </LinearLayout>
-</TableLayout>
+</LinearLayout>

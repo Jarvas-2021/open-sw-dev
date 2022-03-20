@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -60,7 +61,7 @@ public class InputActivity extends Activity {
 
     String searchAddressText;
 
-    Integer checkTime;
+    Integer checkTime=0;
 
     Map<String, String> map = new HashMap<String, String>();
     Set<String> set = map.keySet();
@@ -87,20 +88,26 @@ public class InputActivity extends Activity {
         String current_min = String.valueOf(calendar.get(Calendar.MINUTE));
 
         Button stButton = findViewById(R.id.startTimeButton);
+        Button dtButton = findViewById(R.id.destinationTimeButton);
+
         stButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //출발시간 TimePickerDialog 띄우기
                 showStartTime();
+                stButton.setBackgroundResource(R.drawable.icon_active_time);
+                dtButton.setBackgroundResource(R.drawable.icon_inactive_time);
             }
         });
 
-        Button dtButton = findViewById(R.id.destinationTimeButton);
+
         dtButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //출발시간 TimePickerDialog 띄우기
                 showDestinationTime();
+                dtButton.setBackgroundResource(R.drawable.icon_active_time);
+                stButton.setBackgroundResource(R.drawable.icon_inactive_time);
             }
         });
 
@@ -127,6 +134,7 @@ public class InputActivity extends Activity {
                 android.R.style.Theme_DeviceDefault_Light_Dialog,
                 mTimeSetListener, Integer.parseInt(current_hour), Integer.parseInt(current_min), false);
         oDialog.show();
+
     }
 
     void showDestinationTime() {
@@ -245,14 +253,20 @@ public class InputActivity extends Activity {
                 getAddressText();
                 System.out.println("StartAddress: " + startAddressText + "DestAddress: " + destinationAddressText + "WayAddress: " + wayPointAddressText);
 
+                String resultTime="";
+                if(checkTime==1){
+                    resultTime=startTimeText;
+                }else if (checkTime==2){
+                    resultTime=destinationTimeText;
+                }
+
                 // todo - 서버 연결시 주석 해제 후 밑에 3줄 주석처리하기
-                //ServerThread serverThread = new ServerThread(startAddressText,destinationAddressText);
+                //ServerThread serverThread = new ServerThread(startAddressText,destinationAddressText,resultTime,checkTime);
                 //serverThread.run();
                 //Thread.State state = serverThread.getState();
-                ServerThreadMock serverThreadMock = new ServerThreadMock(startAddressText, destinationAddressText);
+                ServerThreadMock serverThreadMock = new ServerThreadMock(startAddressText, destinationAddressText,resultTime,checkTime);
                 serverThreadMock.run();
                 Thread.State state = serverThreadMock.getState();
-                Toast.makeText(InputActivity.this, "끄애애애앵앵ㄹ", Toast.LENGTH_SHORT).show();
 
                 AlertDialog.Builder msgBuilder = new AlertDialog.Builder(InputActivity.this)
                         .setTitle("확인")
@@ -289,6 +303,10 @@ public class InputActivity extends Activity {
                 msgDlg.show();
             }
         });
+    }
+
+    public void calculateStartTime() {
+
     }
 
     public void getAddressText() {
@@ -349,10 +367,10 @@ public class InputActivity extends Activity {
         recyclerView.setVisibility(View.GONE);
     }
 
-    public void mOnPopupClick(View v) {
+    public void mOnPopupClick(View v, Integer i) {
         //데이터 담아서 팝업(액티비티) 호출
         Intent intent = new Intent(getApplicationContext(), TimePopupActivity.class);
-        intent.putExtra("CallType", 1);
+        intent.putExtra("CallType", i);
         //resultLauncher.launch(intent);
         getApplicationContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
