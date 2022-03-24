@@ -117,16 +117,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cThis = this;
         initView();
 
-        //음성인식
-        System.out.println("startRecognizer");
-        Log.i("Re","start함수");
-        sttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
-        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");//한국어 사용
-        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
-        mRecognizer.setRecognitionListener(listener);
-        System.out.println("startRecognizer");
-
+        setStt();
         startWithTD();
     }
 
@@ -140,6 +131,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sttBtn.performClick();
             }
         },1000);
+    }
+
+    public void setStt() {
+        //음성인식
+        System.out.println("startRecognizer");
+        Log.i("Re","start함수");
+        sttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
+        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");//한국어 사용
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
+        mRecognizer.setRecognitionListener(listener);
+        System.out.println("startRecognizer");
     }
 
     public RecognitionListener listener=new RecognitionListener() {
