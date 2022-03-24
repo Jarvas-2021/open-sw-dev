@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText txtInMsg;
     Context cThis;
     final int PERMISSION = 1;
-    private Boolean trigger = false;
+    public static Boolean trigger = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,44 +117,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cThis = this;
         initView();
 
-        //음성인식
-        System.out.println("startRecognizer");
-        Log.i("Re","start함수");
-        sttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
-        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");//한국어 사용
-        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
-        mRecognizer.setRecognitionListener(listener);
-        System.out.println("startRecognizer");
-        //음성출력 생성, 리스너 초기화
-        tts=new TextToSpeech(cThis, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status!=android.speech.tts.TextToSpeech.ERROR){
-                    tts.setLanguage(Locale.KOREAN);
-                    System.out.println("Init");
-                }
-            }
-        });
+        setStt();
+        startWithTD();
+    }
 
-        //버튼설정
-        sttBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("음성인식 시작!");
-                if(ContextCompat.checkSelfPermission(cThis, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},1);
-                    //권한을 허용하지 않는 경우
-                }else{
-                    //권한을 허용한 경우
-                    try {
-                        mRecognizer.startListening(sttIntent);
-                        System.out.println("권한 허용");
-                    }catch (SecurityException e){e.printStackTrace();}
-                }
-            }
-        });
-
+    public void startWithTD(){
         //어플이 실행되면 자동으로 1초뒤에 음성 인식 시작
         new android.os.Handler().postDelayed(new Runnable() {
             @Override
@@ -164,6 +131,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sttBtn.performClick();
             }
         },1000);
+    }
+
+    public void setStt() {
+        //음성인식
+        System.out.println("startRecognizer");
+        Log.i("Re","start함수");
+        sttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
+        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");//한국어 사용
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
+        mRecognizer.setRecognitionListener(listener);
+        System.out.println("startRecognizer");
     }
 
     public RecognitionListener listener=new RecognitionListener() {
@@ -320,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab1.setOnClickListener(this);
         fab_input.setOnClickListener(this);
         action_mic.setOnClickListener(this);
+        sttBtn.setOnClickListener(this);
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
@@ -429,6 +409,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.Action_Mic:
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
+                break;
+
+            case R.id.sttStart:
+                System.out.println("음성인식 시작!");
+                if(ContextCompat.checkSelfPermission(cThis, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},1);
+                    //권한을 허용하지 않는 경우
+                }else{
+                    //권한을 허용한 경우
+                    try {
+                        mRecognizer.startListening(sttIntent);
+                        System.out.println("권한 허용");
+                    }catch (SecurityException e){e.printStackTrace();}
+                }
                 break;
         }
     }
