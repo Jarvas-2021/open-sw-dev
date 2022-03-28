@@ -21,8 +21,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jarvas.mappyapp.Network.Route;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.ResultItem;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
+import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;
+import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.model.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
@@ -31,13 +35,23 @@ import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class InputActivity extends Activity {
     RecyclerView recyclerView1;
@@ -62,6 +76,7 @@ public class InputActivity extends Activity {
     String searchAddressText;
 
     Integer checkTime=0;
+    String resultTime="";
 
     Map<String, String> map = new HashMap<String, String>();
     Set<String> set = map.keySet();
@@ -251,9 +266,9 @@ public class InputActivity extends Activity {
             public void onClick(View view) {
                 Log.i("BUTTON", "okButton click");
                 getAddressText();
-                System.out.println("StartAddress: " + startAddressText + "DestAddress: " + destinationAddressText + "WayAddress: " + wayPointAddressText);
+                System.out.println("StartAddress: " + startAddressText + "DestAddress: " + destinationAddressText);
 
-                String resultTime="";
+
                 if(checkTime==1){
                     resultTime=startTimeText;
                 }else if (checkTime==2){
@@ -264,50 +279,17 @@ public class InputActivity extends Activity {
                 //ServerThread serverThread = new ServerThread(startAddressText,destinationAddressText,resultTime,checkTime);
                 //serverThread.run();
                 //Thread.State state = serverThread.getState();
-                ServerThreadMock serverThreadMock = new ServerThreadMock(startAddressText, destinationAddressText,resultTime,checkTime);
-                serverThreadMock.run();
-                Thread.State state = serverThreadMock.getState();
+                //ServerThreadMock serverThreadMock = new ServerThreadMock(startAddressText, destinationAddressText,resultTime,checkTime);
+                //serverThreadMock.run();
+                //Thread.State state = serverThreadMock.getState();
+                putIntentAndStartActivity();
 
-                AlertDialog.Builder msgBuilder = new AlertDialog.Builder(InputActivity.this)
-                        .setTitle("확인")
-                        .setMessage(startAddressText + " 에서 " + destinationAddressText + " 검색을 시작하시겠습니까?")
-                        .setPositiveButton("예",new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                System.out.println("onclick들어옴");
-                                Toast.makeText(InputActivity.this, "검색을 시작합니다.", Toast.LENGTH_SHORT).show();
-                                if (serverThreadMock.isAlive() == false) {
-                                    System.out.println("if문 isAlive false");
-                                    // Thread 종료 되었을 때만 ResultActivity 실행
-                                    startResultActivity();
-                                } else {
-                                    progressDialog.show();
-                                    while (true) {
-                                        System.out.println("while loof");
-                                        if (serverThreadMock.isAlive() == false) {
-                                            System.out.println("else안에 if문 isAlive false");
-                                            progressDialog.dismiss();
-                                            startResultActivity();
-                                        }
-                                    }
-                                }
-                            }
-                        })
-                        .setNegativeButton("아니오",new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(InputActivity.this, "검색을 취소합니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                AlertDialog msgDlg = msgBuilder.create();
-                msgDlg.show();
+
+
             }
         });
     }
 
-    public void calculateStartTime() {
-
-    }
 
     public void getAddressText() {
         for (String str : set) {
@@ -349,6 +331,15 @@ public class InputActivity extends Activity {
         Intent intent = new Intent(InputActivity.this, ResultActivity.class);
         //intent.putExtra("startAddressText", startAddressText);
         //intent.putExtra("destinationAddressText", destinationAddressText);
+        startActivity(intent);
+    }
+
+    public void putIntentAndStartActivity() {
+        Intent intent = new Intent(InputActivity.this, ResultActivity.class);
+        intent.putExtra("startAddressText", startAddressText);
+        intent.putExtra("destinationAddressText", destinationAddressText);
+        intent.putExtra("resultTime",resultTime);
+        intent.putExtra("checkTIme",checkTime);
         startActivity(intent);
     }
 
