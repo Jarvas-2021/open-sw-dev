@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-@Controller
+@RestController
 public class RouteController {
 
     private final RouteService routeService;
@@ -20,16 +20,8 @@ public class RouteController {
         this.routeService = routeService;
     }
 
-    @RequestMapping(value = "/android/api", method = RequestMethod.GET)
-    @ResponseBody
-    public List<Route> routeList() {
-        routeService.crawling();
-        return routeService.findRoutes();
-    }
-
-    @RequestMapping(value = "/android", method = RequestMethod.POST)
-    @ResponseBody
-    public String androidPage(HttpServletRequest req) {
+    @RequestMapping(value = "/android")
+    public List<Route> androidPage(HttpServletRequest req) {
         routeService.setClear();
         System.out.println("서버에서 안드로이드 접속 요청함");
         try {
@@ -42,6 +34,7 @@ public class RouteController {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return "android/api";
+        routeService.crawling();
+        return routeService.findRoutes();
     }
 }
