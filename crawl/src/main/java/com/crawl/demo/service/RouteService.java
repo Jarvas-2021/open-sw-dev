@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -20,7 +21,7 @@ public class RouteService {
 
     private static List<WebElement> path;
     private static List<WebElement> time;
-    private static List<WebElement> transType;
+    private static List<WebElement> transType = null;
     private static List<WebElement> elements;
 
     private static WebElement clear;
@@ -64,7 +65,7 @@ public class RouteService {
         route.setDistance(distance);
 
         route.setId(0);
-        if (transType != null) {
+        if ((transType != null) && !transType.isEmpty()) {
             route.setId(1);
             route.setTransType(transType.get(index).getText());
         }
@@ -151,7 +152,7 @@ public class RouteService {
             busImage = driver.findElement(By.cssSelector("#transittab"));
             busImage.sendKeys(Keys.ENTER);
             System.out.println(busImage);
-            Thread.sleep(2000);
+            Thread.sleep(2500);
 
         }catch (Exception e) {
             e.printStackTrace();
