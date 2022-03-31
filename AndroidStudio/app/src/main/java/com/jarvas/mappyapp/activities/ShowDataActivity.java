@@ -18,6 +18,8 @@ import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.kakao_api.NaverRecognizer;
 import com.jarvas.mappyapp.model.category_search.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
+import com.jarvas.mappyapp.utils.ContextStorage;
+import com.jarvas.mappyapp.utils.StringResource;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechRecognitionResult;
 
@@ -29,7 +31,7 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
 
     // Naver CSR Variable
     private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
-    private static final String CLIENT_ID = "n9a2bacryq";
+    private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(),R.string.csr_key);
     private RecognitionHandler handler;
     private NaverRecognizer naverRecognizer;
     private AudioWriterPCM writer;
