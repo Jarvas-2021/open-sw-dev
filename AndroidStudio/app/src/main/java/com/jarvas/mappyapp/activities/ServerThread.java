@@ -16,8 +16,14 @@ import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFact
 import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.utils.ContextStorage;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -26,12 +32,16 @@ import retrofit2.Response;
 public class ServerThread extends Thread {
     private String startAddressText;
     private String destinationAddressText;
+    private String resultTime;
+    private Integer checkTime;
     private ArrayList<ResultItem> mResultItems;
     private ResultRecyclerAdapter mRecyclerAdapter;
 
-    public ServerThread(String startAddressText, String destinationAddressText) {
+    public ServerThread(String startAddressText, String destinationAddressText, String resultTime, Integer checkTime) {
         this.startAddressText = startAddressText;
         this.destinationAddressText = destinationAddressText;
+        this.resultTime = resultTime;
+        this.checkTime = checkTime;
     }
     public void run() {
         //Intent secondIntent = getIntent();
@@ -94,6 +104,11 @@ public class ServerThread extends Thread {
                 content += "환승 : " + route.getTransfer() + "\n";
                 content += "거리 : " + route.getDistance() + "\n\n";
                 //textViewResult.append(content);
+                if(checkTime==1){
+                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTime,route.getTime()));
+                } else if (checkTime==2) {
+                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime,route.getTime()));
+                }
                 mResultItems.add(new ResultItem(content));
             }
             else {
@@ -104,10 +119,93 @@ public class ServerThread extends Thread {
                 content += "교통수단 : " + route.getTransType() + "\n";
                 content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
                 //textViewResult.append(content);
+                if(checkTime==1){
+                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTime,route.getTime()));
+                } else if (checkTime==2) {
+                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime,route.getTime()));
+                }
                 mResultItems.add(new ResultItem(content));
             }
             mRecyclerAdapter.setResultList(mResultItems);
         }
 
+    }
+
+    // StartTime과 크롤링시간을 더해서 예상 도착 시간 알려주는 함수
+    private String predictDestinationTime(String startTime, String crawlingTime) {
+        String result;
+        crawlingTime = convertStringDateFormat(crawlingTime);
+
+        DateFormat format = new SimpleDateFormat("HH:mm");
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = Calendar.getInstance();
+
+        try {
+            calendar1.setTime(format.parse(startTime));
+            calendar2.setTime(format.parse(crawlingTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("predictDestinationTime 시간 계산 : "+calendar1.getTime());
+        System.out.println("predictDestinationTime 시간 계산 : "+calendar2.getTime());
+
+        calendar1.add(Calendar.HOUR_OF_DAY,calendar2.get(Calendar.HOUR_OF_DAY));
+        calendar1.add(Calendar.MINUTE,calendar2.get(Calendar.MINUTE));
+
+        result = format.format(calendar1.getTime());
+        System.out.println("predictDestinationTime 시간 계산 : "+result);
+        return result;
+    }
+
+    // DestinationTime을 받아서 크롤링 시간에서 빼서 예상 출발 시간 알려주는 함수
+    private String predictStartTime(String destinationTime, String crawlingTime) {
+        String result;
+        crawlingTime = convertStringDateFormat(crawlingTime);
+
+        DateFormat format = new SimpleDateFormat("HH:mm");
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = Calendar.getInstance();
+
+        try {
+            calendar1.setTime(format.parse(destinationTime));
+            calendar2.setTime(format.parse(crawlingTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("predictStartTime 시간 계산 : "+calendar1.getTime());
+        System.out.println("predictStartTime 시간 계산 : "+calendar2.getTime());
+
+        calendar1.add(Calendar.HOUR_OF_DAY,-calendar2.get(Calendar.HOUR_OF_DAY));
+        calendar1.add(Calendar.MINUTE,-calendar2.get(Calendar.MINUTE));
+
+        result = format.format(calendar1.getTime());
+        System.out.println("predictStartTime 시간 계산 : "+result);
+        return result;
+    }
+
+    private String convertStringDateFormat(String data) {
+        data = data.replace("시간 ",":");
+        data = data.replace("분","");
+        return data;
+    }
+
+    private String convertDateFormatToKoreanString(String data) {
+        DateFormat df = new SimpleDateFormat("HH:mm");
+        Date dateData = null;
+        try {
+            dateData = df.parse(data);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        System.out.println("현재 data : " + dateData);
+
+        DateFormat format = new SimpleDateFormat("a hh:mm", Locale.KOREAN);
+        format.format(dateData);
+
+        //dateData = format.format(data);
+        System.out.println("format : " + format.format(dateData));
+        return format.format(dateData);
     }
 }
