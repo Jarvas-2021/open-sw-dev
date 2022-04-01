@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp.Network;
+package com.jarvas.mappyapp.models;
 
 public class Route {
 

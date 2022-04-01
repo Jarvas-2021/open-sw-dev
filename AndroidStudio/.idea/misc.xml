@@ -8,6 +8,7 @@
         <entry key="..\:/Users/Prof_Baek/Desktop/KangDongHwa/OpenSW/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_main.xml" value="0.5" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/button_background.xml" value="0.175" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_access_time_24.xml" value="0.175" />
+        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_location_searching_24.xml" value="0.2315" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.2315" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.2315" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.2315" />
@@ -24,12 +25,12 @@
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_result_except.xml" value="0.2869791666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_setting.xml" value="0.2869791666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_show_data.xml" value="0.22760416666666666" />
-        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_star.xml" value="0.2869791666666667" />
+        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_star.xml" value="0.1" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/activity_time_popup.xml" value="0.5" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/dialog_progress.xml" value="0.14375" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/item_location.xml" value="0.2869791666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/item_recyclerview.xml" value="0.14375" />
-        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/item_result.xml" value="0.33" />
+        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/item_result.xml" value="0.1" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/navi_header.xml" value="0.2713541666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/navi_menu.xml" value="0.2713541666666667" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/layout/toolbar_layout.xml" value="0.25" />

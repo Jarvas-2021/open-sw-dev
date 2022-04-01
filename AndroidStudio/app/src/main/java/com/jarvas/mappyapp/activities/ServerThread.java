@@ -3,7 +3,7 @@ package com.jarvas.mappyapp.activities;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.jarvas.mappyapp.Network.Route;
+import com.jarvas.mappyapp.models.Route;
 import com.jarvas.mappyapp.models.ResultItem;
 import com.jarvas.mappyapp.adapter.ResultRecyclerAdapter;
 import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;

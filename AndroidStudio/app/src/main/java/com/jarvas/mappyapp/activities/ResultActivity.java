@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jarvas.mappyapp.Network.Route;
+import com.jarvas.mappyapp.models.Route;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.models.ResultItem;
 import com.jarvas.mappyapp.adapter.ResultRecyclerAdapter;

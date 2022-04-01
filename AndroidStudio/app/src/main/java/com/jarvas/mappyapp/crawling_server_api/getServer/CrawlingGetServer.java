@@ -1,6 +1,6 @@
 package com.jarvas.mappyapp.crawling_server_api.getServer;
 
-import com.jarvas.mappyapp.Network.Route;
+import com.jarvas.mappyapp.models.Route;
 
 import java.util.List;
 
