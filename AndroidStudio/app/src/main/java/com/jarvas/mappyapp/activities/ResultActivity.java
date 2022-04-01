@@ -46,8 +46,8 @@ public class ResultActivity extends AppCompatActivity {
     private ArrayList<ResultItem> mResultItems;
     private ResultRecyclerAdapter mRecyclerAdapter;
 
-    private String resultTime;
-    private Integer checkTime;
+    private String resultTimeResult;
+    private Integer checkTimeResult;
 
     //private ResultRecyclerAdapter mRecyclerAdapter;
     @Override
@@ -55,12 +55,18 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
         //textViewResult = findViewById(R.id.text_view_result);
-        checkTime = 0;
+        checkTimeResult = 0;
         Intent secondIntent = getIntent();
         String startAddressText = secondIntent.getStringExtra("startAddressText");
         String destinationAddressText = secondIntent.getStringExtra("destinationAddressText");
         String resultTime = secondIntent.getStringExtra("resultTime");
         Integer checkTime = secondIntent.getExtras().getInt("checkTime");
+        resultTimeResult = resultTime;
+        if (checkTime == 1) {
+            checkTimeResult = 1;
+        } else {
+            checkTimeResult = 2;
+        }
 
         mRecyclerView = findViewById(R.id.result_recyclerView);
 
@@ -145,10 +151,10 @@ public class ResultActivity extends AppCompatActivity {
                 content += "환승 : " + route.getTransfer() + "\n";
                 content += "거리 : " + route.getDistance() + "\n\n";
                 //textViewResult.append(content);
-                if(checkTime==1){
-                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTime,route.getTime()));
-                } else if (checkTime==2) {
-                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime,route.getTime()));
+                if(checkTimeResult==1){
+                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                } else if (checkTimeResult==2) {
+                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
                 }
                 mResultItems.add(new ResultItem(content));
             }
@@ -160,10 +166,10 @@ public class ResultActivity extends AppCompatActivity {
                 content += "교통수단 : " + route.getTransType() + "\n";
                 content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
                 //textViewResult.append(content);
-                if(checkTime==1){
-                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTime,route.getTime()));
-                } else if (checkTime==2) {
-                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime,route.getTime()));
+                if(checkTimeResult==1){
+                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                } else if (checkTimeResult==2) {
+                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
                 }
                 mResultItems.add(new ResultItem(content));
             }
