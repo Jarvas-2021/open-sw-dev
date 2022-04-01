@@ -63,7 +63,5 @@ public class StarActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        StarDatabase.destroyInstance();
-        starDatabase = null;
     }
 }

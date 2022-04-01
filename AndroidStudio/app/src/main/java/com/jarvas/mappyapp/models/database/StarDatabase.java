@@ -8,19 +8,23 @@ import androidx.room.RoomDatabase;
 
 import com.jarvas.mappyapp.models.Star;
 
-@Database(entities = {Star.class}, version = 1)
+@Database(entities = {Star.class}, version = 1, exportSchema = false)
+
 public abstract class StarDatabase extends RoomDatabase {
-    private static StarDatabase INSTANCE = null;
-    public abstract StarDAO starDAO();
+    private static StarDatabase database;
 
-    public static StarDatabase getInstance(Context context) {
-        if (INSTANCE == null) {
-            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), StarDatabase.class, "star.db").build();
+    private static String DATABASE_NAME = "database";
+
+    public synchronized static StarDatabase getInstance(Context context) {
+        if (database == null) {
+            database = Room.databaseBuilder(context.getApplicationContext(), StarDatabase.class, DATABASE_NAME)
+                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build();
         }
-        return INSTANCE;
+        return database;
     }
 
-    public static void destroyInstance() {
-        INSTANCE = null;
-    }
+    public abstract StarDAO starDAO();
 }
+

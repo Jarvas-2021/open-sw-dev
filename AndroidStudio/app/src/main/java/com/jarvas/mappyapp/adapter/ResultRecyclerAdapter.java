@@ -3,7 +3,6 @@ package com.jarvas.mappyapp.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,9 +16,11 @@ import com.jarvas.mappyapp.models.database.StarDatabase;
 import com.jarvas.mappyapp.utils.ContextStorage;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAdapter.ViewHolder> {
     private ArrayList<ResultItem> mResultList ;
+    private StarDatabase database;
 
     @NonNull
     @Override
@@ -31,6 +32,19 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
     @Override
     public void onBindViewHolder(@NonNull ResultRecyclerAdapter.ViewHolder holder, int position) {
         holder.onBind(mResultList.get(position));
+
+        database = StarDatabase.getInstance(ContextStorage.getCtx());
+
+        holder.starButton1.setOnClickListener(v -> {
+            holder.starButton1.setVisibility(View.INVISIBLE);
+            holder.starButton2.setVisibility(View.VISIBLE);
+
+            Star star = new Star();
+            star.content = holder.content.getText().toString();
+            database.starDAO().insertStar(star);
+            System.out.println(star.content);
+
+        });
     }
 
     public void setResultList(ArrayList<ResultItem> list){
@@ -46,34 +60,22 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView content;
-        ImageView starButton;
+        ImageView starButton1;
+        ImageView starButton2;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             content = (TextView) itemView.findViewById(R.id.result_data);
-            starButton = (ImageView) itemView.findViewById(R.id.save_img);
+            starButton1 = (ImageView) itemView.findViewById(R.id.save_img);
+            starButton2 = (ImageView) itemView.findViewById(R.id.save_img2);
         }
 
         void onBind(ResultItem item){
             System.out.println("bind"+mResultList);
             content.setText(item.getContent());
 
-            starButton.setOnClickListener(v -> {
-                starButton.setImageResource(R.drawable.ic_baseline_star_24);
-                InsertRunnable insertRunnable = new InsertRunnable();
-                Thread addThread = new Thread(insertRunnable);
-                addThread.start();
-            });
         }
 
-        class InsertRunnable implements Runnable {
-            @Override
-            public void run() {
-                Star star = new Star();
-                star.content = content.getText().toString();
-                StarDatabase.getInstance(ContextStorage.getCtx()).starDAO().insertStar(star);
-            }
-        }
     }
 
 
