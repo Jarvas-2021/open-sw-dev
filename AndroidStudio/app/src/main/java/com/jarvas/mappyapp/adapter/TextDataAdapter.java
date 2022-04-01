@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.R;
-import com.jarvas.mappyapp.model.category_search.TextDataItem;
+import com.jarvas.mappyapp.models.TextDataItem;
 
 import java.util.ArrayList;
 

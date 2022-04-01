@@ -1,7 +1,6 @@
 package com.jarvas.mappyapp.activities;
 
 import static android.net.wifi.p2p.WifiP2pManager.ERROR;
-import static com.jarvas.mappyapp.activities.ServerThreadMock.mRecyclerAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,8 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.Network.Route;
 import com.jarvas.mappyapp.R;
-import com.jarvas.mappyapp.ResultItem;
-import com.jarvas.mappyapp.ResultRecyclerAdapter;
+import com.jarvas.mappyapp.models.ResultItem;
+import com.jarvas.mappyapp.adapter.ResultRecyclerAdapter;
 import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;
 import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.utils.ContextStorage;

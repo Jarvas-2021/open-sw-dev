@@ -1,17 +1,11 @@
 package com.jarvas.mappyapp.activities;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
 import com.jarvas.mappyapp.Network.Route;
-import com.jarvas.mappyapp.ResultItem;
-import com.jarvas.mappyapp.ResultRecyclerAdapter;
+import com.jarvas.mappyapp.models.ResultItem;
+import com.jarvas.mappyapp.adapter.ResultRecyclerAdapter;
 import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;
 import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.utils.ContextStorage;

@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp;
+package com.jarvas.mappyapp.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.models.ResultItem;
 
-import javax.xml.transform.Result;
+import java.util.ArrayList;
 
 public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAdapter.ViewHolder> {
     private ArrayList<ResultItem> mResultList ;

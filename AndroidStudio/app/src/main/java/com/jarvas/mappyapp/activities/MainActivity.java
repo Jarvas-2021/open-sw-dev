@@ -42,8 +42,8 @@ import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.kakao_api.ApiClient;
 import com.jarvas.mappyapp.kakao_api.ApiInterface;
-import com.jarvas.mappyapp.model.category_search.CategoryResult;
-import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.models.category_search.CategoryResult;
+import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
@@ -58,7 +58,6 @@ import net.daum.mf.map.api.MapView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;

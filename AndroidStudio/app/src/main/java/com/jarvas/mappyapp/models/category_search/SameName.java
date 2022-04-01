@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp.model.category_search;
+package com.jarvas.mappyapp.models.category_search;
 import android.os.Parcel;
 import android.os.Parcelable;
 

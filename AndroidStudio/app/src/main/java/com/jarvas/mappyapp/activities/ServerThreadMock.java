@@ -1,7 +1,7 @@
 package com.jarvas.mappyapp.activities;
 
-import com.jarvas.mappyapp.ResultItem;
-import com.jarvas.mappyapp.ResultRecyclerAdapter;
+import com.jarvas.mappyapp.models.ResultItem;
+import com.jarvas.mappyapp.adapter.ResultRecyclerAdapter;
 
 import java.text.DateFormat;
 import java.text.ParseException;

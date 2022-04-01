@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp.model.category_search;
+package com.jarvas.mappyapp.models;
 
 public class TextDataItem {
     String textData;

@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp;
+package com.jarvas.mappyapp.models;
 
 public class ResultItem {
     String content;

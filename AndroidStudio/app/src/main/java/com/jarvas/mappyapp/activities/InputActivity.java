@@ -1,10 +1,8 @@
 package com.jarvas.mappyapp.activities;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -21,37 +18,22 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jarvas.mappyapp.Network.Route;
 import com.jarvas.mappyapp.R;
-import com.jarvas.mappyapp.ResultItem;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
-import com.jarvas.mappyapp.crawling_server_api.getServer.RetrofitServiceImplFactoryGetServer;
-import com.jarvas.mappyapp.crawling_server_api.postServer.RetrofitServiceImplFactoryPostServer;
 import com.jarvas.mappyapp.listener.EventListener;
-import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
-import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class InputActivity extends Activity {
     RecyclerView recyclerView1;
