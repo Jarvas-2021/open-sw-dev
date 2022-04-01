@@ -76,6 +76,7 @@ public class ResultActivity extends AppCompatActivity {
         mResultItems = new ArrayList<>();
         System.out.println("33333333333");
 
+        // todo - Dummy Data & Server 변경
         // Call Server
         //callServer(startAddressText,destinationAddressText);
 
