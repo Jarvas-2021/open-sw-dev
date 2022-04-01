@@ -77,6 +77,29 @@ public class ResultActivity extends AppCompatActivity {
         mResultItems = new ArrayList<>();
         System.out.println("33333333333");
 
+        // Call Server
+        //callServer(startAddressText,destinationAddressText);
+
+        // Dummy Data
+        getRouteValuesDummyData();
+
+
+        // TTS를 생성하고 OnInitListener로 초기화 한다.
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != ERROR) {
+                    // 언어를 선택한다.
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
+        
+        // todo - 추후 tts recyclerview 속 data 읽기로 바꾸기
+        //tts.speak(textViewResult.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
+    }
+
+    private void callServer(String startAddressText, String destinationAddressText) {
         Call<String> m = RetrofitServiceImplFactoryPostServer.serverPost().sendAddress(startAddressText,destinationAddressText);
         m.enqueue(new Callback<String>() {
             @Override
@@ -121,21 +144,6 @@ public class ResultActivity extends AppCompatActivity {
                 Toast.makeText(ContextStorage.getCtx(), "서버와 통신중 에러가 발생했습니다", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-        // TTS를 생성하고 OnInitListener로 초기화 한다.
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != ERROR) {
-                    // 언어를 선택한다.
-                    tts.setLanguage(Locale.KOREAN);
-                }
-            }
-        });
-        
-        // todo - 추후 tts recyclerview 속 data 읽기로 바꾸기
-        //tts.speak(textViewResult.getText().toString(), TextToSpeech.QUEUE_FLUSH, null);
     }
 
     private void getRouteValues(List<Route> routes) {
@@ -174,6 +182,40 @@ public class ResultActivity extends AppCompatActivity {
                 mResultItems.add(new ResultItem(content));
             }
         }
+    }
+
+    private void getRouteValuesDummyData() {
+        mResultItems = new ArrayList<>();
+        String content = "";
+        content += "시간 : " + "1시간 30분" + "\n";
+        content += "경로 : " + "경로는 어쩌구저쩌구" + "\n";
+        content += "요금 : " + "1250원" + "\n";
+        content += "도보 시간 : " + "40분" + "\n";
+        content += "환승 : " + "3번" + "\n";
+        content += "거리 : " + "130km" + "\n\n";
+        System.out.println("지금 content: " + content);
+
+        if (checkTimeResult == 1) {
+            content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult, "1시간 30분"));
+        } else if (checkTimeResult == 2) {
+            content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
+        }
+
+        mResultItems.add(new ResultItem(content));
+
+        content = "";
+        content += "시간 : " + "1시간 50분" + "\n";
+        content += "경로 : " + "경로는 좌짜짜짜짜자자자자자잦쿠카쿠카쿠켘켘어쩌구저쩌구" + "\n";
+        content += "요금 : " + "1350원" + "\n";
+        content += "도보 시간 : " + "45분" + "\n";
+        content += "환승 : " + "2번" + "\n";
+        content += "거리 : " + "10km" + "\n\n";
+
+        mResultItems.add(new ResultItem(content));
+
+        mRecyclerAdapter = new ResultRecyclerAdapter();
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerAdapter.setResultList(mResultItems);
     }
 
     // StartTime과 크롤링시간을 더해서 예상 도착 시간 알려주는 함수
