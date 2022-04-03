@@ -3,6 +3,8 @@ package com.jarvas.mappyapp.activities;
 import static android.net.wifi.p2p.WifiP2pManager.ERROR;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
@@ -13,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jarvas.mappyapp.dialog.ProgressDialog;
 import com.jarvas.mappyapp.models.Route;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.models.ResultItem;
@@ -48,6 +51,8 @@ public class ResultActivity extends AppCompatActivity {
     private String resultTimeResult;
     private Integer checkTimeResult;
 
+    private com.jarvas.mappyapp.dialog.ProgressDialog customProgressDialog;
+
     //private ResultRecyclerAdapter mRecyclerAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,10 @@ public class ResultActivity extends AppCompatActivity {
         String destinationAddressText = secondIntent.getStringExtra("destinationAddressText");
         String resultTime = secondIntent.getStringExtra("resultTime");
         Integer checkTime = secondIntent.getExtras().getInt("checkTime");
+
+        customProgressDialog = new com.jarvas.mappyapp.dialog.ProgressDialog(ResultActivity.this);
+        customProgressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         resultTimeResult = resultTime;
         if (checkTime == 1 || checkTime == 0) {
             checkTimeResult = 1;
@@ -100,11 +109,13 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private void callServer(String startAddressText, String destinationAddressText) {
+        customProgressDialog.show();
         Call<String> m = RetrofitServiceImplFactoryPostServer.serverPost().sendAddress(startAddressText,destinationAddressText);
         m.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 Toast.makeText(ContextStorage.getCtx(), "서버에 값을 전달했습니다 : " , Toast.LENGTH_SHORT).show();
+
                 Call<List<Route>> m2 = RetrofitServiceImplFactoryGetServer.serverCon2().getMlist();
                 System.out.println("여기까지 됨");
                 m2.enqueue(new Callback<List<Route>>(){
@@ -122,6 +133,7 @@ public class ResultActivity extends AppCompatActivity {
                         List<Route> routes = response.body();
                         Log.i("RESPONSE",routes.toString());
                         getRouteValues(routes);
+                        customProgressDialog.dismiss();
                         mRecyclerAdapter = new ResultRecyclerAdapter();
                         mRecyclerView.setAdapter(mRecyclerAdapter);
                         mRecyclerAdapter.setResultList(mResultItems);
