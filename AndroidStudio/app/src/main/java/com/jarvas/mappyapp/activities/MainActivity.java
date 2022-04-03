@@ -48,6 +48,7 @@ import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
+import com.jarvas.mappyapp.utils.Util;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -401,7 +402,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.fab_input:
+                String currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng);
+                System.out.println("currentLocation : "+currentLocation);
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
+                intent.putExtra("currentLocation",currentLocation);
                 startActivity(intent);
                 break;
 

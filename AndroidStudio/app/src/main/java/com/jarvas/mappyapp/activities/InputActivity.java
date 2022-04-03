@@ -24,6 +24,7 @@ import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.IntentKey;
+import com.jarvas.mappyapp.utils.Util;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -56,6 +57,8 @@ public class InputActivity extends Activity {
 
     String startTimeText;
     String destinationTimeText;
+
+    String currentLocation;
 
     String searchAddressText;
 
@@ -263,13 +266,13 @@ public class InputActivity extends Activity {
                 }
                 System.out.println("resultTime : " +resultTime);
 
-                if (startAddressText==null) {
-                    Toast.makeText(InputActivity.this, "출발지를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }
-                else if (destinationAddressText==null) {
+                if (destinationAddressText == null) {
                     Toast.makeText(InputActivity.this, "도착지를 입력해주세요.", Toast.LENGTH_SHORT).show();
                 }
                 else {
+                    if (startAddressText == null) {
+                        startAddressText = currentLocation;
+                    }
                     putIntentAndStartActivity();
                 }
 
@@ -307,6 +310,9 @@ public class InputActivity extends Activity {
     public void getProcessIntentAndKey() {
         //Intent 받아오기
         Intent processIntent = getIntent();
+        currentLocation = processIntent.getStringExtra("currentLocation");
+        searchEdit1.setText(currentLocation);
+        recyclerView1.setVisibility(View.GONE);
         Bundle b = processIntent.getExtras();
 
         //Key 값 받기
