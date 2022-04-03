@@ -318,10 +318,10 @@ public class InputActivity extends Activity {
             }
             switch (key) {
                 case IntentKey.PLACE_SEARCH_SET_STARTING:
-                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_STARTING, searchEdit1, startAddressText, recyclerView1);
+                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_STARTING, searchEdit1, startAddressText, recyclerView1,1);
                     break;
                 case IntentKey.PLACE_SEARCH_SET_DESTINATION:
-                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_DESTINATION, searchEdit2, destinationAddressText, recyclerView2);
+                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_DESTINATION, searchEdit2, destinationAddressText, recyclerView2,2);
                     break;
             }
         }
@@ -343,18 +343,23 @@ public class InputActivity extends Activity {
         startActivity(intent);
     }
 
-    private void processIntent(Intent intent, String key, EditText searchEdit, String addressText, RecyclerView recyclerView) {
+    private void processIntent(Intent intent, String key, EditText searchEdit, String addressText, RecyclerView recyclerView, Integer check) {
         if (intent != null) {
             Document document = intent.getParcelableExtra(key);
             if (document != null) {
-                getDocumentValues(document, searchEdit, addressText, recyclerView);
+                getDocumentValues(document, searchEdit, addressText, recyclerView, check);
             }
         }
     }
 
-    private void getDocumentValues(Document document, EditText searchEdit, String addressText, RecyclerView recyclerView) {
+    private void getDocumentValues(Document document, EditText searchEdit, String addressText, RecyclerView recyclerView,Integer check) {
         searchEdit.setText(document.getPlaceName());
         addressText = document.getAddressName();
+        if (check==1) {
+            startAddressText = addressText;
+        } else if (check==2) {
+            destinationAddressText = addressText;
+        }
         recyclerView.setVisibility(View.GONE);
     }
 
