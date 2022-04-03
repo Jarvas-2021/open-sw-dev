@@ -27,8 +27,10 @@ import com.jarvas.mappyapp.utils.IntentKey;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -157,15 +159,15 @@ public class InputActivity extends Activity {
     }
 
     //확인 버튼 클릭
-    public void mOnClose(View v) {
-        //데이터 전달하기
-        Intent intent = new Intent();
-        intent.putExtra("startingTime", startTimeText);
-        intent.putExtra("destinationTime", destinationTimeText);
-        setResult(RESULT_OK, intent);
-        //액티비티(팝업) 닫기
-        finish();
-    }
+//    public void mOnClose(View v) {
+//        //데이터 전달하기
+//        Intent intent = new Intent();
+//        intent.putExtra("startingTime", startTimeText);
+//        intent.putExtra("destinationTime", destinationTimeText);
+//        setResult(RESULT_OK, intent);
+//        //액티비티(팝업) 닫기
+//        finish();
+//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -250,28 +252,44 @@ public class InputActivity extends Activity {
                 getAddressText();
                 System.out.println("StartAddress: " + startAddressText + "DestAddress: " + destinationAddressText);
 
+                System.out.println();
 
                 if(checkTime==1){
                     resultTime=startTimeText;
                 }else if (checkTime==2){
                     resultTime=destinationTimeText;
+                }else if (checkTime==0) {
+                    resultTime=calculateCurrentTime();
+                }
+                System.out.println("resultTime : " +resultTime);
+
+                if (startAddressText==null) {
+                    Toast.makeText(InputActivity.this, "출발지를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
+                else if (destinationAddressText==null) {
+                    Toast.makeText(InputActivity.this, "도착지를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    putIntentAndStartActivity();
                 }
 
-                // todo - 서버 연결시 주석 해제 후 밑에 3줄 주석처리하기
                 //ServerThread serverThread = new ServerThread(startAddressText,destinationAddressText,resultTime,checkTime);
                 //serverThread.run();
                 //Thread.State state = serverThread.getState();
                 //ServerThreadMock serverThreadMock = new ServerThreadMock(startAddressText, destinationAddressText,resultTime,checkTime);
                 //serverThreadMock.run();
                 //Thread.State state = serverThreadMock.getState();
-                putIntentAndStartActivity();
-
-
 
             }
         });
     }
 
+    public String calculateCurrentTime() {
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm");
+        Date now = new Date();
+        String currentTime = sf.format(now);
+        return currentTime;
+    }
 
     public void getAddressText() {
         for (String str : set) {

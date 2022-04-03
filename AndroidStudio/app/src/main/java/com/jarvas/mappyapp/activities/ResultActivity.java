@@ -61,7 +61,7 @@ public class ResultActivity extends AppCompatActivity {
         String resultTime = secondIntent.getStringExtra("resultTime");
         Integer checkTime = secondIntent.getExtras().getInt("checkTime");
         resultTimeResult = resultTime;
-        if (checkTime == 1) {
+        if (checkTime == 1 || checkTime == 0) {
             checkTimeResult = 1;
         } else {
             checkTimeResult = 2;
@@ -210,6 +210,12 @@ public class ResultActivity extends AppCompatActivity {
         content += "도보 시간 : " + "45분" + "\n";
         content += "환승 : " + "2번" + "\n";
         content += "거리 : " + "10km" + "\n\n";
+
+        if (checkTimeResult == 1) {
+            content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult, "1시간 30분"));
+        } else if (checkTimeResult == 2) {
+            content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
+        }
 
         mResultItems.add(new ResultItem(content));
 
