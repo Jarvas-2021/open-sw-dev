@@ -189,6 +189,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ArrayList<String> mResult =results.getStringArrayList(key);
             String[] rs = new String[mResult.size()];
             if (checkTriggerWord(mResult)) trigger = true;
+            if (trigger == true) {
+                Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
+                startActivity(intent_show);
+            }
             mResult.toArray(rs);
             System.out.println("trigger "+trigger);
             //System.out.println(rs[0]+"\r\n"+txtInMsg.getText()+trigger+"stt result");
