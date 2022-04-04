@@ -152,7 +152,7 @@ public class RouteService {
             busImage = driver.findElement(By.cssSelector("#transittab"));
             busImage.sendKeys(Keys.ENTER);
             System.out.println(busImage);
-            Thread.sleep(2500);
+            Thread.sleep(2000);
 
         }catch (Exception e) {
             e.printStackTrace();
