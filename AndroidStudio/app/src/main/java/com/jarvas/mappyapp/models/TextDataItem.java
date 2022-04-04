@@ -1,14 +1,20 @@
 package com.jarvas.mappyapp.models;
 
 public class TextDataItem {
-    String textData;
+    private String textData;
+    private int viewType;
 
-    public TextDataItem(String textData) {
+    public TextDataItem(String textData, int viewType) {
         this.textData = textData;
+        this.viewType = viewType;
     }
 
     public String getTextData() {
         return textData;
+    }
+
+    public Integer getViewType() {
+        return viewType;
     }
 
     public void setTextData(String textData) {

@@ -18,6 +18,7 @@ import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.kakao_api.NaverRecognizer;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
+import com.jarvas.mappyapp.utils.Code;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.StringResource;
 import com.naver.speech.clientapi.SpeechConfig;
@@ -38,31 +39,44 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
     private FloatingActionButton floatingActionButton;
-    private ArrayList<TextDataItem> mTextDataItems = new ArrayList<>();
-    private TextDataAdapter mTextDataAdapter = new TextDataAdapter();
+    private ArrayList<TextDataItem> mTextDataItems;
+    private TextDataAdapter mTextDataAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
 
+        initData();
+
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,RecyclerView.VERTICAL,false);
 
-        /* initiate adapter */
-
-        /* initiate recyclerview */
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mTextDataAdapter = new TextDataAdapter(mTextDataItems);
         mRecyclerView.setAdapter(mTextDataAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(this);
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
-        /* adapt data */
-        mTextDataItems.add(new TextDataItem("예제 데이터"));
-        mTextDataAdapter.setFriendList(mTextDataItems);
 
+        //mTextDataAdapter.setFriendList(mTextDataItems);
+
+    }
+
+    private void initData() {
+        mTextDataItems = new ArrayList<>();
+        /* adapt data */
+        mTextDataItems.add(new TextDataItem("예제 데이터 매피가 얘기하는거ㅋㅋ아싸", Code.ViewType.LEFT_CONTENT));
+        mTextDataItems.add(new TextDataItem("예제 데이터 사용자가 얘기하는거", Code.ViewType.RIGHT_CONTENT));
+        mTextDataItems.add(new TextDataItem("예제 데이터 사용자가 얘기하는거ㅇㅇㅇ", Code.ViewType.RIGHT_CONTENT));
+        mTextDataItems.add(new TextDataItem("예제 데이터 사용자가 얘기하는거ㅋㅋㅋㅋ", Code.ViewType.RIGHT_CONTENT));
+        mTextDataItems.add(new TextDataItem("예제 데이터 매피가 ㅎㅎㅎㅎ", Code.ViewType.LEFT_CONTENT));
+        System.out.println("items:"+mTextDataItems.get(0).getViewType());
+        System.out.println(mTextDataItems.get(1).getViewType());
     }
 
     static class RecognitionHandler extends Handler {
@@ -156,7 +170,7 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
                 System.out.println("results:"+results);
                 // todo - 이부분 고치기
                 System.out.println("strBuf"+strBuf);
-                mTextDataItems.add(new TextDataItem(strBuf.toString()));
+                mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 System.out.println(mTextDataItems);
                 mTextDataAdapter.setFriendList(mTextDataItems);
                 break;
