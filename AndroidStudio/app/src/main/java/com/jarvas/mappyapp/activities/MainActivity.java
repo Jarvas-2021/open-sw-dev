@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.fab_input:
-                String currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng);
+                String currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
                 System.out.println("currentLocation : "+currentLocation);
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 intent.putExtra("currentLocation",currentLocation);
