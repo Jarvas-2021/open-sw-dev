@@ -8,7 +8,14 @@
         android:id="@+id/text_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:background="@drawable/text_data_background"
         android:text="대화데이터"
         android:textColor="#000"
         android:textSize="16sp" />
+    <View
+        android:layout_width="6dp"
+        android:layout_height="6dp"
+        />
 </LinearLayout>
