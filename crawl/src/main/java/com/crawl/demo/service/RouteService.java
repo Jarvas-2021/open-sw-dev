@@ -177,7 +177,10 @@ public class RouteService {
                 splitOutOfTownElements(i);
             }
 
-            routeRepository.save(createRoute(i));
+            if (price != null) {
+                routeRepository.save(createRoute(i));
+            }
+
         }
 
     }
