@@ -70,11 +70,11 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     private void initData() {
         mTextDataItems = new ArrayList<>();
         /* adapt data */
-        mTextDataItems.add(new TextDataItem("예제 데이터 매피가 얘기하는거ㅋㅋ아싸", Code.ViewType.LEFT_CONTENT));
-        mTextDataItems.add(new TextDataItem("예제 데이터 사용자가 얘기하는거", Code.ViewType.RIGHT_CONTENT));
-        mTextDataItems.add(new TextDataItem("예제 데이터 사용자가 얘기하는거ㅇㅇㅇ", Code.ViewType.RIGHT_CONTENT));
-        mTextDataItems.add(new TextDataItem("예제 데이터 사용자가 얘기하는거ㅋㅋㅋㅋ", Code.ViewType.RIGHT_CONTENT));
-        mTextDataItems.add(new TextDataItem("예제 데이터 매피가 ㅎㅎㅎㅎ", Code.ViewType.LEFT_CONTENT));
+        mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
+        mTextDataItems.add(new TextDataItem("인천대입구역까지 얼마나 걸려?", Code.ViewType.RIGHT_CONTENT));
+        mTextDataItems.add(new TextDataItem("잠시만 기다려주세요. 탐색 중입니다.", Code.ViewType.RIGHT_CONTENT));
+        mTextDataItems.add(new TextDataItem("약 30분 걸릴 것으로 예상됩니다.", Code.ViewType.RIGHT_CONTENT));
+        mTextDataItems.add(new TextDataItem("알겠어.", Code.ViewType.LEFT_CONTENT));
         System.out.println("items:"+mTextDataItems.get(0).getViewType());
         System.out.println(mTextDataItems.get(1).getViewType());
     }
