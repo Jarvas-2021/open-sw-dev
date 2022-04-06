@@ -22,12 +22,31 @@
             tools:text="1시간 30분" />
 
         <TextView
+            android:id="@+id/tv_result_st"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             app:layout_constraintBottom_toBottomOf="@id/tv_result_time"
             app:layout_constraintStart_toEndOf="@id/tv_result_time"
-            tools:text="오후 01:30 - 오후 03:00" />
+            tools:text="오후 01:30" />
+        <TextView
+            android:id="@+id/tv_result_stdt"
+            android:text="-"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_result_st"
+            app:layout_constraintStart_toEndOf="@id/tv_result_st"
+            tools:text="-" />
+
+        <TextView
+            android:id="@+id/tv_result_dt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_result_stdt"
+            app:layout_constraintStart_toEndOf="@id/tv_result_stdt"
+            tools:text="오후 03:00" />
 
         <ImageView
             android:id="@+id/save_img"

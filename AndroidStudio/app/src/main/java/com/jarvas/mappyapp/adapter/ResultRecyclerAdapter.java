@@ -62,6 +62,9 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView time;
+        TextView st;
+        TextView dt;
+
         TextView path;
         TextView price;
 
@@ -85,6 +88,9 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             time = itemView.findViewById(R.id.tv_result_time);
+            st = itemView.findViewById(R.id.tv_result_st);
+            dt = itemView.findViewById(R.id.tv_result_dt);
+
             path = (TextView) itemView.findViewById(R.id.result_data);
             price = itemView.findViewById(R.id.tv_result_fee2);
             price_ = itemView.findViewById(R.id.tv_result_fee1);
@@ -109,6 +115,8 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
         void onBind(ResultItem item){
             System.out.println("bind"+mResultList);
             time.setText(item.getTime());
+            st.setText(item.getSt());
+            dt.setText(item.getDt());
             path.setText(item.getPath());
             price.setText(item.getPrice());
 

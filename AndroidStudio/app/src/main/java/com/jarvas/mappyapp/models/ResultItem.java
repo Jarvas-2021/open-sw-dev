@@ -12,16 +12,22 @@ public class ResultItem {
     String transType;
     String interTime;
 
-    public ResultItem(String time, String path, String price, String walktime, String transfer, String distance, String transType, String interTime) {
-        this.time=time;
-        this.path= path;
+    String st;
+    String dt;
+
+    public ResultItem(String time, String path, String price, String walktime, String transfer, String distance, String transType, String interTime, String st, String dt) {
+        this.time = time;
+        this.path = path;
         this.price = price;
         this.walkTime = walktime;
-        this.transfer=transfer;
-        this.distance=distance;
-        this.transType=transType;
-        this.interTime=interTime;
+        this.transfer = transfer;
+        this.distance = distance;
+        this.transType = transType;
+        this.interTime = interTime;
+        this.st = st;
+        this.dt = dt;
     }
+
     public String getTime() {
         return time;
     }
@@ -84,6 +90,22 @@ public class ResultItem {
 
     public void setInterTime(String interTime) {
         this.interTime = interTime;
+    }
+
+    public String getSt() {
+        return st;
+    }
+
+    public void setSt(String st) {
+        this.st = st;
+    }
+
+    public String getDt() {
+        return dt;
+    }
+
+    public void setDt(String dt) {
+        this.dt = dt;
     }
 
 

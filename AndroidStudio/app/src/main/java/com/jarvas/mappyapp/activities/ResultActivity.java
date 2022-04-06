@@ -39,7 +39,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ResultActivity extends AppCompatActivity {
-    private TextView textViewResult;
+    //private TextView textViewResult;
     private TextToSpeech tts;
 
     final static private String ServerUrl = StringResource.getStringResource(ContextStorage.getCtx(), R.string.ServerUrl);
@@ -180,12 +180,16 @@ public class ResultActivity extends AppCompatActivity {
                 transfer += route.getTransfer() + "\n";
                 distance += route.getDistance() + "\n\n";
                 //textViewResult.append(content);
+
+                //1일때는 출발시간이 들어올 때임
                 if(checkTimeResult==1){
                     expect_dt += convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                    mResultItems.add(new ResultItem(time,path,price,walktime,transfer,distance,"","",resultTimeResult,expect_dt));
                 } else if (checkTimeResult==2) {
                     expect_st += convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
+                    mResultItems.add(new ResultItem(time,path,price,walktime,transfer,distance,"","",expect_st,resultTimeResult));
                 }
-                mResultItems.add(new ResultItem(time,path,price,walktime,transfer,distance,"",""));
+
             }
             else {
                 String time = "";
@@ -204,48 +208,55 @@ public class ResultActivity extends AppCompatActivity {
                 //textViewResult.append(content);
                 if(checkTimeResult==1){
                     expect_dt += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                    mResultItems.add(new ResultItem(time,path,price,"","","",transType,interTime,resultTimeResult,expect_dt));
                 } else if (checkTimeResult==2) {
                     expect_st += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
+                    mResultItems.add(new ResultItem(time,path,price,"","","",transType,interTime,expect_st,resultTimeResult));
                 }
-                mResultItems.add(new ResultItem(time,path,price,"","","",transType,interTime));
+
             }
         }
     }
 
     private void getRouteValuesDummyData() {
         mResultItems = new ArrayList<>();
-        String content = "";
-        content += "시간 : " + "1시간 30분" + "\n";
-        content += "경로 : " + "경로는 어쩌구저쩌구" + "\n";
-        content += "요금 : " + "1250원" + "\n";
-        content += "도보 시간 : " + "40분" + "\n";
-        content += "환승 : " + "3번" + "\n";
-        content += "거리 : " + "130km" + "\n\n";
-        System.out.println("지금 content: " + content);
+        String expect_st="";
+        String expect_dt="";
+//        content += "시간 : " + "1시간 30분" + "\n";
+//        content += "경로 : " + "경로는 어쩌구저쩌구" + "\n";
+//        content += "요금 : " + "1250원" + "\n";
+//        content += "도보 시간 : " + "40분" + "\n";
+//        content += "환승 : " + "3번" + "\n";
+//        content += "거리 : " + "130km" + "\n\n";
+//        System.out.println("지금 content: " + content);
 
         if (checkTimeResult == 1) {
-            content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult, "1시간 30분"));
+            expect_dt +=convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult, "1시간 30분"));
+            mResultItems.add(new ResultItem("1시간 30분","안양역 시외버스터미널 09213\n9,2\n어쩌구저쩌구터미널","1250원","","","","시외","1시간",resultTimeResult,expect_dt));
         } else if (checkTimeResult == 2) {
-            content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
+            expect_st +=convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
+            mResultItems.add(new ResultItem("1시간 30분","안양역 시외버스터미널 09213\n9,2\n어쩌구저쩌구터미널","1250원","","","","시외","1시간",expect_st,resultTimeResult));
         }
 
-        mResultItems.add(new ResultItem("1시간 30분","안양역 시외버스터미널 09213\n9,2\n어쩌구저쩌구터미널","1250원","","","","시외","1시간"));
+//        content = "";
+//        content += "시간 : " + "1시간 50분" + "\n";
+//        content += "경로 : " + "경로는 좌짜짜짜짜자자자자자잦쿠카쿠카쿠켘켘어쩌구저쩌구" + "\n";
+//        content += "요금 : " + "1350원" + "\n";
+//        content += "도보 시간 : " + "45분" + "\n";
+//        content += "환승 : " + "2번" + "\n";
+//        content += "거리 : " + "10km" + "\n\n";
 
-        content = "";
-        content += "시간 : " + "1시간 50분" + "\n";
-        content += "경로 : " + "경로는 좌짜짜짜짜자자자자자잦쿠카쿠카쿠켘켘어쩌구저쩌구" + "\n";
-        content += "요금 : " + "1350원" + "\n";
-        content += "도보 시간 : " + "45분" + "\n";
-        content += "환승 : " + "2번" + "\n";
-        content += "거리 : " + "10km" + "\n\n";
-
+        expect_st="";
+        expect_dt="";
         if (checkTimeResult == 1) {
-            content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult, "1시간 30분"));
+            expect_dt += convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult, "1시간 30분"));
+            mResultItems.add(new ResultItem("1시간 50분","부평역(1호선) 일반급행\n구로역(1호선) 일반급행\n 안양역 정류장 09213\n9,2\n안양2동행정복지센터정류장","1350원","45분","3회","24.3km","","",resultTimeResult,expect_dt));
         } else if (checkTimeResult == 2) {
-            content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
+            expect_st += convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
+            mResultItems.add(new ResultItem("1시간 50분","부평역(1호선) 일반급행\n구로역(1호선) 일반급행\n 안양역 정류장 09213\n9,2\n안양2동행정복지센터정류장","1350원","45분","3회","24.3km","","",expect_st,resultTimeResult));
         }
 
-        mResultItems.add(new ResultItem("1시간 50분","부평역(1호선) 일반급행\n구로역(1호선) 일반급행\n 안양역 정류장 09213\n9,2\n안양2동행정복지센터정류장","1350원","45분","3회","24.3km","",""));
+
 
         mRecyclerAdapter = new ResultRecyclerAdapter();
         mRecyclerView.setAdapter(mRecyclerAdapter);
