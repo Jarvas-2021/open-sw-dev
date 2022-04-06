@@ -48,7 +48,7 @@ public class ServerThreadMock extends Thread {
             content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime, "1시간 30분"));
         }
 
-        mResultItems.add(new ResultItem(content));
+        //mResultItems.add(new ResultItem(content));
 
         content = "";
         content += "시간 : " + "1시간 50분" + "\n";
@@ -58,7 +58,7 @@ public class ServerThreadMock extends Thread {
         content += "환승 : " + "2번" + "\n";
         content += "거리 : " + "10km" + "\n\n";
 
-        mResultItems.add(new ResultItem(content));
+        //mResultItems.add(new ResultItem(content));
         mRecyclerAdapter.setResultList(mResultItems);
     }
 

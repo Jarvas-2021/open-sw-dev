@@ -15,6 +15,8 @@ import com.jarvas.mappyapp.models.Star;
 import com.jarvas.mappyapp.models.database.StarDatabase;
 import com.jarvas.mappyapp.utils.ContextStorage;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
             holder.starButton2.setVisibility(View.VISIBLE);
 
             Star star = new Star();
-            star.content = holder.content.getText().toString();
+            star.content = holder.path.getText().toString();
             database.starDAO().insertStar(star);
             System.out.println(star.content);
 
@@ -59,21 +61,76 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView content;
+        TextView time;
+        TextView path;
+        TextView price;
+
+        TextView price_;
+
+        TextView walktime_;
+        TextView transfer_;
+        TextView distance_;
+
+        TextView walktime;
+        TextView transfer;
+        TextView distance;
+
+        TextView transType;
+        TextView interTime;
+
+
         ImageView starButton1;
         ImageView starButton2;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            content = (TextView) itemView.findViewById(R.id.result_data);
+            time = itemView.findViewById(R.id.tv_result_time);
+            path = (TextView) itemView.findViewById(R.id.result_data);
+            price = itemView.findViewById(R.id.tv_result_fee2);
+            price_ = itemView.findViewById(R.id.tv_result_fee1);
+
+
+
+            walktime = itemView.findViewById(R.id.tv_result_walktime2);
+            transfer = itemView.findViewById(R.id.tv_result_transfer2);
+            distance = itemView.findViewById(R.id.tv_result_distance2);
+
+            walktime_ = itemView.findViewById(R.id.tv_result_walktime);
+            transfer_ = itemView.findViewById(R.id.tv_result_transfer);
+            distance_ = itemView.findViewById(R.id.tv_result_distance);
+
+            transType = itemView.findViewById(R.id.tv_result_transport);
+            interTime = itemView.findViewById(R.id.tv_result_transporttime);
+
             starButton1 = (ImageView) itemView.findViewById(R.id.save_img);
             starButton2 = (ImageView) itemView.findViewById(R.id.save_img2);
         }
 
         void onBind(ResultItem item){
             System.out.println("bind"+mResultList);
-            content.setText(item.getContent());
+            time.setText(item.getTime());
+            path.setText(item.getPath());
+            price.setText(item.getPrice());
 
+            if (item.getTransType().isEmpty()) {
+                walktime.setText(item.getWalkTime());
+                transfer.setText(item.getTransfer());
+                distance.setText(item.getDistance());
+                walktime.setVisibility(View.VISIBLE);
+                walktime_.setVisibility(View.VISIBLE);
+                transfer.setVisibility(View.VISIBLE);
+                transfer_.setVisibility(View.VISIBLE);
+                distance.setVisibility(View.VISIBLE);
+                distance_.setVisibility(View.VISIBLE);
+
+            } else {
+                transType.setText(item.getTransType());
+                interTime.setText(item.getInterTime());
+
+                transType.setVisibility(View.VISIBLE);
+                interTime.setVisibility(View.VISIBLE);
+
+            }
         }
 
     }

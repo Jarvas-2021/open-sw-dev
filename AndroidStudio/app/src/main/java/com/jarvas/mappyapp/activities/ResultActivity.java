@@ -87,10 +87,10 @@ public class ResultActivity extends AppCompatActivity {
 
         // todo - Dummy Data & Server 변경
         // Call Server
-        callServer(startAddressText,destinationAddressText);
+        //callServer(startAddressText,destinationAddressText);
 
         // Dummy Data
-        //getRouteValuesDummyData();
+        getRouteValuesDummyData();
 
 
         // TTS를 생성하고 OnInitListener로 초기화 한다.
@@ -132,7 +132,8 @@ public class ResultActivity extends AppCompatActivity {
 
                         List<Route> routes = response.body();
                         Log.i("RESPONSE",routes.toString());
-                        getRouteValues(routes);
+                        //todo-주석해제
+                        //getRouteValues(routes);
                         customProgressDialog.dismiss();
                         mRecyclerAdapter = new ResultRecyclerAdapter();
                         mRecyclerView.setAdapter(mRecyclerAdapter);
@@ -162,35 +163,51 @@ public class ResultActivity extends AppCompatActivity {
         // if (routes의 앞에있는 부분이 0이면 시내버스 )
         for (Route route : routes) {
             if (route.getId() == 0) {
-                String content = "";
-                content += "시간 : " + route.getTime() + "\n";
-                content += "경로 : " + route.getPath() + "\n";
-                content += "요금 : " + route.getPrice() + "\n";
-                content += "도보 시간 : " + route.getWalkTime() + "\n";
-                content += "환승 : " + route.getTransfer() + "\n";
-                content += "거리 : " + route.getDistance() + "\n\n";
+                String time = "";
+                String path = "";
+                String price = "";
+                String walktime = "";
+                String transfer = "";
+                String distance = "";
+
+                String expect_st="";
+                String expect_dt="";
+
+                time += route.getTime() + "\n";
+                path += route.getPath() + "\n";
+                price += route.getPrice() + "\n";
+                walktime += route.getWalkTime() + "\n";
+                transfer += route.getTransfer() + "\n";
+                distance += route.getDistance() + "\n\n";
                 //textViewResult.append(content);
                 if(checkTimeResult==1){
-                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                    expect_dt += convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
                 } else if (checkTimeResult==2) {
-                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
+                    expect_st += convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
                 }
-                mResultItems.add(new ResultItem(content));
+                mResultItems.add(new ResultItem(time,path,price,walktime,transfer,distance,"",""));
             }
             else {
-                String content = "";
-                content += "시간 : " + route.getTime() + "\n";
-                content += "경로 : " + route.getPath() + "\n";
-                content += "요금 : " + route.getPrice() + "\n";
-                content += "교통수단 : " + route.getTransType() + "\n";
-                content += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
+                String time = "";
+                String path = "";
+                String price = "";
+                String transType = "";
+                String interTime = "";
+
+                String expect_st="";
+                String expect_dt="";
+                time += "시간 : " + route.getTime() + "\n";
+                path += "경로 : " + route.getPath() + "\n";
+                price += "요금 : " + route.getPrice() + "\n";
+                transType += "교통수단 : " + route.getTransType() + "\n";
+                interTime += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
                 //textViewResult.append(content);
                 if(checkTimeResult==1){
-                    content += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                    expect_dt += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
                 } else if (checkTimeResult==2) {
-                    content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
+                    expect_st += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
                 }
-                mResultItems.add(new ResultItem(content));
+                mResultItems.add(new ResultItem(time,path,price,"","","",transType,interTime));
             }
         }
     }
@@ -212,7 +229,7 @@ public class ResultActivity extends AppCompatActivity {
             content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
         }
 
-        mResultItems.add(new ResultItem(content));
+        mResultItems.add(new ResultItem("1시간 30분","안양역 시외버스터미널 09213\n9,2\n어쩌구저쩌구터미널","1250원","","","","시외","1시간"));
 
         content = "";
         content += "시간 : " + "1시간 50분" + "\n";
@@ -228,7 +245,7 @@ public class ResultActivity extends AppCompatActivity {
             content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult, "1시간 30분"));
         }
 
-        mResultItems.add(new ResultItem(content));
+        mResultItems.add(new ResultItem("1시간 50분","부평역(1호선) 일반급행\n구로역(1호선) 일반급행\n 안양역 정류장 09213\n9,2\n안양2동행정복지센터정류장","1350원","45분","3회","24.3km","",""));
 
         mRecyclerAdapter = new ResultRecyclerAdapter();
         mRecyclerView.setAdapter(mRecyclerAdapter);

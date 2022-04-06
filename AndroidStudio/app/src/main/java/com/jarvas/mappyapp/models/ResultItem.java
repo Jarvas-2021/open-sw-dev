@@ -1,17 +1,90 @@
 package com.jarvas.mappyapp.models;
 
 public class ResultItem {
-    String content;
+    String time;
+    String path;
+    String price;
 
-    public ResultItem(String content) {
-        this.content = content;
+    String walkTime;
+    String transfer;
+    String distance;
+
+    String transType;
+    String interTime;
+
+    public ResultItem(String time, String path, String price, String walktime, String transfer, String distance, String transType, String interTime) {
+        this.time=time;
+        this.path= path;
+        this.price = price;
+        this.walkTime = walktime;
+        this.transfer=transfer;
+        this.distance=distance;
+        this.transType=transType;
+        this.interTime=interTime;
+    }
+    public String getTime() {
+        return time;
     }
 
-    public String getContent() {
-        return content;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public void setContent() {
-        this.content = content;
+    public String getPath() {
+        return path;
     }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getWalkTime() {
+        return walkTime;
+    }
+
+    public void setWalkTime(String walkTime) {
+        this.walkTime = walkTime;
+    }
+
+    public String getTransfer() {
+        return transfer;
+    }
+
+    public void setTransfer(String transfer) {
+        this.transfer = transfer;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    public String getTransType() {
+        return transType;
+    }
+
+    public void setTransType(String transType) {
+        this.transType = transType;
+    }
+
+    public String getInterTime() {
+        return interTime;
+    }
+
+    public void setInterTime(String interTime) {
+        this.interTime = interTime;
+    }
+
+
 }

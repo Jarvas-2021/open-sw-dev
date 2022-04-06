@@ -103,7 +103,7 @@ public class ServerThread extends Thread {
                 } else if (checkTime==2) {
                     content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime,route.getTime()));
                 }
-                mResultItems.add(new ResultItem(content));
+                //mResultItems.add(new ResultItem(content));
             }
             else {
                 String content = "";
@@ -118,7 +118,7 @@ public class ServerThread extends Thread {
                 } else if (checkTime==2) {
                     content += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTime,route.getTime()));
                 }
-                mResultItems.add(new ResultItem(content));
+                //mResultItems.add(new ResultItem(content));
             }
             mRecyclerAdapter.setResultList(mResultItems);
         }
