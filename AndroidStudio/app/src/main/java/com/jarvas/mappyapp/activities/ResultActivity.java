@@ -87,10 +87,10 @@ public class ResultActivity extends AppCompatActivity {
 
         // todo - Dummy Data & Server 변경
         // Call Server
-        //callServer(startAddressText,destinationAddressText);
+        callServer(startAddressText,destinationAddressText);
 
         // Dummy Data
-        getRouteValuesDummyData();
+        //getRouteValuesDummyData();
 
 
         // TTS를 생성하고 OnInitListener로 초기화 한다.
@@ -133,7 +133,7 @@ public class ResultActivity extends AppCompatActivity {
                         List<Route> routes = response.body();
                         Log.i("RESPONSE",routes.toString());
                         //todo-주석해제
-                        //getRouteValues(routes);
+                        getRouteValues(routes);
                         customProgressDialog.dismiss();
                         mRecyclerAdapter = new ResultRecyclerAdapter();
                         mRecyclerView.setAdapter(mRecyclerAdapter);
