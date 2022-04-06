@@ -173,12 +173,12 @@ public class ResultActivity extends AppCompatActivity {
                 String expect_st="";
                 String expect_dt="";
 
-                time += route.getTime() + "\n";
-                path += route.getPath() + "\n";
-                price += route.getPrice() + "\n";
-                walktime += route.getWalkTime() + "\n";
-                transfer += route.getTransfer() + "\n";
-                distance += route.getDistance() + "\n\n";
+                time += route.getTime() ;
+                path += route.getPath() ;
+                price += route.getPrice() ;
+                walktime += route.getWalkTime() ;
+                transfer += route.getTransfer() ;
+                distance += route.getDistance() ;
                 //textViewResult.append(content);
 
                 //1일때는 출발시간이 들어올 때임
@@ -200,11 +200,11 @@ public class ResultActivity extends AppCompatActivity {
 
                 String expect_st="";
                 String expect_dt="";
-                time += "시간 : " + route.getTime() + "\n";
-                path += "경로 : " + route.getPath() + "\n";
-                price += "요금 : " + route.getPrice() + "\n";
-                transType += "교통수단 : " + route.getTransType() + "\n";
-                interTime += "교통수단에 따른 시간 : " + route.getInterTime() + "\n";
+                time += "시간 : " + route.getTime();
+                path += "경로 : " + route.getPath();
+                price += "요금 : " + route.getPrice() ;
+                transType += "교통수단 : " + route.getTransType();
+                interTime += "교통수단에 따른 시간 : " + route.getInterTime();
                 //textViewResult.append(content);
                 if(checkTimeResult==1){
                     expect_dt += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
