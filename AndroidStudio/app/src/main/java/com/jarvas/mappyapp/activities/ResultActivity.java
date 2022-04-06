@@ -200,17 +200,17 @@ public class ResultActivity extends AppCompatActivity {
 
                 String expect_st="";
                 String expect_dt="";
-                time += "시간 : " + route.getTime();
-                path += "경로 : " + route.getPath();
-                price += "요금 : " + route.getPrice() ;
-                transType += "교통수단 : " + route.getTransType();
-                interTime += "교통수단에 따른 시간 : " + route.getInterTime();
+                time += route.getTime();
+                path += route.getPath();
+                price += route.getPrice() ;
+                transType +=  route.getTransType();
+                interTime += route.getInterTime();
                 //textViewResult.append(content);
                 if(checkTimeResult==1){
-                    expect_dt += "예상 도착 시간 : " + convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
+                    expect_dt += convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
                     mResultItems.add(new ResultItem(time,path,price,"","","",transType,interTime,convertDateFormatToKoreanString(resultTimeResult),expect_dt));
                 } else if (checkTimeResult==2) {
-                    expect_st += "예상 출발 시간 : " + convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
+                    expect_st += convertDateFormatToKoreanString(predictStartTime(resultTimeResult,route.getTime()));
                     mResultItems.add(new ResultItem(time,path,price,"","","",transType,interTime,expect_st,convertDateFormatToKoreanString(resultTimeResult)));
                 }
 
