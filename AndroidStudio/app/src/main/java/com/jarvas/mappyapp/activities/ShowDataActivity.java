@@ -1,5 +1,7 @@
 package com.jarvas.mappyapp.activities;
 
+import static com.jarvas.mappyapp.Network.Client.client_msg;
+
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.kakao_api.NaverRecognizer;
 import com.jarvas.mappyapp.models.TextDataItem;
@@ -42,6 +45,9 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
 
+    Scenario scenario = new Scenario();
+    String ai_msg = new String();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,23 +56,22 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         initData();
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,RecyclerView.VERTICAL,false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mTextDataAdapter = new TextDataAdapter(mTextDataItems);
         mRecyclerView.setAdapter(mTextDataAdapter);
+        /* initiate adapter */
 
+        /* initiate recyclerview */
+        mRecyclerView.setAdapter(mTextDataAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(this);
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
-
-
-        //mTextDataAdapter.setFriendList(mTextDataItems);
-
     }
-
     private void initData() {
         mTextDataItems = new ArrayList<>();
         /* adapt data */
@@ -77,6 +82,8 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         mTextDataItems.add(new TextDataItem("알겠어.", Code.ViewType.LEFT_CONTENT));
         System.out.println("items:"+mTextDataItems.get(0).getViewType());
         System.out.println(mTextDataItems.get(1).getViewType());
+        mTextDataAdapter.setFriendList(mTextDataItems);
+
     }
 
     static class RecognitionHandler extends Handler {
@@ -171,7 +178,10 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
                 // todo - 이부분 고치기
                 System.out.println("strBuf"+strBuf);
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
+                Log.d("Take MSG", client_msg);
+                ai_msg = scenario.check_auto(client_msg);
                 System.out.println(mTextDataItems);
+                mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
                 mTextDataAdapter.setFriendList(mTextDataItems);
                 break;
 
