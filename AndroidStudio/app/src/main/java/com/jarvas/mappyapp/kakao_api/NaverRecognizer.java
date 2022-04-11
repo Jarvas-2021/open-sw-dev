@@ -7,6 +7,7 @@ import android.util.Log;
 
 import androidx.annotation.WorkerThread;
 
+import com.jarvas.mappyapp.Network.Client;
 import com.jarvas.mappyapp.R;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechConfig.EndPointDetectType;
@@ -91,9 +92,14 @@ public class NaverRecognizer implements SpeechRecognitionListener {
     @WorkerThread
     public void onResult(SpeechRecognitionResult result) {
         Log.d(TAG, "Final Result!! (" + result.getResults().get(0) + ")");
-        // todo - 나중에 이거 주석 풀기
-        //Client sendobj = new Client("Thread", result.getResults().get(0));
-        //sendobj.start();
+        Client sendobj = new Client("Thread", result.getResults().get(0));
+        sendobj.client_msg = "";
+        sendobj.start();
+        try {
+            sendobj.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Message msg = Message.obtain(mHandler, R.id.finalResult, result);
         msg.sendToTarget();
     }

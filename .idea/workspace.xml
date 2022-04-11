@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ed76387a-c8d0-42d4-99b7-becb60392aca" name="Default Changelist" comment="" />
+    <list default="true" id="ed76387a-c8d0-42d4-99b7-becb60392aca" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/AndroidStudio/.idea/deploymentTargetDropDown.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/Network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/Network/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/Scenario.java" beforeDir="false" afterPath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/Scenario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/activities/ShowDataActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/activities/ShowDataActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/kakao_api/NaverRecognizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/AndroidStudio/app/src/main/java/com/jarvas/mappyapp/kakao_api/NaverRecognizer.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,9 +27,11 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="RunOnceActivity.cidr.known.project.marker" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/crawl" />
+    <property name="cidr.known.project.marker" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/AndroidStudio" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

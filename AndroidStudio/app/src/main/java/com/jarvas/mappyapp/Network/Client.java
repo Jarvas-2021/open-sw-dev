@@ -1,8 +1,10 @@
 package com.jarvas.mappyapp.Network;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
+
+import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.utils.ContextStorage;
+import com.jarvas.mappyapp.utils.StringResource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,13 +15,14 @@ import java.nio.ByteOrder;
 
 public class Client extends Thread {
 
-    private String IP = "@string/AI_Server_IP";
-    private int portNum = Integer.parseInt("@string/AI_Server_Port");
-    private String msg;
+    private String IP = StringResource.getStringResource(ContextStorage.getCtx(), R.string.AI_Server_IP);
+    private int portNum = Integer.parseInt(StringResource.getStringResource(ContextStorage.getCtx(), R.string.AI_Server_Port));
+    static public String client_msg;
+    private String send_msg;
 
     public Client(@NonNull String name, String msg) {
         super(name);
-        this.msg = msg;
+        this.send_msg = msg;
     }
 
     public void run() {
@@ -30,7 +33,7 @@ public class Client extends Thread {
 
             try(OutputStream sender = client.getOutputStream(); InputStream receiver = client.getInputStream();) {
 
-                byte[] data = msg.getBytes();
+                byte[] data = send_msg.getBytes();
 
                 ByteBuffer b = ByteBuffer.allocate(4);
 
@@ -53,8 +56,7 @@ public class Client extends Thread {
 
                 receiver.read(data, 0, length);
 
-                msg = new String(data, "UTF-8");
-                Log.d("Send", msg);
+                this.client_msg = new String(data, "UTF-8");
 
                 client.close();
             }

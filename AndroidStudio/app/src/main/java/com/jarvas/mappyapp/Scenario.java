@@ -12,8 +12,8 @@ public class Scenario {
     public String arrive_place = "";
 
     Pattern time_check = Pattern.compile("[0-9]+시");
-    Pattern date_time_check = Pattern.compile("<.*+:DT>");
-    Pattern place_check = Pattern.compile("<.*+:LC>");
+    Pattern date_time_check = Pattern.compile("<.*:TI>");
+    Pattern place_check = Pattern.compile("<.*:LC>");
 
     public int check() {
         if (start_time.equals("")) {
@@ -42,11 +42,11 @@ public class Scenario {
 
         // input message에 시간이 있는지 확인
         if (date_match_msg.find()) {
-            if (start_time.equals("")) {
+            if (arrive_time.equals("")) {
                 arrive_time = date_match_msg.group();
                 return_msg = return_msg + "도착시간이 입력되었습니다.";
             }
-            else if (arrive_time.equals("")) {
+            else if (start_time.equals("")) {
                 start_time = date_match_msg.group();
                 return_msg = return_msg + "출발시간이 입력되었습니다.";
             }
@@ -68,13 +68,13 @@ public class Scenario {
 
         // input message에 장소가 포함되어 있는지 확인
         if (place_match_msg.find()) {
-            if (start_place.equals("")) {
+            if (arrive_place.equals("")) {
                 arrive_place = place_match_msg.group();
-                return_msg = return_msg + "도착시간이 입력되었습니다.";
+                return_msg = return_msg + "도착지가 입력되었습니다.";
             }
-            else if (arrive_place.equals("")) {
+            else if (start_place.equals("")) {
                 start_place = place_match_msg.group();
-                return_msg = return_msg + "출발시간이 입력되었습니다.";
+                return_msg = return_msg + "출발지가 입력되었습니다.";
             }
         }
         else {
