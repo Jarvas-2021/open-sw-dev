@@ -7,14 +7,12 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
@@ -31,7 +29,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShowDataActivity extends AppCompatActivity implements View.OnClickListener {
+public class ShowDataActivity extends AppCompatActivity {
 
     // Naver CSR Variable
     private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
@@ -41,9 +39,10 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     private AudioWriterPCM writer;
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
-    private FloatingActionButton floatingActionButton;
     private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
+
+    private boolean end_point = false;
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
@@ -53,7 +52,9 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
 
-        initData();
+//        initData();
+        mTextDataItems = new ArrayList<>();
+        mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -67,11 +68,13 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
         mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        floatingActionButton = findViewById(R.id.floatingActionButton);
-        floatingActionButton.setOnClickListener(this);
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+
+        mTextDataAdapter.setFriendList(mTextDataItems);
+
     }
+
     private void initData() {
         mTextDataItems = new ArrayList<>();
         /* adapt data */
@@ -105,35 +108,6 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.floatingActionButton:
-                System.out.println("case 들어옴");
-                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                    System.out.println("음성인식 실행됨");
-                    // Run SpeechRecongizer by calling recognize().
-                    currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
-                    isEpdTypeSelected = false;
-                    naverRecognizer.recognize();
-                }
-                if (!isEpdTypeSelected) {
-                    if (naverRecognizer.getSpeechRecognizer().isRunning()) {
-                        naverRecognizer.getSpeechRecognizer().selectEPDTypeInHybrid(SpeechConfig.EndPointDetectType.AUTO);
-                    }
-                } else {
-                    if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                        Log.e(NAVER_TAG, "Recognition is already finished.");
-                    } else {
-                        naverRecognizer.getSpeechRecognizer().stop();
-                    }
-                }
-                break;
-        }
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
         // NOTE : initialize() must be called on start time.
@@ -143,7 +117,31 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onResume() {
         super.onResume();
-        floatingActionButton.setEnabled(true);
+    }
+
+    private void recognition() {
+        while (!end_point) {
+            System.out.println("case 들어옴");
+            writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+            if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
+                System.out.println("음성인식 실행됨");
+                // Run SpeechRecongizer by calling recognize().
+                currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
+                isEpdTypeSelected = false;
+                naverRecognizer.recognize();
+            }
+            if (!isEpdTypeSelected) {
+                if (naverRecognizer.getSpeechRecognizer().isRunning()) {
+                    naverRecognizer.getSpeechRecognizer().selectEPDTypeInHybrid(SpeechConfig.EndPointDetectType.AUTO);
+                }
+            } else {
+                if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
+                    Log.e(NAVER_TAG, "Recognition is already finished.");
+                } else {
+                    naverRecognizer.getSpeechRecognizer().stop();
+                }
+            }
+        }
     }
 
     // Handle speech recognition Messages.
@@ -179,7 +177,10 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
                 System.out.println("strBuf"+strBuf);
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 Log.d("Take MSG", client_msg);
-                ai_msg = scenario.check_auto(client_msg);
+                ai_msg = this.scenario.check_auto(client_msg);
+                if (this.scenario.check() == -1) {
+                    end_point = true;
+                }
                 System.out.println(mTextDataItems);
                 mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
                 mTextDataAdapter.setFriendList(mTextDataItems);
@@ -189,14 +190,12 @@ public class ShowDataActivity extends AppCompatActivity implements View.OnClickL
                 if (writer != null) {
                     writer.close();
                 }
-                floatingActionButton.setEnabled(true);
                 break;
 
             case R.id.clientInactive:
                 if (writer != null) {
                     writer.close();
                 }
-                floatingActionButton.setEnabled(true);
                 break;
 
             case R.id.endPointDetectTypeSelected:
