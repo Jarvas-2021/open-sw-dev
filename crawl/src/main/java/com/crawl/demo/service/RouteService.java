@@ -9,6 +9,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,14 +126,15 @@ public class RouteService {
 
         //Driver SetUp
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
-        //options.addArguments("--window-size=300,600");
+        //options.addArguments("headless");
+        options.addArguments("--window-size=300,600");
         options.addArguments("--disable-popup-blocking");
         driver = new ChromeDriver(options);
 
         try {
+            WebDriverWait wait = new WebDriverWait(driver, 2);
             driver.get(TEST_URL);
-            Thread.sleep(500);
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"info.route.searchBox.clearVia\"]")));
 
             clear = driver.findElement(By.xpath("//*[@id=\"info.route.searchBox.clearVia\"]"));
             clear.sendKeys(Keys.ENTER);
@@ -141,18 +144,19 @@ public class RouteService {
             startingPoint.sendKeys(InputRoad.getStart());
             startingPoint.sendKeys(Keys.ENTER);
 
-            Thread.sleep(500);
+            Thread.sleep(300);
 
             destination = driver.findElement(By.id("info.route.waypointSuggest.input1"));
             destination.clear();
             destination.sendKeys(InputRoad.getEnd());
             destination.sendKeys(Keys.ENTER);
-            Thread.sleep(500);
+            Thread.sleep(300);
 
             busImage = driver.findElement(By.cssSelector("#transittab"));
             busImage.sendKeys(Keys.ENTER);
             System.out.println(busImage);
-            Thread.sleep(2000);
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("SummaryDetail")));
 
         }catch (Exception e) {
             e.printStackTrace();
