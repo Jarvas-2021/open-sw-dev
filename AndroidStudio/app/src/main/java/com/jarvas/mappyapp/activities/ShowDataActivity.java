@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
-import com.jarvas.mappyapp.kakao_api.NaverRecognizer;
+import com.jarvas.mappyapp.listener.NaverRecognizer;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.Code;
