@@ -9,4 +9,5 @@
     <string name="string_st_hint">출발할 장소를 입력 후 선택해주세요</string>
     <string name="string_dt_hint">도착할 장소를 입력 후 선택해주세요</string>
     <string name="string_example_route">부평역(1호선) 일반급행\n구로역(1호선) 일반급행\n 안양역 정류장 09213\n9,2\n안양2동행정복지센터정류장</string>
+    <string name="string_opensource">오픈소스 라이센스</string>
 </resources>

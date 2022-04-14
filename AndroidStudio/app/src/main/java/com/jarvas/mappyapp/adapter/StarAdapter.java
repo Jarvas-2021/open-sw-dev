@@ -43,14 +43,15 @@ public class StarAdapter extends RecyclerView.Adapter<StarAdapter.ViewHolder> {
 
         holder.onBind(starList.get(position));
         database = StarDatabase.getInstance(ContextStorage.getCtx());
-        holder.starButton1.setOnClickListener(new View.OnClickListener() {
+        holder.starButton2.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                holder.starButton1.setVisibility(View.INVISIBLE);
-                holder.starButton2.setVisibility(View.VISIBLE);
+                holder.starButton1.setVisibility(View.VISIBLE);
+                holder.starButton2.setVisibility(View.INVISIBLE);
 
                 Star star = starList.get(holder.getAdapterPosition());
+                System.out.println("star 확인"+star.path.toString());
                 database.starDAO().deleteStar(star);
 
 
@@ -58,15 +59,6 @@ public class StarAdapter extends RecyclerView.Adapter<StarAdapter.ViewHolder> {
                 starList.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position,starList.size());
-            }
-        });
-
-        holder.starButton2.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                holder.starButton1.setVisibility(View.VISIBLE);
-                holder.starButton2.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -78,20 +70,49 @@ public class StarAdapter extends RecyclerView.Adapter<StarAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        TextView content;
+        TextView time;
+        TextView fee;
+        TextView walktime;
+        TextView transfer;
+        TextView distance;
+        TextView transport;
+        TextView transporttime;
+        TextView path;
+
         ImageView starButton1;
         ImageView starButton2;
 
         ViewHolder(View itemView) {
             super(itemView);
 
-            content = (TextView) itemView.findViewById(R.id.star_result_data);
+            time = itemView.findViewById(R.id.star_result_time);
+            fee = itemView.findViewById(R.id.star_result_fee2);
+            walktime = itemView.findViewById(R.id.star_result_walktime2);
+            transfer = itemView.findViewById(R.id.star_result_transfer2);
+            distance = itemView.findViewById(R.id.star_result_distance2);
+            transport = itemView.findViewById(R.id.star_result_transport);
+            transporttime = itemView.findViewById(R.id.star_result_transporttime);
+            path = (TextView) itemView.findViewById(R.id.star_result_data);
+
             starButton1 = (ImageView) itemView.findViewById(R.id.star_save_img);
             starButton2 = (ImageView) itemView.findViewById(R.id.star_save_img2);
         }
 
         void onBind(Star item){
-            content.setText(item.content);
+
+            time.setText(item.time);
+            path.setText(item.path);
+            fee.setText(item.fee);
+
+            if (item.walktime!=null) {
+                walktime.setText(item.walktime);
+                transfer.setText(item.transfer);
+                distance.setText(item.distance);
+            }
+            else if (item.transport != null) {
+                transport.setText(item.transport);
+                transporttime.setText(item.transporttime);
+            }
         }
 
     }
