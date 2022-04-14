@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.android.gms.oss-licenses-plugin'
 }
 
 android {
@@ -77,4 +78,7 @@ dependencies {
     //room database
     implementation("androidx.room:room-runtime:2.3.0")
     annotationProcessor("androidx.room:room-compiler:2.3.0")
+
+    // oss licenses
+    implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 }
