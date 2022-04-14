@@ -182,6 +182,10 @@ public class ResultActivity extends AppCompatActivity {
                 //textViewResult.append(content);
 
                 //1일때는 출발시간이 들어올 때임
+
+                System.out.println("chek하기 : "+checkTimeResult);
+                System.out.println("chek하기 : "+resultTimeResult);
+
                 if(checkTimeResult==1){
                     expect_dt += convertDateFormatToKoreanString(predictDestinationTime(resultTimeResult,route.getTime()));
                     mResultItems.add(new ResultItem(time,path,price,walktime,transfer,distance,"","",convertDateFormatToKoreanString(resultTimeResult),expect_dt));
@@ -318,8 +322,13 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     private String convertStringDateFormat(String data) {
+        if (!data.contains("시간")) {
+            data = "0시간 " + data;
+        }
+
         data = data.replace("시간 ",":");
         data = data.replace("분","");
+
         return data;
     }
 
