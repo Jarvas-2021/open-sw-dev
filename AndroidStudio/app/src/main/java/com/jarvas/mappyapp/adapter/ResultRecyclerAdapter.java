@@ -42,9 +42,16 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
             holder.starButton2.setVisibility(View.VISIBLE);
 
             Star star = new Star();
-            star.content = holder.path.getText().toString();
+            star.time = holder.time.getText().toString();
+            star.fee = holder.price.getText().toString();
+            star.walktime = holder.walktime.getText().toString();
+            star.transfer = holder.transfer.getText().toString();
+            star.distance = holder.distance.getText().toString();
+            star.transport = holder.transType.getText().toString();
+            star.transporttime = holder.interTime.getText().toString();
+            star.path = holder.path.getText().toString();
             database.starDAO().insertStar(star);
-            System.out.println(star.content);
+            System.out.println(star.path);
 
         });
     }
