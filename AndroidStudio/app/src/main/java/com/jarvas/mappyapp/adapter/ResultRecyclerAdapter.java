@@ -1,5 +1,6 @@
 package com.jarvas.mappyapp.adapter;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,19 +11,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.activities.MainActivity;
+import com.jarvas.mappyapp.activities.PolyLineActivity;
 import com.jarvas.mappyapp.models.ResultItem;
 import com.jarvas.mappyapp.models.Star;
 import com.jarvas.mappyapp.models.database.StarDatabase;
 import com.jarvas.mappyapp.utils.ContextStorage;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAdapter.ViewHolder> {
     private ArrayList<ResultItem> mResultList ;
     private StarDatabase database;
+
+    private String startAddressText;
+    private String destinationAddressText;
+
+    public ResultRecyclerAdapter(String startAddressText, String destinationAddressText) {
+        this.startAddressText = startAddressText;
+        this.destinationAddressText = destinationAddressText;
+    }
 
     @NonNull
     @Override
@@ -54,6 +62,14 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
             System.out.println(star.path);
 
         });
+
+        holder.path.setOnClickListener(v -> {
+            Intent intent = new Intent(ContextStorage.getCtx(), PolyLineActivity.class);
+            intent.putExtra("startAddressText",startAddressText);
+            intent.putExtra("destinationAddressText",destinationAddressText);
+            ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        });
+
     }
 
     public void setResultList(ArrayList<ResultItem> list){
