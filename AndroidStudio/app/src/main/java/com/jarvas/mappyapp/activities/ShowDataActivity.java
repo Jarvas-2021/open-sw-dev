@@ -17,6 +17,7 @@ import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
+import com.jarvas.mappyapp.listener.rec_thread;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.Code;
@@ -71,6 +72,9 @@ public class ShowDataActivity extends AppCompatActivity {
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
+        rec_thread rec_thread = new rec_thread(end_point, naverRecognizer, NAVER_TAG, isEpdTypeSelected);
+        rec_thread.start();
+
         mTextDataAdapter.setFriendList(mTextDataItems);
 
     }
@@ -117,31 +121,6 @@ public class ShowDataActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    private void recognition() {
-        while (!end_point) {
-            System.out.println("case 들어옴");
-            writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-            if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                System.out.println("음성인식 실행됨");
-                // Run SpeechRecongizer by calling recognize().
-                currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
-                isEpdTypeSelected = false;
-                naverRecognizer.recognize();
-            }
-            if (!isEpdTypeSelected) {
-                if (naverRecognizer.getSpeechRecognizer().isRunning()) {
-                    naverRecognizer.getSpeechRecognizer().selectEPDTypeInHybrid(SpeechConfig.EndPointDetectType.AUTO);
-                }
-            } else {
-                if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                    Log.e(NAVER_TAG, "Recognition is already finished.");
-                } else {
-                    naverRecognizer.getSpeechRecognizer().stop();
-                }
-            }
-        }
     }
 
     // Handle speech recognition Messages.
