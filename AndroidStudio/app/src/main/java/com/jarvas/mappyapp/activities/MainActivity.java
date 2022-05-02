@@ -1,6 +1,7 @@
 package com.jarvas.mappyapp.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -8,16 +9,21 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
+import android.speech.SpeechRecognizer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -34,18 +40,15 @@ import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
-import com.jarvas.mappyapp.api.ApiClient;
-import com.jarvas.mappyapp.api.ApiInterface;
-import com.jarvas.mappyapp.api.NaverRecognizer;
-import com.jarvas.mappyapp.model.category_search.CategoryResult;
-import com.jarvas.mappyapp.model.category_search.Document;
-import com.jarvas.mappyapp.utils.AudioWriterPCM;
+import com.jarvas.mappyapp.kakao_api.ApiClient;
+import com.jarvas.mappyapp.kakao_api.ApiInterface;
+import com.jarvas.mappyapp.models.category_search.CategoryResult;
+import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
-import com.naver.speech.clientapi.SpeechConfig;
-import com.naver.speech.clientapi.SpeechRecognitionResult;
+import com.jarvas.mappyapp.utils.Util;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -55,9 +58,7 @@ import net.daum.mf.map.api.MapView;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,15 +67,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener,MapView.CurrentLocationEventListener {
     final static String TAG = "MapTAG";
 
-    // Naver CSR Variable
-    private static final String NAVER_TAG = MainActivity.class.getSimpleName();
-    private static final String CLIENT_ID = "n9a2bacryq";
-    private RecognitionHandler handler;
-    private NaverRecognizer naverRecognizer;
-    private AudioWriterPCM writer;
     private FloatingActionButton action_mic;
-    private boolean isEpdTypeSelected;
-    private SpeechConfig.EndPointDetectType currentEpdType;
 
     MapView mMapView;
     ViewGroup mMapViewContainer;
@@ -102,16 +95,184 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO};
 
+    Intent sttIntent;
+    SpeechRecognizer mRecognizer;
+    TextToSpeech tts;
+    Button sttBtn;
+    EditText txtSystem;
+    EditText txtInMsg;
+    Context cThis;
+    final int PERMISSION = 1;
+    public static Boolean trigger = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         bus.register(this); //정류소 등록
+        txtInMsg = (EditText) findViewById(R.id.txtInMsg);
+        txtSystem = (EditText) findViewById(R.id.txtSystem);
+        sttBtn = (Button)findViewById(R.id.sttStart);
+        cThis = this;
         initView();
 
-        handler = new RecognitionHandler(this);
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        setStt();
+        startWithTD();
+    }
+
+    public void startWithTD(){
+        //어플이 실행되면 자동으로 1초뒤에 음성 인식 시작
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("자동 음성 인식 시작");
+                txtSystem.setText("어플 실행됨--자동 실행-----------"+"\r\n"+txtSystem.getText());
+                sttBtn.performClick();
+            }
+        },1000);
+    }
+
+    public void setStt() {
+        //음성인식
+        System.out.println("startRecognizer");
+        Log.i("Re","start함수");
+        sttIntent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getApplicationContext().getPackageName());
+        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");//한국어 사용
+        mRecognizer=SpeechRecognizer.createSpeechRecognizer(cThis);
+        mRecognizer.setRecognitionListener(listener);
+        System.out.println("startRecognizer");
+    }
+
+    public RecognitionListener listener=new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle bundle) {
+            System.out.println("onREADY");
+            txtSystem.setText("onReadyForSpeech..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+            System.out.println("onBEGINNING");
+            txtSystem.setText("지금부터 말을 해주세요..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onRmsChanged(float v) {
+            System.out.println("onRms");
+        }
+
+        @Override
+        public void onBufferReceived(byte[] bytes) {
+            txtSystem.setText("onBufferReceived..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            txtSystem.setText("onEndOfSpeech..........."+"\r\n"+txtSystem.getText());
+            System.out.println("onEndOfSpeech");
+        }
+
+        @Override
+        public void onError(int i) {
+            txtSystem.setText("천천히 다시 말해 주세요..........."+"\r\n"+txtSystem.getText());
+            System.out.println("onError"+i);
+            mRecognizer.startListening(sttIntent);
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            String key= "";
+            trigger = false;
+            key = SpeechRecognizer.RESULTS_RECOGNITION;
+            ArrayList<String> mResult =results.getStringArrayList(key);
+            String[] rs = new String[mResult.size()];
+            if (checkTriggerWord(mResult)) trigger = true;
+            if (trigger == true) {
+                Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
+                startActivity(intent_show);
+            }
+            mResult.toArray(rs);
+            System.out.println("trigger "+trigger);
+            //System.out.println(rs[0]+"\r\n"+txtInMsg.getText()+trigger+"stt result");
+            txtInMsg.setText(rs[0]+"\r\n"+txtInMsg.getText()+trigger);
+            mRecognizer.startListening(sttIntent);
+
+        }
+
+        public Boolean checkTriggerWord(ArrayList<String> values){
+            for (String v : values){
+                if (v.equals("매피")) return true;
+                if (v.equals("맵피")) return true;
+                if (v.equals("해피")) return true;
+                if (v.equals("웨피")) return true;
+                if (v.equals("웹피")) return true;
+
+                if (v.equals("매피야")) return true;
+                if (v.equals("맵피야")) return true;
+                if (v.equals("해피야")) return true;
+                if (v.equals("웨피야")) return true;
+                if (v.equals("웹피야")) return true;
+
+                if (v.equals("웨피아")) return true;
+                if (v.equals("웨피아")) return true;
+                if (v.equals("웨피아")) return true;
+                if (v.equals("웨피아")) return true;
+                if (v.equals("웹피아")) return true;
+
+                if (v.equals("매피 야")) return true;
+                if (v.equals("맵피 야")) return true;
+                if (v.equals("해피 야")) return true;
+                if (v.equals("웨피 야")) return true;
+                if (v.equals("웹피 야")) return true;
+
+                if (v.equals("웨피 아")) return true;
+                if (v.equals("웨피 아")) return true;
+                if (v.equals("웨피 아")) return true;
+                if (v.equals("웨피 아")) return true;
+                if (v.equals("웨피 아")) return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onPartialResults(Bundle bundle) {
+            txtSystem.setText("onPartialResults..........."+"\r\n"+txtSystem.getText());
+        }
+
+        @Override
+        public void onEvent(int i, Bundle bundle) {
+            txtSystem.setText("onEvent..........."+"\r\n"+txtSystem.getText());
+        }
+    };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.main_menu, menu);
+
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item)
+    {
+        Toast toast = Toast.makeText(getApplicationContext(),"", Toast.LENGTH_LONG);
+
+        switch(item.getItemId())
+        {
+            case R.id.menu1:
+                Intent intent = new Intent(getApplicationContext(), StarActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu2:
+                Intent intent2 = new Intent(getApplicationContext(), SettingActivity.class);
+                startActivity(intent2);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initView() {
@@ -142,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab1.setOnClickListener(this);
         fab_input.setOnClickListener(this);
         action_mic.setOnClickListener(this);
+        sttBtn.setOnClickListener(this);
         //stopTrackingFab.setOnClickListener(this);
 
         //맵 리스너 (현재위치 업데이트)
@@ -228,6 +390,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+
+
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -242,119 +406,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.fab_input:
+                String currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                System.out.println("currentLocation : "+currentLocation);
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
+                intent.putExtra("currentLocation",currentLocation);
                 startActivity(intent);
                 break;
 
             case R.id.Action_Mic:
-                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                    // Run SpeechRecongizer by calling recognize().
+                Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
+                startActivity(intent_show);
+                break;
 
-                    currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;
-                    isEpdTypeSelected = false;
-                    naverRecognizer.recognize();
-                }
-                if (!isEpdTypeSelected) {
-                    if (naverRecognizer.getSpeechRecognizer().isRunning()) {
-                        naverRecognizer.getSpeechRecognizer().selectEPDTypeInHybrid(SpeechConfig.EndPointDetectType.AUTO);
-                    }
-                } else {
-                    if (!naverRecognizer.getSpeechRecognizer().isRunning()) {
-                        Log.e(NAVER_TAG, "Recognition is already finished.");
-                    } else {
-                        naverRecognizer.getSpeechRecognizer().stop();
-                    }
+            case R.id.sttStart:
+                System.out.println("음성인식 시작!");
+                if(ContextCompat.checkSelfPermission(cThis, Manifest.permission.RECORD_AUDIO)!= PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.RECORD_AUDIO},1);
+                    //권한을 허용하지 않는 경우
+                }else{
+                    //권한을 허용한 경우
+                    try {
+                        mRecognizer.startListening(sttIntent);
+                        System.out.println("권한 허용");
+                    }catch (SecurityException e){e.printStackTrace();}
                 }
                 break;
         }
     }
-
-    static class RecognitionHandler extends Handler {
-        private final WeakReference<MainActivity> mActivity;
-
-        RecognitionHandler(MainActivity activity) {
-            mActivity = new WeakReference<MainActivity>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            MainActivity activity = mActivity.get();
-            if (activity != null) {
-            }
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // NOTE : initialize() must be called on start time.
-        naverRecognizer.getSpeechRecognizer().initialize();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        action_mic.setEnabled(true);
-    }
-
-    // Handle speech recognition Messages.
-    private void handleMessage(Message msg) {
-        switch (msg.what) {
-            case R.id.clientReady:
-                // Now an user can speak.
-                writer = new AudioWriterPCM(
-                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                writer.open("Test");
-                break;
-
-            case R.id.audioRecording:
-                writer.write((short[]) msg.obj);
-                break;
-
-            case R.id.partialResult:
-                // Extract obj property typed with String.
-                break;
-
-            case R.id.finalResult:
-                // Extract obj property typed with String array.
-                // The first element is recognition result for speech.
-                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
-                List<String> results = speechRecognitionResult.getResults();
-                StringBuilder strBuf = new StringBuilder();
-                for(String result : results) {
-                    strBuf.append(result);
-                    strBuf.append("\n");
-                }
-                break;
-
-            case R.id.recognitionError:
-                if (writer != null) {
-                    writer.close();
-                }
-
-                action_mic.setEnabled(true);
-                break;
-
-            case R.id.clientInactive:
-                if (writer != null) {
-                    writer.close();
-                }
-                action_mic.setEnabled(true);
-                break;
-
-            case R.id.endPointDetectTypeSelected:
-                isEpdTypeSelected = true;
-                currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
-                if(currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
-                    Toast.makeText(this, "AUTO epd type is selected.", Toast.LENGTH_SHORT).show();
-                } else if(currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
-                    Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
 
     @Override
     public void onMapViewInitialized(MapView mapView) {
@@ -439,7 +517,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CFAlertDialog.Builder builder = new CFAlertDialog.Builder(this);
         builder.setDialogStyle(CFAlertDialog.CFAlertStyle.ALERT);
         builder.setTitle("선택해주세요");
-        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기: 출발지로 설정","길찾기: 도착지로 설정","길찾기: 경유지로 설정"}, 4, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(new String[]{"장소 정보", "길찾기: 출발지로 설정","길찾기: 도착지로 설정"}, 3, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int index) {
                 if (index == 0) {
@@ -510,32 +588,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call<CategoryResult> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "해당장소에 대해 도착지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
-                            mLoaderLayout.setVisibility(View.GONE);
-                            Intent intent = new Intent(MainActivity.this, InputActivity.class);
-                            startActivity(intent);
-                        }
-                    });
-
-                }
-                else if (index == 3 ){
-                    mLoaderLayout.setVisibility(View.VISIBLE);
-                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
-                    Call<CategoryResult> call = apiInterface.getSearchLocationDetail(StringResource.getStringResource(ContextStorage.getCtx(),R.string.restapi_key), mapPOIItem.getItemName(), String.valueOf(lat), String.valueOf(lng), 1);
-                    call.enqueue(new Callback<CategoryResult>() {
-                        @Override
-                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
-                            mLoaderLayout.setVisibility(View.GONE);
-                            if (response.isSuccessful()) {
-                                Intent intent = new Intent(MainActivity.this, InputActivity.class);
-                                assert response.body() != null;
-                                intent.putExtra(IntentKey.PLACE_SEARCH_SET_WAYPOINT, response.body().getDocuments().get(0));
-                                startActivity(intent);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<CategoryResult> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "해당장소에 대해 경유지로 설정 할 수 없습니다.", Toast.LENGTH_SHORT).show();
                             mLoaderLayout.setVisibility(View.GONE);
                             Intent intent = new Intent(MainActivity.this, InputActivity.class);
                             startActivity(intent);

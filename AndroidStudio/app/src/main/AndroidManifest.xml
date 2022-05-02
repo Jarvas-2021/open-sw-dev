@@ -18,11 +18,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MappyApp">
-        <activity android:name=".activities.TimePopupActivity" android:theme="@android:style/Theme.Dialog" ></activity>
-        <activity android:name=".activities.ResultActivity"/>
+        <activity
+            android:name=".activities.TimePopupActivity"
+            android:theme="@android:style/Theme.Dialog"></activity>
+        <activity android:name=".activities.ResultActivity" />
         <activity android:name=".activities.PlaceDetailActivity" />
         <activity android:name=".activities.OutputActivity" />
-        <activity android:name=".activities.InputActivity" />
+        <activity
+            android:name=".activities.InputActivity"
+            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
+        <activity android:name=".activities.SettingActivity" />
+        <activity android:name=".activities.StarActivity" />
+        <activity android:name=".activities.ShowDataActivity"
+            android:theme="@style/Transparent"/>
         <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,10 +38,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            <intent-filter>
+                <action android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value= "@string/app_key"/>
+            android:value="@string/app_key" />
     </application>
 
 </manifest>

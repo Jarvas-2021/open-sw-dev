@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.R;
-import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.BusProvider;
 
 import java.util.ArrayList;

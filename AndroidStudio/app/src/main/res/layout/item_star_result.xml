@@ -1,0 +1,174 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/result_text_background">
+
+        <TextView
+            android:id="@+id/star_result_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1시간 30분" />
+
+
+        <ImageView
+            android:id="@+id/star_save_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/ic_baseline_star_border_24"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/star_save_img2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:background="@drawable/ic_baseline_star_24"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/star_result_fee1"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="요금 "
+            app:layout_constraintStart_toStartOf="@id/star_result_time"
+            app:layout_constraintTop_toBottomOf="@id/star_result_time"
+            tools:text="요금 " />
+
+        <TextView
+            android:id="@+id/star_result_fee2"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            app:layout_constraintStart_toEndOf="@id/star_result_fee1"
+            app:layout_constraintTop_toBottomOf="@id/star_result_time"
+            tools:text="1460원" />
+
+        <TextView
+            android:id="@+id/star_result_walktime"
+            android:textSize="12dp"
+            android:text="도보시간 "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_fee2"
+            app:layout_constraintTop_toTopOf="@id/star_result_fee2"
+            tools:text="도보시간 " />
+
+        <TextView
+            android:id="@+id/star_result_walktime2"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_walktime"
+            app:layout_constraintTop_toTopOf="@id/star_result_walktime"
+            tools:text="30분" />
+
+        <TextView
+            android:id="@+id/star_result_transfer"
+            android:textSize="12dp"
+            android:text="환승 "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_walktime2"
+            app:layout_constraintTop_toTopOf="@id/star_result_walktime2"
+            tools:text="환승 " />
+
+        <TextView
+            android:id="@+id/star_result_transfer2"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_transfer"
+            app:layout_constraintTop_toTopOf="@id/star_result_transfer"
+            tools:text="2회" />
+
+        <TextView
+            android:id="@+id/star_result_distance"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="거리 "
+            android:layout_marginStart="10dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_transfer2"
+            app:layout_constraintTop_toTopOf="@id/star_result_transfer2"
+            tools:text="거리 " />
+
+        <TextView
+            android:id="@+id/star_result_distance2"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_distance"
+            app:layout_constraintTop_toTopOf="@id/star_result_distance"
+            tools:text="28.4km" />
+
+        <TextView
+            android:id="@+id/star_result_transport"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_fee2"
+            app:layout_constraintTop_toTopOf="@id/star_result_fee2"
+            tools:text="교통수단 " />
+
+        <TextView
+            android:id="@+id/star_result_transporttime"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/star_result_transport"
+            app:layout_constraintTop_toTopOf="@id/star_result_transport"
+            tools:text="1시간 10분" />
+
+
+        <TextView
+            android:id="@+id/star_result_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="30dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="10dp"
+            android:text="@string/string_example_route"
+            android:textColor="#000"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/star_result_fee1" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="6dp"
+        android:layout_height="6dp" />
+
+</LinearLayout>

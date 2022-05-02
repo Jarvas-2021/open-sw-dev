@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jarvas.mappyapp.R;
-import com.jarvas.mappyapp.model.category_search.Document;
+import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.IntentKey;
 
 public class PlaceDetailActivity extends AppCompatActivity {

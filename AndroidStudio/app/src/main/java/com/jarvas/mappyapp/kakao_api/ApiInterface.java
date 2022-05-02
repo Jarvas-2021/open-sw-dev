@@ -1,6 +1,6 @@
-package com.jarvas.mappyapp.api;
+package com.jarvas.mappyapp.kakao_api;
 
-import com.jarvas.mappyapp.model.category_search.CategoryResult;
+import com.jarvas.mappyapp.models.category_search.CategoryResult;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

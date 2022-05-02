@@ -1,4 +1,4 @@
-package com.jarvas.mappyapp.api;
+package com.jarvas.mappyapp.listener;
 
 import android.content.Context;
 import android.os.Handler;
@@ -93,7 +93,13 @@ public class NaverRecognizer implements SpeechRecognitionListener {
     public void onResult(SpeechRecognitionResult result) {
         Log.d(TAG, "Final Result!! (" + result.getResults().get(0) + ")");
         Client sendobj = new Client("Thread", result.getResults().get(0));
+        sendobj.client_msg = "";
         sendobj.start();
+        try {
+            sendobj.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Message msg = Message.obtain(mHandler, R.id.finalResult, result);
         msg.sendToTarget();
     }

@@ -31,9 +31,14 @@ public class TimePopupActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_popup);
+        Intent intent = getIntent();
+        Integer value = intent.getIntExtra("CallType",0);
 
-        textview_st = findViewById(R.id.textView_st);
-        textview_dt = findViewById(R.id.textView_dt);
+        if(value==1) {
+            textview_st = findViewById(R.id.textView_st);
+        }else if(value==2){
+            textview_dt = findViewById(R.id.textView_dt);
+        }
 
         Calendar calendar = Calendar.getInstance();
         String current_hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
