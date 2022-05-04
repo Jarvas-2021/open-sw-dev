@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
         setStt();
-        startWithTD();
+//        startWithTD();
     }
 
     public void startWithTD(){
