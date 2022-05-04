@@ -42,6 +42,7 @@ public class ShowDataActivity extends AppCompatActivity {
     private SpeechConfig.EndPointDetectType currentEpdType;
     private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
+    Toast myToast;
 
     private boolean end_point = false;
 
@@ -72,7 +73,7 @@ public class ShowDataActivity extends AppCompatActivity {
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
-        rec_thread rec_thread = new rec_thread(end_point, naverRecognizer, NAVER_TAG, isEpdTypeSelected);
+        rec_thread rec_thread = new rec_thread(end_point, naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread.start();
 
         mTextDataAdapter.setFriendList(mTextDataItems);

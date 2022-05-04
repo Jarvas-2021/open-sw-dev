@@ -1,7 +1,9 @@
 package com.jarvas.mappyapp.listener;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.naver.speech.clientapi.SpeechConfig;
@@ -14,12 +16,15 @@ public class rec_thread extends Thread {
     String NAVER_TAG;
     boolean isEpdTypeSelected;
     SpeechConfig.EndPointDetectType currentEpdType;
+    Toast myToast;
+    Context context;
 
-    public rec_thread(boolean end_point, NaverRecognizer naverRecognizer, String NAVER_TAG, boolean isEpdTypeSelected) {
+    public rec_thread(boolean end_point, NaverRecognizer naverRecognizer, String NAVER_TAG, boolean isEpdTypeSelected, Context context) {
         this.end_point = end_point;
         this.naverRecognizer = naverRecognizer;
         this.NAVER_TAG = NAVER_TAG;
         this.isEpdTypeSelected = isEpdTypeSelected;
+        this.context = context;
 
     }
 
