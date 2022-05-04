@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
         //initView();
-        setStt();
-        startWithTD();
+        //setStt();
+        //startWithTD();
 
     }
 
@@ -134,6 +134,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         initView();
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        setStt();
+        startWithTD();
+        super.onResume();
     }
 
     public void startWithTD(){
@@ -205,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] rs = new String[mResult.size()];
             if (checkTriggerWord(mResult)) trigger = true;
             if (trigger == true) {
+                mRecognizer.destroy();
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
             }
@@ -247,6 +255,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (v.equals("웨피 아")) return true;
                 if (v.equals("웨피 아")) return true;
                 if (v.equals("웨피 아")) return true;
+
+                if (v.equals("매퍄")) return true;
+                if (v.equals("피야")) return true;
+
             }
             return false;
         }
@@ -431,6 +443,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.Action_Mic:
+                //tts.stop();
+                //tts.shutdown();
+                mRecognizer.destroy();
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
                 break;

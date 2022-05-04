@@ -182,7 +182,7 @@ public class ShowDataActivity extends AppCompatActivity {
                 isEpdTypeSelected = true;
                 currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
                 if (currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
-                    Toast.makeText(this, "AUTO epd type is selected.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "지금 말하세요.", Toast.LENGTH_SHORT).show();
                 } else if (currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
                     Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
                 }
