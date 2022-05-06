@@ -10,6 +10,8 @@
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/button_background.xml" value="0.175" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_access_time_24.xml" value="0.175" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_location_searching_24.xml" value="0.2315" />
+        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_notifications_active_24.xml" value="0.1625" />
+        <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_notifications_none_24.xml" value="0.1625" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.2315" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_settings_24.xml" value="0.2315" />
         <entry key="..\:/Users/dustn/2021_jarvas/open-sw-dev/AndroidStudio/app/src/main/res/drawable/ic_baseline_star_24.xml" value="0.2315" />
@@ -42,7 +44,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

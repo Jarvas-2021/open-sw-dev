@@ -1,11 +1,16 @@
 package com.jarvas.mappyapp.adapter;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,12 +18,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.activities.MainActivity;
 import com.jarvas.mappyapp.activities.PolyLineActivity;
+import com.jarvas.mappyapp.alarm.AlertReceiver;
 import com.jarvas.mappyapp.models.ResultItem;
 import com.jarvas.mappyapp.models.Star;
 import com.jarvas.mappyapp.models.database.StarDatabase;
 import com.jarvas.mappyapp.utils.ContextStorage;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAdapter.ViewHolder> {
     private ArrayList<ResultItem> mResultList ;
@@ -70,6 +83,90 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
             ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         });
 
+        holder.notificationButton1.setOnClickListener(v -> {
+            holder.notificationButton1.setVisibility(View.INVISIBLE);
+            holder.notificationButton2.setVisibility(View.VISIBLE);
+
+            updateTimeText();
+            startAlarm(holder.st.getText().toString());
+
+        });
+
+        holder.notificationButton2.setOnClickListener(v -> {
+            holder.notificationButton2.setVisibility(View.INVISIBLE);
+            holder.notificationButton1.setVisibility(View.VISIBLE);
+
+            cancelAlarm();
+        });
+
+    }
+
+    private void updateTimeText() {
+        String timeText = "출발 5분전에 알려드릴게요 :>";
+        Toast.makeText(ContextStorage.getCtx(), timeText, Toast.LENGTH_SHORT).show();
+    }
+
+    private void startAlarm(String st) {
+        AlarmManager alarmManager = (AlarmManager) ContextStorage.getCtx().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(ContextStorage.getCtx(), AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ContextStorage.getCtx(),1,intent,0);
+
+        long d = convertDateFormatToLong(st);
+        System.out.println("d"+d);
+        System.out.println("current"+ SystemClock.elapsedRealtime());
+        //todo - 즉시 실행됨, 고쳐야함
+        alarmManager.set(AlarmManager.RTC_WAKEUP,SystemClock.elapsedRealtime()+180*1000,pendingIntent);
+
+    }
+
+    private void cancelAlarm() {
+        AlarmManager alarmManager = (AlarmManager) ContextStorage.getCtx().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(ContextStorage.getCtx(), AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ContextStorage.getCtx(),1,intent,0);
+        alarmManager.cancel(pendingIntent);
+        Toast.makeText(ContextStorage.getCtx(), "알람 취소 !", Toast.LENGTH_SHORT).show();
+    }
+
+    private long convertDateFormatToLong(String data) {
+        System.out.println("시험"+data);
+        String tmp1 = data.substring(data.indexOf(":")+1);
+        //5분전 알림
+        Integer tmp2 = Integer.parseInt(tmp1)-5;
+        String tmp3="";
+
+        if (tmp2<10) {
+            tmp3 = 0+tmp2.toString();
+        }
+        else {
+            tmp3 = tmp2.toString();
+        }
+
+        System.out.println("시험tmp1"+tmp1);
+        System.out.println("시험tmp2"+tmp2);
+        System.out.println(tmp3);
+
+        String Ndata = data.replace(tmp1,"") + tmp3;
+        System.out.println("시험2"+data);
+
+        DateFormat df = new SimpleDateFormat("a hh:mm", Locale.KOREAN);
+        Date dateData = null;
+        Date m =null;
+        long time=0;
+        long mm=0;
+        try {
+            dateData = df.parse(Ndata);
+            m = df.parse(data);
+            mm = m.getTime();
+            System.out.println("현재 date"+dateData);
+            time = dateData.getTime();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        System.out.println("현재 time : " + time);
+        System.out.println("이전 time : "+mm);
+
+        return time;
     }
 
     public void setResultList(ArrayList<ResultItem> list){
@@ -108,6 +205,9 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
         ImageView starButton1;
         ImageView starButton2;
 
+        ImageView notificationButton1;
+        ImageView notificationButton2;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             time = itemView.findViewById(R.id.tv_result_time);
@@ -133,6 +233,9 @@ public class ResultRecyclerAdapter extends RecyclerView.Adapter<ResultRecyclerAd
 
             starButton1 = (ImageView) itemView.findViewById(R.id.save_img);
             starButton2 = (ImageView) itemView.findViewById(R.id.save_img2);
+
+            notificationButton1 = itemView.findViewById(R.id.notification_img);
+            notificationButton2 = itemView.findViewById(R.id.notification_img2);
         }
 
         void onBind(ResultItem item){
