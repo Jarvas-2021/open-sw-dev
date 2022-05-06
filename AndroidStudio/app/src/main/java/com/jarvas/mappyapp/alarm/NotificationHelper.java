@@ -46,8 +46,8 @@ public class NotificationHelper extends ContextWrapper {
 
     public NotificationCompat.Builder getChannelNotification() {
         return new NotificationCompat.Builder(getApplicationContext(),channelID)
-                .setContentTitle("알람")
-                .setContentText("알람매니저 실행중")
+                .setContentTitle("MAPPY 알람 !")
+                .setContentText("곧 출발할 시간이예요")
                 .setSmallIcon(R.drawable.ic_launcher_background);
     }
 }
