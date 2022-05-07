@@ -1,5 +1,13 @@
 package com.jarvas.mappyapp;
 
+import android.content.Intent;
+
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
+import com.jarvas.mappyapp.activities.SettingActivity;
+import com.jarvas.mappyapp.activities.StarActivity;
+import com.jarvas.mappyapp.activities.TimePopupActivity;
+import com.jarvas.mappyapp.utils.ContextStorage;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,6 +73,27 @@ public class Scenario {
 
 
     public String check_auto(String msg) {
+        // 설정창 액티비티로 이동
+        if (msg.contains("설정")) {
+            Intent intent = new Intent(ContextStorage.getCtx(), SettingActivity.class);
+            ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
+        // 즐겨찾기 액티비티로 이동
+        if (msg.contains("즐겨") || msg.contains("즐겨찾기")) {
+            Intent intent = new Intent(ContextStorage.getCtx(), StarActivity.class);
+            ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
+        // 현재위치 찾기
+        if (msg.contains("현재") || msg.contains("위치")) {
+
+        }
+
+        // 장소 검색
+
+        // 출발도착
+
+
+
         error_code_scene = -1;
         Matcher date_match_msg = date_time_check.matcher(msg);
         Matcher place_match_msg = place_check.matcher(msg);
@@ -80,6 +109,10 @@ public class Scenario {
         int startTimeCount = 0;
         int arriveTimeCount = 0;
         int whatTimeCount = 0;
+
+
+
+
 
         // input message에 시간이 있는지 확인
         while (date_match_msg.find()) {

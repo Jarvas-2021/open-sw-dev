@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtSystem = (EditText) findViewById(R.id.txtSystem);
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
-        //initView();
+
         //setStt();
         //startWithTD();
 
@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
         rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread.start();
+
 
     }
 
