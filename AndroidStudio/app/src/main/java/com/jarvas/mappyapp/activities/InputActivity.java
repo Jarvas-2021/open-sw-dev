@@ -285,6 +285,7 @@ public class InputActivity extends Activity {
         //eventListener.setOnClickListenerEvent(searchEdit3);
 
         okButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 Log.i("BUTTON", "okButton click");

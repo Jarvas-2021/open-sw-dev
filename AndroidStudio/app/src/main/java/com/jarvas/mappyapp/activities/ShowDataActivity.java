@@ -3,6 +3,7 @@ package com.jarvas.mappyapp.activities;
 import static com.jarvas.mappyapp.Network.Client.client_msg;
 import static com.jarvas.mappyapp.activities.MainActivity.end_point;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -44,6 +45,7 @@ public class ShowDataActivity extends AppCompatActivity {
     private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
     Toast myToast;
+    boolean check_end = false;
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
@@ -172,8 +174,28 @@ public class ShowDataActivity extends AppCompatActivity {
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
+                if (check_all(ai_msg)) {
+                    ai_msg = ai_msg + " 검색을 마치시겠습니까?";
+                    check_end = true;
+                }
+                if (check_end) {
+                    if (client_msg.equals("네") | client_msg.equals("예")) {
+                        end_point = true;
+                    }
+                    else {
+                        check_end = false;
+                    }
+                }
                 if (this.scenario.check_scene() == -1) {
                     end_point = true;
+                }
+                if (end_point) {
+                    Intent intent = new Intent(getApplicationContext(), InputActivity.class);
+                    intent.putExtra("start_time_scene", this.scenario.start_time_scene);
+                    intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
+                    intent.putExtra("start_place_scene", this.scenario.start_place_scene);
+                    intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
+                    finish();
                 }
                 System.out.println(mTextDataItems);
                 mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
@@ -205,4 +227,19 @@ public class ShowDataActivity extends AppCompatActivity {
         }
     }
 
+    public boolean check_all(String msg) {
+        if (msg.contains("출발시간이 입력되었습니다.")) {
+            return true;
+        }
+        if (msg.contains("도착시간이 입력되었습니다.")) {
+            return true;
+        }
+        if (msg.contains("도착지가 입력되었습니다.")) {
+            return true;
+        }
+        if (msg.contains("출발지가 입력되었습니다.")) {
+            return true;
+        }
+        return false;
+    }
 }
