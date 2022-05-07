@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ViewGroup mMapViewContainer;
     RecyclerView recyclerView;
     EditText mSearchEdit;
-    private RecognitionHandler handler;
 
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
@@ -127,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Boolean trigger = false;
 
     // Naver CSR Variable
+    private RecognitionHandler handler;
     private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
     private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(),R.string.csr_key);
     private NaverRecognizer naverRecognizer;
@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
         rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread.start();
-
 
     }
 
@@ -844,7 +843,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     break;
                 }
                 System.out.println("results:"+results);
-                // todo - 이부분 고치기
                 System.out.println("strBuf"+strBuf);
                 Log.d("Take MSG", client_msg);
                 if (this.scenario.check_main(client_msg) == -1) {

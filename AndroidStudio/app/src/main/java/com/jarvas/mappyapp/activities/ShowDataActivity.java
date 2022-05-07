@@ -1,6 +1,7 @@
 package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
+import static com.jarvas.mappyapp.activities.MainActivity.end_point;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,8 +30,6 @@ import com.naver.speech.clientapi.SpeechRecognitionResult;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.jarvas.mappyapp.activities.MainActivity.end_point;
 
 public class ShowDataActivity extends AppCompatActivity {
 
@@ -169,7 +168,6 @@ public class ShowDataActivity extends AppCompatActivity {
                     break;
                 }
                 System.out.println("results:"+results);
-                // todo - 이부분 고치기
                 System.out.println("strBuf"+strBuf);
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 Log.d("Take MSG", client_msg);

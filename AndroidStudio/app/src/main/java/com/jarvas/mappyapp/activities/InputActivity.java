@@ -1,10 +1,17 @@
 package com.jarvas.mappyapp.activities;
 
+import static com.jarvas.mappyapp.Network.Client.client_msg;
+import static com.jarvas.mappyapp.activities.MainActivity.end_point;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,26 +21,37 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.listener.EventListener;
+import com.jarvas.mappyapp.listener.NaverRecognizer;
+import com.jarvas.mappyapp.listener.rec_thread;
 import com.jarvas.mappyapp.models.category_search.Document;
+import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
+import com.jarvas.mappyapp.utils.StringResource;
 import com.jarvas.mappyapp.utils.Util;
+import com.naver.speech.clientapi.SpeechConfig;
+import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -74,6 +92,18 @@ public class InputActivity extends Activity {
 
     ProgressDialog progressDialog;
 
+    // Naver CSR Variable
+    private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
+    private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(),R.string.csr_key);
+    private NaverRecognizer naverRecognizer;
+    private AudioWriterPCM writer;
+    private boolean isEpdTypeSelected;
+    rec_thread rec_thread;
+    Scenario scenario = new Scenario();
+    String ai_msg = new String();
+    private SpeechConfig.EndPointDetectType currentEpdType;
+    private RecognitionHandler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +121,12 @@ public class InputActivity extends Activity {
 
         Button stButton = findViewById(R.id.startTimeButton);
         Button dtButton = findViewById(R.id.destinationTimeButton);
+
+        end_point = false;
+        handler = new InputActivity.RecognitionHandler(this);
+        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread.start();
 
         stButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,6 +330,7 @@ public class InputActivity extends Activity {
         return currentTime;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void getAddressText() {
         for (String str : set) {
             //출발지
@@ -398,6 +435,79 @@ public class InputActivity extends Activity {
         mAddressText = document.getAddressName();
         mPlaceNameText = document.getPlaceName();
         map.put(mAddressText, mPlaceNameText);
+    }
+    // Handle speech recognition Messages.
+    private void handleMessage(Message msg) {
+        switch (msg.what) {
+            case R.id.clientReady:
+                // Now an user can speak.
+                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+                writer.open("Test");
+                break;
 
+            case R.id.audioRecording:
+                writer.write((short[]) msg.obj);
+                break;
+
+            case R.id.partialResult:
+                // Extract obj property typed with String.
+                break;
+
+            case R.id.finalResult:
+                // Extract obj property typed with String array.
+                // The first element is recognition result for speech.
+                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
+                List<String> results = speechRecognitionResult.getResults();
+                StringBuilder strBuf = new StringBuilder();
+                for (String result : results) {
+                    strBuf.append(result);
+                    break;
+                }
+                System.out.println("results:"+results);
+                System.out.println("strBuf"+strBuf);
+                Log.d("Take MSG", client_msg);
+                if (this.scenario.check_main(client_msg) == -1) {
+                    end_point = true;
+                }
+                break;
+
+            case R.id.recognitionError:
+                if (writer != null) {
+                    writer.close();
+                }
+                break;
+
+            case R.id.clientInactive:
+                if (writer != null) {
+                    writer.close();
+                }
+                break;
+
+            case R.id.endPointDetectTypeSelected:
+                isEpdTypeSelected = true;
+                currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
+                if (currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
+                    Toast.makeText(this, "지금 말하세요.", Toast.LENGTH_SHORT).show();
+                } else if (currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
+                    Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    static class RecognitionHandler extends Handler {
+        private final WeakReference<InputActivity> mActivity;
+
+        RecognitionHandler(InputActivity activity) {
+            mActivity = new WeakReference<InputActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            InputActivity activity = mActivity.get();
+            if (activity != null) {
+                activity.handleMessage(msg);
+            }
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.jarvas.mappyapp;
 
 import android.content.Intent;
 
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.jarvas.mappyapp.activities.SettingActivity;
 import com.jarvas.mappyapp.activities.StarActivity;
 import com.jarvas.mappyapp.activities.TimePopupActivity;
@@ -63,10 +62,39 @@ public class Scenario {
     }
 
     public int check_main(String msg) {
+        if (msg.equals("매피")) return 1;
+        if (msg.equals("맵피")) return 1;
+        if (msg.equals("해피")) return 1;
+        if (msg.equals("웨피")) return 1;
+        if (msg.equals("웹피")) return 1;
 
-        if (msg.equals("해피야")) {
-            return -1;
-        }
+        if (msg.equals("매피야")) return 1;
+        if (msg.equals("맵피야")) return 1;
+        if (msg.equals("해피야")) return 1;
+        if (msg.equals("웨피야")) return 1;
+        if (msg.equals("웹피야")) return 1;
+
+        if (msg.equals("웨피아")) return 1;
+        if (msg.equals("웨피아")) return 1;
+        if (msg.equals("웨피아")) return 1;
+        if (msg.equals("웨피아")) return 1;
+        if (msg.equals("웹피아")) return 1;
+
+        if (msg.equals("매피 야")) return 1;
+        if (msg.equals("맵피 야")) return 1;
+        if (msg.equals("해피 야")) return 1;
+        if (msg.equals("웨피 야")) return 1;
+        if (msg.equals("웹피 야")) return 1;
+
+        if (msg.equals("웨피 아")) return 1;
+        if (msg.equals("웨피 아")) return 1;
+        if (msg.equals("웨피 아")) return 1;
+        if (msg.equals("웨피 아")) return 1;
+        if (msg.equals("웨피 아")) return 1;
+
+        if (msg.equals("매퍄")) return 1;
+        if (msg.equals("피야")) return 1;
+
         return 0;
     }
 
