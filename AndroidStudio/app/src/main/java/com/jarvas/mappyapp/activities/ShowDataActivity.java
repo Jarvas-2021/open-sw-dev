@@ -2,6 +2,7 @@ package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -74,8 +75,8 @@ public class ShowDataActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        handler = new RecognitionHandler(this);
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        handler = new RecognitionHandler((ShowDataActivity) ContextStorage.getCtx());
+        naverRecognizer = new NaverRecognizer(ContextStorage.getCtx(), handler, CLIENT_ID);
 
         rec_thread_showdata rec_thread_showdata = new rec_thread_showdata(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread_showdata.start();

@@ -143,8 +143,8 @@ public class InputActivity extends Activity {
         Button dtButton = findViewById(R.id.destinationTimeButton);
 
         end_point_input = false;
-        handler = new InputActivity.RecognitionHandler(this);
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        handler = new InputActivity.RecognitionHandler((InputActivity) ContextStorage.getCtx());
+        naverRecognizer = new NaverRecognizer(ContextStorage.getCtx(), handler, CLIENT_ID);
         rec_thread_input = new rec_thread_input(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread_input.start();
 
