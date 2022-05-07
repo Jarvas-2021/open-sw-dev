@@ -158,7 +158,7 @@ public class ShowDataActivity extends AppCompatActivity {
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
-                if (this.scenario.check() == -1) {
+                if (this.scenario.check_scene() == -1) {
                     end_point = true;
                 }
                 System.out.println(mTextDataItems);
