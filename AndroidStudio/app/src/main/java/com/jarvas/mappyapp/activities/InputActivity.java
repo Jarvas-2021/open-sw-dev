@@ -1,7 +1,6 @@
 package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
-import static com.jarvas.mappyapp.activities.MainActivity.end_point;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,7 +30,7 @@ import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
-import com.jarvas.mappyapp.listener.rec_thread;
+import com.jarvas.mappyapp.listener.rec_thread_input;
 import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
@@ -98,7 +97,8 @@ public class InputActivity extends Activity {
     private NaverRecognizer naverRecognizer;
     private AudioWriterPCM writer;
     private boolean isEpdTypeSelected;
-    rec_thread rec_thread;
+    public static boolean end_point_input;
+    rec_thread_input rec_thread_input;
     Scenario scenario = new Scenario();
     String ai_msg = new String();
     private SpeechConfig.EndPointDetectType currentEpdType;
@@ -122,11 +122,11 @@ public class InputActivity extends Activity {
         Button stButton = findViewById(R.id.startTimeButton);
         Button dtButton = findViewById(R.id.destinationTimeButton);
 
-        end_point = false;
+        end_point_input = false;
         handler = new InputActivity.RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
-        rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
-        rec_thread.start();
+        rec_thread_input = new rec_thread_input(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread_input.start();
 
         stButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -468,7 +468,7 @@ public class InputActivity extends Activity {
                 System.out.println("strBuf"+strBuf);
                 Log.d("Take MSG", client_msg);
                 if (this.scenario.check_main(client_msg) == -1) {
-                    end_point = true;
+                    end_point_input = true;
                 }
                 break;
 

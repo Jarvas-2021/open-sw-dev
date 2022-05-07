@@ -2,6 +2,8 @@ package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
 
+import static java.lang.Thread.sleep;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,7 +53,7 @@ import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.kakao_api.ApiClient;
 import com.jarvas.mappyapp.kakao_api.ApiInterface;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
-import com.jarvas.mappyapp.listener.rec_thread;
+import com.jarvas.mappyapp.listener.rec_thread_main;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.models.category_search.CategoryResult;
 import com.jarvas.mappyapp.models.category_search.Document;
@@ -132,8 +134,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private NaverRecognizer naverRecognizer;
     private AudioWriterPCM writer;
     private boolean isEpdTypeSelected;
-    rec_thread rec_thread;
-    public static boolean end_point;
+    com.jarvas.mappyapp.listener.rec_thread_main rec_thread_main;
+    public static boolean end_point_main;
     Scenario scenario = new Scenario();
     String ai_msg = new String();
     private SpeechConfig.EndPointDetectType currentEpdType;
@@ -152,11 +154,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //setStt();
         //startWithTD();
 
-        end_point = false;
+        end_point_main = false;
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
-        rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
-        rec_thread.start();
+        rec_thread_main = new rec_thread_main(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread_main.start();
 
     }
 
@@ -845,8 +847,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("results:"+results);
                 System.out.println("strBuf"+strBuf);
                 Log.d("Take MSG", client_msg);
-                if (this.scenario.check_main(client_msg) == -1) {
-                    end_point = true;
+                if (this.scenario.check_main(client_msg) == 1) {
+                    end_point_main = true;
                     Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                     startActivity(intent_show);
                 }

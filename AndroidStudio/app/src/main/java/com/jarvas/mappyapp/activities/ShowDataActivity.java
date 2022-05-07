@@ -1,7 +1,6 @@
 package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
-import static com.jarvas.mappyapp.activities.MainActivity.end_point;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,7 +18,7 @@ import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
-import com.jarvas.mappyapp.listener.rec_thread;
+import com.jarvas.mappyapp.listener.rec_thread_showdata;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.Code;
@@ -46,6 +45,7 @@ public class ShowDataActivity extends AppCompatActivity {
     private TextDataAdapter mTextDataAdapter;
     Toast myToast;
     boolean check_end = false;
+    public static boolean end_point_showdata;
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
@@ -56,7 +56,7 @@ public class ShowDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
 
-        end_point = false;
+        end_point_showdata = false;
 
 //        initData();
         mTextDataItems = new ArrayList<>();
@@ -77,8 +77,8 @@ public class ShowDataActivity extends AppCompatActivity {
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
-        rec_thread rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
-        rec_thread.start();
+        rec_thread_showdata rec_thread_showdata = new rec_thread_showdata(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread_showdata.start();
 
         mTextDataAdapter.setFriendList(mTextDataItems);
 
@@ -180,16 +180,16 @@ public class ShowDataActivity extends AppCompatActivity {
                 }
                 if (check_end) {
                     if (client_msg.equals("네") | client_msg.equals("예")) {
-                        end_point = true;
+                        end_point_showdata = true;
                     }
                     else {
                         check_end = false;
                     }
                 }
                 if (this.scenario.check_scene() == -1) {
-                    end_point = true;
+                    end_point_showdata = true;
                 }
-                if (end_point) {
+                if (end_point_showdata) {
                     Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                     intent.putExtra("start_time_scene", this.scenario.start_time_scene);
                     intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
