@@ -54,6 +54,14 @@ public class Scenario {
         return -1;
     }
 
+    public int check_main(String msg) {
+
+        if (msg.equals("매피야")) {
+            return -1;
+        }
+        return 0;
+    }
+
 
 
     public String check_auto(String msg) {

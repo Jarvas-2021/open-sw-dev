@@ -7,20 +7,18 @@ import android.widget.Toast;
 
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.naver.speech.clientapi.SpeechConfig;
+import static com.jarvas.mappyapp.activities.MainActivity.end_point;
 
 public class rec_thread extends Thread {
 
-    boolean end_point;
     AudioWriterPCM writer;
     NaverRecognizer naverRecognizer;
     String NAVER_TAG;
     boolean isEpdTypeSelected;
     SpeechConfig.EndPointDetectType currentEpdType;
-    Toast myToast;
     Context context;
 
-    public rec_thread(boolean end_point, NaverRecognizer naverRecognizer, String NAVER_TAG, boolean isEpdTypeSelected, Context context) {
-        this.end_point = end_point;
+    public rec_thread(NaverRecognizer naverRecognizer, String NAVER_TAG, boolean isEpdTypeSelected, Context context) {
         this.naverRecognizer = naverRecognizer;
         this.NAVER_TAG = NAVER_TAG;
         this.isEpdTypeSelected = isEpdTypeSelected;
@@ -30,7 +28,7 @@ public class rec_thread extends Thread {
 
     @Override
     public void run() {
-        while (!this.end_point) {
+        while (!end_point) {
             System.out.println("case 들어옴");
             this.writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
             if (!this.naverRecognizer.getSpeechRecognizer().isRunning()) {

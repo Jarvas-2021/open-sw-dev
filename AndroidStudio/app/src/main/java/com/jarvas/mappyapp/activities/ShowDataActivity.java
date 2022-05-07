@@ -30,6 +30,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jarvas.mappyapp.activities.MainActivity.end_point;
+
 public class ShowDataActivity extends AppCompatActivity {
 
     // Naver CSR Variable
@@ -43,9 +45,6 @@ public class ShowDataActivity extends AppCompatActivity {
     private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
     Toast myToast;
-    rec_thread rec_thread;
-
-    private boolean end_point = false;
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
@@ -55,6 +54,8 @@ public class ShowDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
+
+        end_point = false;
 
 //        initData();
         mTextDataItems = new ArrayList<>();
@@ -75,7 +76,7 @@ public class ShowDataActivity extends AppCompatActivity {
         handler = new RecognitionHandler(this);
         naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
 
-        rec_thread = new rec_thread(end_point, naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread rec_thread = new rec_thread(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread.start();
 
         mTextDataAdapter.setFriendList(mTextDataItems);
@@ -129,14 +130,12 @@ public class ShowDataActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        rec_thread.interrupt();
         this.finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        rec_thread.interrupt();
         this.finish();
     }
 
