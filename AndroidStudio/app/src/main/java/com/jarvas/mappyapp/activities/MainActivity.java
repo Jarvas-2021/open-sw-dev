@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (checkTriggerWord(mResult)) trigger = true;
             if (trigger == true) {
 //                mRecognizer.destroy();
+
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
             }
@@ -844,11 +845,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     strBuf.append(result);
                     break;
                 }
-                System.out.println("results:"+results);
-                System.out.println("strBuf"+strBuf);
+                System.out.println("mainresults:"+results);
+                System.out.println("mainstrBuf"+strBuf);
                 Log.d("Take MSG", client_msg);
                 if (this.scenario.check_main(client_msg) == 1) {
+
                     end_point_main = true;
+                    System.out.println("여기"+end_point_main);
+                    try {Thread.sleep(3000);}
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                     startActivity(intent_show);
                 }
@@ -893,4 +900,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
 }

@@ -1,6 +1,8 @@
 package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
+import static android.net.wifi.p2p.WifiP2pManager.ERROR;
+
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,9 +31,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
+import com.jarvas.mappyapp.kakao_api.ApiClient;
+import com.jarvas.mappyapp.kakao_api.ApiInterface;
 import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
 import com.jarvas.mappyapp.listener.rec_thread_input;
+
 import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
@@ -43,6 +49,8 @@ import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,11 +59,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class InputActivity extends Activity {
+    private TextToSpeech tts;
     RecyclerView recyclerView1;
     RecyclerView recyclerView2;
     RecyclerView recyclerView3;
@@ -90,6 +104,12 @@ public class InputActivity extends Activity {
     EventListener eventListener = new EventListener();
 
     ProgressDialog progressDialog;
+
+    ArrayList<Document> documentArrayList;
+    LocationAdapter locationAdapter;
+    LocationAdapter locationAdapter2;
+    LinearLayoutManager layoutManager;
+    LinearLayoutManager layoutManager2;
 
     // Naver CSR Variable
     private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
@@ -128,6 +148,27 @@ public class InputActivity extends Activity {
         rec_thread_input = new rec_thread_input(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread_input.start();
 
+        Intent intent = getIntent();
+        //String intentStartPlace = intent.getStringExtra("start_place_scene");
+        //String intentDestinationPlace = intent.getStringExtra("arrive_place_scene");
+        //String intentStartTime = intent.getStringExtra("start_time_scene");
+        //String intentDestinationTime = intent.getStringExtra("arrive_time_scene");
+        String intentStartPlace = "";
+        String intentDestinationPlace = "안양천";
+//intent.getStringExtra("arrive_place_scene").length()!=0 ||
+
+        // 안양천
+        if (intentDestinationPlace=="안양천") {
+            // 검색 텍스처 Listener
+            //searchEdit1.setText(currentLocation); //현재값
+            searchEdit2.setText(intentDestinationPlace);
+
+        }
+
+
+
+
+
         stButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,6 +187,17 @@ public class InputActivity extends Activity {
                 showDestinationTime();
                 dtButton.setBackgroundResource(R.drawable.icon_active_time);
                 stButton.setBackgroundResource(R.drawable.icon_inactive_time);
+            }
+        });
+
+        // TTS를 생성하고 OnInitListener로 초기화 한다.
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != ERROR) {
+                    // 언어를 선택한다.
+                    tts.setLanguage(Locale.KOREAN);
+                }
             }
         });
 
@@ -254,11 +306,11 @@ public class InputActivity extends Activity {
         recyclerView2 = findViewById(R.id.recyclerview2);
         okButton = findViewById(R.id.okButton);
 
-        ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
-        LocationAdapter locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
-        LocationAdapter locationAdapter2 = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit2, recyclerView2);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
+        locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
+        locationAdapter2 = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit2, recyclerView2);
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         recyclerView1.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL)); //아래구분선 세팅
         recyclerView1.setLayoutManager(layoutManager);
@@ -270,8 +322,8 @@ public class InputActivity extends Activity {
 
 
         // 검색 텍스처 Listener
-        eventListener.addTextChangedListenerEvent(searchEdit1, recyclerView1, documentArrayList, locationAdapter);
-        eventListener.addTextChangedListenerEvent(searchEdit2, recyclerView2, documentArrayList, locationAdapter2);
+        eventListener.addTextChangedListenerEventStart(searchEdit1, recyclerView1, documentArrayList, locationAdapter);
+        eventListener.addTextChangedListenerEventDestination(searchEdit2, recyclerView2, documentArrayList, locationAdapter2);
         //eventListener.addTextChangedListenerEvent(searchEdit3,recyclerView3,documentArrayList,locationAdapter3);
 
         // setOnFocusChangeListener

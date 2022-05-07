@@ -29,6 +29,7 @@ public class rec_thread_showdata extends Thread {
     @Override
     public void run() {
         while (!end_point_showdata) {
+            System.out.println("showdata"+end_point_showdata);
             System.out.println("case 들어옴");
             this.writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
             if (!this.naverRecognizer.getSpeechRecognizer().isRunning()) {

@@ -49,7 +49,7 @@ public class EventListener {
         });
     }
 
-    public void addTextChangedListenerEvent(EditText searchEdit, RecyclerView recyclerView, ArrayList<Document> documentArrayList, LocationAdapter locationAdapter) {
+    public void addTextChangedListenerEventStart(EditText searchEdit, RecyclerView recyclerView, ArrayList<Document> documentArrayList, LocationAdapter locationAdapter) {
         // editText1(출발지) 검색 텍스처이벤트
         searchEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -75,6 +75,60 @@ public class EventListener {
                                     locationAdapter.addItem(document);
                                 }
                                 locationAdapter.notifyDataSetChanged();
+
+
+
+                            } else {
+                                Log.e("onResponse ERROR", response.message());
+                            }
+                        }
+                        @Override
+                        public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
+
+                        }
+                    });
+                } else {
+                    if (charSequence.length() <= 0) {
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // 입력이 끝났을 때
+            }
+        });
+    }
+
+    public void addTextChangedListenerEventDestination(EditText searchEdit, RecyclerView recyclerView, ArrayList<Document> documentArrayList, LocationAdapter locationAdapter) {
+        // editText1(출발지) 검색 텍스처이벤트
+        searchEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // 입력하기 전에
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (charSequence.length() >= 1) {
+                    documentArrayList.clear();
+                    locationAdapter.clear();
+                    locationAdapter.notifyDataSetChanged();
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(), R.string.restapi_key), charSequence.toString(), 15);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            if (response.isSuccessful()) {
+                                assert response.body() != null;
+                                for (Document document : response.body().getDocuments()) {
+                                    locationAdapter.addItem(document);
+                                }
+                                locationAdapter.notifyDataSetChanged();
+
+                                System.out.println("document result" +documentArrayList.get(0).getAddressName());
 
                             } else {
                                 Log.e("onResponse ERROR", response.message());

@@ -169,8 +169,8 @@ public class ShowDataActivity extends AppCompatActivity {
                     strBuf.append(result);
                     break;
                 }
-                System.out.println("results:"+results);
-                System.out.println("strBuf"+strBuf);
+                System.out.println("showresults:"+results);
+                System.out.println("showstrBuf"+strBuf);
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
