@@ -49,6 +49,7 @@ public class ShowDataActivity extends AppCompatActivity {
     Scenario scenario = new Scenario();
     String ai_msg = new String();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +125,19 @@ public class ShowDataActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.finish();
+    }
+
+
     // Handle speech recognition Messages.
     private void handleMessage(Message msg) {
         switch (msg.what) {
@@ -164,6 +178,7 @@ public class ShowDataActivity extends AppCompatActivity {
                 System.out.println(mTextDataItems);
                 mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
                 mTextDataAdapter.setFriendList(mTextDataItems);
+                System.out.println("실행");
                 break;
 
             case R.id.recognitionError:

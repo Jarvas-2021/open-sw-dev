@@ -16,7 +16,9 @@ public class Scenario {
      * -1: 문제 없음
      * 1: TI 정보가 하나만 있을 때. 출발 시간인지 도착시간인지 모름
      * 2: 도착지를 입력 안 했을 때
+     * 3: 출발 시간, 도착 시간 둘 다 없을 때
      * */
+
     public int error_code_scene = -1;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
@@ -27,6 +29,10 @@ public class Scenario {
         if (arrive_place_scene.equals("")){
             return 2;
         }
+        if (arrive_time_scene.equals("") && start_time_scene.equals("")){
+            return 3;
+        }
+
         if (error_code_scene != -1) {
             return error_code_scene;
         }
@@ -47,6 +53,7 @@ public class Scenario {
         }*/
         return -1;
     }
+
 
 
     public String check_auto(String msg) {
@@ -227,7 +234,9 @@ public class Scenario {
         return return_msg;
     }
 
-    public void convertWord(){
+
+
+    public static void convertWord(){
         start_place_scene = start_place_scene.replaceAll("^[<]|:LC[>]", "");
 
         arrive_place_scene = arrive_place_scene.replaceAll("^[<]|:LC[>]", "");
@@ -238,6 +247,7 @@ public class Scenario {
         arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:TI[>]", "");
         arrive_time_scene = arrive_time_scene.replaceAll("[반]", "30분");
     }
+
 
     public void check_start_time(String msg) {
         Matcher match_msg = date_time_check.matcher(msg);
@@ -273,6 +283,8 @@ public class Scenario {
             arrive_place_scene = match_msg.group();
         }
     }
+
+
 
 
     /*public String simulation() {
