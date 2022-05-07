@@ -64,7 +64,7 @@ public class Scenario {
 
     public int check_main(String msg) {
 
-        if (msg.equals("매피야")) {
+        if (msg.equals("해피야")) {
             return -1;
         }
         return 0;
@@ -85,7 +85,7 @@ public class Scenario {
         }
         // 현재위치 찾기
         if (msg.contains("현재") || msg.contains("위치")) {
-
+            
         }
 
         // 장소 검색
