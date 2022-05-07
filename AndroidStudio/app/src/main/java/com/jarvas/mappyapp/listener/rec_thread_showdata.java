@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
+import com.jarvas.mappyapp.utils.ContextStorage;
 import com.naver.speech.clientapi.SpeechConfig;
 
 public class rec_thread_showdata extends Thread {
@@ -28,7 +29,7 @@ public class rec_thread_showdata extends Thread {
 
     @Override
     public void run() {
-        while (!end_point_showdata) {
+        while (!((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
             System.out.println("showdata"+end_point_showdata);
             System.out.println("case 들어옴");
             this.writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");

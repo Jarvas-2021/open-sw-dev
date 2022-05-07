@@ -520,7 +520,7 @@ public class InputActivity extends Activity {
                 System.out.println("strBuf"+strBuf);
                 Log.d("Take MSG", client_msg);
                 if (this.scenario.check_main(client_msg) == -1) {
-                    end_point_input = true;
+                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_input(true);
                 }
                 break;
 

@@ -850,7 +850,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("Take MSG", client_msg);
                 if (this.scenario.check_main(client_msg) == 1) {
 
-                    end_point_main = true;
+                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_main(true);
                     System.out.println("여기"+end_point_main);
                     try {Thread.sleep(3000);}
                     catch (InterruptedException e) {

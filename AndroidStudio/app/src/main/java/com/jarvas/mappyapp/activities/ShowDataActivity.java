@@ -180,16 +180,16 @@ public class ShowDataActivity extends AppCompatActivity {
                 }
                 if (check_end) {
                     if (client_msg.equals("네") | client_msg.equals("예")) {
-                        end_point_showdata = true;
+                        ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
                     }
                     else {
                         check_end = false;
                     }
                 }
                 if (this.scenario.check_scene() == -1) {
-                    end_point_showdata = true;
+                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
                 }
-                if (end_point_showdata) {
+                if (((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
                     Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                     intent.putExtra("start_time_scene", this.scenario.start_time_scene);
                     intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
