@@ -35,7 +35,6 @@ import com.jarvas.mappyapp.kakao_api.ApiClient;
 import com.jarvas.mappyapp.kakao_api.ApiInterface;
 import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
-import com.jarvas.mappyapp.listener.rec_thread_input;
 import com.jarvas.mappyapp.models.category_search.CategoryResult;
 import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
@@ -119,22 +118,6 @@ public class InputActivity extends Activity {
 
     public boolean textToSpeechIsInitialized = false;
 
-
-    // Naver CSR Variable
-    private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
-    private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(), R.string.csr_key);
-
-    public static Integer micCheck = 0;
-    private NaverRecognizer naverRecognizer;
-    private AudioWriterPCM writer;
-    private boolean isEpdTypeSelected;
-    public static boolean end_point_input;
-    rec_thread_input rec_thread_input;
-    Scenario scenario = new Scenario();
-    String ai_msg = new String();
-    private SpeechConfig.EndPointDetectType currentEpdType;
-    private RecognitionHandler handler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,13 +136,6 @@ public class InputActivity extends Activity {
 
         Button stButton = findViewById(R.id.startTimeButton);
         Button dtButton = findViewById(R.id.destinationTimeButton);
-
-        end_point_input = false;
-        handler = new InputActivity.RecognitionHandler(InputActivity.this);
-        naverRecognizer = new NaverRecognizer(InputActivity.this, handler, CLIENT_ID);
-        rec_thread_input = new rec_thread_input(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
-        rec_thread_input.start();
-
 
         Intent intent = getIntent();
         //String intentStartPlace = intent.getStringExtra("start_place_scene");
@@ -185,10 +161,6 @@ public class InputActivity extends Activity {
             recyclerView1.setVisibility(View.GONE);
             searchEdit2.setText(intentDestinationPlace);
             recyclerView2.setVisibility(View.GONE);
-
-
-
-
         }
 
 
@@ -664,80 +636,5 @@ public class InputActivity extends Activity {
         mAddressText = document.getAddressName();
         mPlaceNameText = document.getPlaceName();
         map.put(mAddressText, mPlaceNameText);
-    }
-
-    // Handle speech recognition Messages.
-    private void handleMessage(Message msg) {
-        switch (msg.what) {
-            case R.id.clientReady:
-                // Now an user can speak.
-                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
-                writer.open("Test");
-                break;
-
-            case R.id.audioRecording:
-                writer.write((short[]) msg.obj);
-                break;
-
-            case R.id.partialResult:
-                // Extract obj property typed with String.
-                break;
-
-            case R.id.finalResult:
-                // Extract obj property typed with String array.
-                // The first element is recognition result for speech.
-                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
-                List<String> results = speechRecognitionResult.getResults();
-                StringBuilder strBuf = new StringBuilder();
-                for (String result : results) {
-                    strBuf.append(result);
-                    break;
-                }
-                System.out.println("results:" + results);
-                System.out.println("strBuf" + strBuf);
-                Log.d("Take MSG", client_msg);
-                if (this.scenario.check_main(client_msg) == -1) {
-                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_input(true);
-                }
-                break;
-
-            case R.id.recognitionError:
-                if (writer != null) {
-                    writer.close();
-                }
-                break;
-
-            case R.id.clientInactive:
-                if (writer != null) {
-                    writer.close();
-                }
-                break;
-
-            case R.id.endPointDetectTypeSelected:
-                isEpdTypeSelected = true;
-                currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
-                if (currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
-                    Toast.makeText(this, "지금 말하세요.", Toast.LENGTH_SHORT).show();
-                } else if (currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
-                    Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
-    static class RecognitionHandler extends Handler {
-        private final WeakReference<InputActivity> mActivity;
-
-        RecognitionHandler(InputActivity activity) {
-            mActivity = new WeakReference<InputActivity>(activity);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            InputActivity activity = mActivity.get();
-            if (activity != null) {
-                activity.handleMessage(msg);
-            }
-        }
     }
 }
