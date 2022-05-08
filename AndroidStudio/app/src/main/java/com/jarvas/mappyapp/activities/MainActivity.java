@@ -1,5 +1,9 @@
 package com.jarvas.mappyapp.activities;
 
+import static com.jarvas.mappyapp.Network.Client.client_msg;
+
+import static java.lang.Thread.sleep;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +15,9 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -37,21 +44,28 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Insert;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.LocationAdapter;
 import com.jarvas.mappyapp.kakao_api.ApiClient;
 import com.jarvas.mappyapp.kakao_api.ApiInterface;
+import com.jarvas.mappyapp.listener.NaverRecognizer;
+import com.jarvas.mappyapp.listener.rec_thread_main;
+import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.models.category_search.CategoryResult;
 import com.jarvas.mappyapp.models.category_search.Document;
+import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
+import com.jarvas.mappyapp.utils.Code;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
 import com.jarvas.mappyapp.utils.Util;
+import com.naver.speech.clientapi.SpeechConfig;
+import com.naver.speech.clientapi.SpeechRecognitionResult;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -63,6 +77,7 @@ import net.daum.mf.map.api.MapView;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,14 +113,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
     MapPOIItem searchMarker = new MapPOIItem();
 
-
-
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO};
 
     Intent sttIntent;
-    SpeechRecognizer mRecognizer;
+//    SpeechRecognizer mRecognizer;
     TextToSpeech tts;
     Button sttBtn;
     EditText txtSystem;
@@ -113,6 +126,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Context cThis;
     final int PERMISSION = 1;
     public static Boolean trigger = false;
+
+    // Naver CSR Variable
+    private RecognitionHandler handler;
+    private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
+    private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(),R.string.csr_key);
+    private NaverRecognizer naverRecognizer;
+    private AudioWriterPCM writer;
+    private boolean isEpdTypeSelected;
+    com.jarvas.mappyapp.listener.rec_thread_main rec_thread_main;
+    public static boolean end_point_main;
+    Scenario scenario = new Scenario();
+    String ai_msg = new String();
+    private SpeechConfig.EndPointDetectType currentEpdType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,9 +150,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtSystem = (EditText) findViewById(R.id.txtSystem);
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
-        //initView();
+
         //setStt();
         //startWithTD();
+
+        end_point_main = false;
+        handler = new RecognitionHandler(this);
+        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        rec_thread_main = new rec_thread_main(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread_main.start();
 
     }
 
@@ -134,15 +166,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         initView();
         super.onStart();
+        naverRecognizer.getSpeechRecognizer().initialize();
     }
 
     @Override
     public void onResume() {
-        setStt();
-        startWithTD();
+//        setStt();
+//        startWithTD();
         super.onResume();
     }
-
+/*
     public void startWithTD(){
         //어플이 실행되면 자동으로 1초뒤에 음성 인식 시작
         new android.os.Handler().postDelayed(new Runnable() {
@@ -150,10 +183,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 System.out.println("자동 음성 인식 시작");
                 txtSystem.setText("어플 실행됨--자동 실행-----------"+"\r\n"+txtSystem.getText());
-                sttBtn.performClick();
+                sttBtn.performClick();x
             }
         },1000);
     }
+
 
     public void setStt() {
         //음성인식
@@ -166,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRecognizer.setRecognitionListener(listener);
         System.out.println("startRecognizer");
     }
+ */
 
     public RecognitionListener listener=new RecognitionListener() {
         @Override
@@ -200,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onError(int i) {
             txtSystem.setText("천천히 다시 말해 주세요..........."+"\r\n"+txtSystem.getText());
             System.out.println("onError"+i);
-            mRecognizer.startListening(sttIntent);
+//            mRecognizer.startListening(sttIntent);
         }
 
         @Override
@@ -212,7 +247,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] rs = new String[mResult.size()];
             if (checkTriggerWord(mResult)) trigger = true;
             if (trigger == true) {
-                mRecognizer.destroy();
+//                mRecognizer.destroy();
+
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
             }
@@ -220,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             System.out.println("trigger "+trigger);
             //System.out.println(rs[0]+"\r\n"+txtInMsg.getText()+trigger+"stt result");
             txtInMsg.setText(rs[0]+"\r\n"+txtInMsg.getText()+trigger);
-            mRecognizer.startListening(sttIntent);
+//            mRecognizer.startListening(sttIntent);
 
         }
 
@@ -445,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.Action_Mic:
                 //tts.stop();
                 //tts.shutdown();
-                mRecognizer.destroy();
+//                mRecognizer.destroy();
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
                 break;
@@ -458,7 +494,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }else{
                     //권한을 허용한 경우
                     try {
-                        mRecognizer.startListening(sttIntent);
+//                        mRecognizer.startListening(sttIntent);
                         System.out.println("권한 허용");
                     }catch (SecurityException e){e.printStackTrace();}
                 }
@@ -782,5 +818,87 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onBackPressed();
     }
 
+    // Handle speech recognition Messages.
+    private void handleMessage(Message msg) {
+        switch (msg.what) {
+            case R.id.clientReady:
+                // Now an user can speak.
+                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+                writer.open("Test");
+                break;
+
+            case R.id.audioRecording:
+                writer.write((short[]) msg.obj);
+                break;
+
+            case R.id.partialResult:
+                // Extract obj property typed with String.
+                break;
+
+            case R.id.finalResult:
+                // Extract obj property typed with String array.
+                // The first element is recognition result for speech.
+                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
+                List<String> results = speechRecognitionResult.getResults();
+                StringBuilder strBuf = new StringBuilder();
+                for (String result : results) {
+                    strBuf.append(result);
+                    break;
+                }
+                System.out.println("mainresults:"+results);
+                System.out.println("mainstrBuf"+strBuf);
+                Log.d("Take MSG", client_msg);
+                if (this.scenario.check_main(client_msg) == 1) {
+
+                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_main(true);
+                    System.out.println("여기"+((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_main());
+                    try {Thread.sleep(3000);}
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
+                    startActivity(intent_show);
+                }
+                break;
+
+            case R.id.recognitionError:
+                if (writer != null) {
+                    writer.close();
+                }
+                break;
+
+            case R.id.clientInactive:
+                if (writer != null) {
+                    writer.close();
+                }
+                break;
+
+            case R.id.endPointDetectTypeSelected:
+                isEpdTypeSelected = true;
+                currentEpdType = (SpeechConfig.EndPointDetectType) msg.obj;
+                if (currentEpdType == SpeechConfig.EndPointDetectType.AUTO) {
+                    Toast.makeText(this, "지금 말하세요.", Toast.LENGTH_SHORT).show();
+                } else if (currentEpdType == SpeechConfig.EndPointDetectType.MANUAL) {
+                    Toast.makeText(this, "MANUAL epd type is selected.", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    class RecognitionHandler extends Handler {
+        private WeakReference<MainActivity> mActivity;
+
+        RecognitionHandler(MainActivity activity) {
+            mActivity = new WeakReference<MainActivity>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity activity = mActivity.get();
+            if (activity != null) {
+                activity.handleMessage(msg);
+            }
+        }
+    }
 
 }

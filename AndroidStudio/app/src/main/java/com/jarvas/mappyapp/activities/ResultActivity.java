@@ -58,7 +58,7 @@ public class ResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
-        //textViewResult = findViewById(R.id.text_view_result);
+        //textViewResult = findViewById(R.id.exampletextview);
         checkTimeResult = 0;
         Intent secondIntent = getIntent();
         String startAddressText = secondIntent.getStringExtra("startAddressText");

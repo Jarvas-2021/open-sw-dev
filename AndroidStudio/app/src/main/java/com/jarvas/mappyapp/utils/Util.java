@@ -37,4 +37,7 @@ public class Util {
 
         return strAdd;
     }
+    public static boolean isStringEmpty(String str) {
+        return str==null || str.isEmpty();
+    }
 }

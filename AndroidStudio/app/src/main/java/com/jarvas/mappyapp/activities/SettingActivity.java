@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.jarvas.mappyapp.R;
+import com.jarvas.mappyapp.utils.ContextStorage;
 
 public class SettingActivity extends AppCompatActivity {
     Button ossButton;
@@ -27,6 +28,12 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(ContextStorage.getCtx(), MainActivity.class);
+        ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
     }
 }

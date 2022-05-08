@@ -2,6 +2,8 @@ package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -17,7 +19,7 @@ import com.jarvas.mappyapp.R;
 import com.jarvas.mappyapp.Scenario;
 import com.jarvas.mappyapp.adapter.TextDataAdapter;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
-import com.jarvas.mappyapp.listener.rec_thread;
+import com.jarvas.mappyapp.listener.rec_thread_showdata;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.Code;
@@ -43,16 +45,19 @@ public class ShowDataActivity extends AppCompatActivity {
     private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
     Toast myToast;
-
-    private boolean end_point = false;
+    boolean check_end = false;
+    public static boolean end_point_showdata;
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
+
+        end_point_showdata = false;
 
 //        initData();
         mTextDataItems = new ArrayList<>();
@@ -70,11 +75,11 @@ public class ShowDataActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        handler = new RecognitionHandler(this);
-        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        handler = new RecognitionHandler(ShowDataActivity.this);
+        naverRecognizer = new NaverRecognizer(ShowDataActivity.this, handler, CLIENT_ID);
 
-        rec_thread rec_thread = new rec_thread(end_point, naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
-        rec_thread.start();
+        rec_thread_showdata rec_thread_showdata = new rec_thread_showdata(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
+        rec_thread_showdata.start();
 
         mTextDataAdapter.setFriendList(mTextDataItems);
 
@@ -95,7 +100,7 @@ public class ShowDataActivity extends AppCompatActivity {
     }
 
     static class RecognitionHandler extends Handler {
-        private final WeakReference<ShowDataActivity> mActivity;
+        private WeakReference<ShowDataActivity> mActivity;
 
         RecognitionHandler(ShowDataActivity activity) {
             mActivity = new WeakReference<ShowDataActivity>(activity);
@@ -123,6 +128,19 @@ public class ShowDataActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.finish();
+    }
+
 
     // Handle speech recognition Messages.
     private void handleMessage(Message msg) {
@@ -152,18 +170,38 @@ public class ShowDataActivity extends AppCompatActivity {
                     strBuf.append(result);
                     break;
                 }
-                System.out.println("results:"+results);
-                // todo - 이부분 고치기
-                System.out.println("strBuf"+strBuf);
+                System.out.println("showresults:"+results);
+                System.out.println("showstrBuf"+strBuf);
                 mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
-                if (this.scenario.check() == -1) {
-                    end_point = true;
+                if (check_all(ai_msg)) {
+                    ai_msg = ai_msg + " 검색을 마치시겠습니까?";
+                    check_end = true;
+                }
+                if (check_end) {
+                    if (client_msg.equals("네") | client_msg.equals("예")) {
+                        ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
+                    }
+                    else {
+                        check_end = false;
+                    }
+                }
+                if (this.scenario.check_scene() == -1) {
+                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
+                }
+                if (((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
+                    Intent intent = new Intent(getApplicationContext(), InputActivity.class);
+                    intent.putExtra("start_time_scene", this.scenario.start_time_scene);
+                    intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
+                    intent.putExtra("start_place_scene", this.scenario.start_place_scene);
+                    intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
+                    finish();
                 }
                 System.out.println(mTextDataItems);
                 mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
                 mTextDataAdapter.setFriendList(mTextDataItems);
+                System.out.println("실행");
                 break;
 
             case R.id.recognitionError:
@@ -190,4 +228,19 @@ public class ShowDataActivity extends AppCompatActivity {
         }
     }
 
+    public boolean check_all(String msg) {
+        if (msg.contains("출발시간이 입력되었습니다.")) {
+            return true;
+        }
+        if (msg.contains("도착시간이 입력되었습니다.")) {
+            return true;
+        }
+        if (msg.contains("도착지가 입력되었습니다.")) {
+            return true;
+        }
+        if (msg.contains("출발지가 입력되었습니다.")) {
+            return true;
+        }
+        return false;
+    }
 }
