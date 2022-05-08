@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Insert;
 
 import com.crowdfire.cfalertdialog.CFAlertDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -54,11 +57,14 @@ import com.squareup.otto.Subscribe;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
+import net.daum.mf.map.api.MapPolyline;
 import net.daum.mf.map.api.MapView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ViewGroup mMapViewContainer;
     RecyclerView recyclerView;
     EditText mSearchEdit;
+
     private Animation fab_open, fab_close;
     private Boolean isFabOpen = false;
     private FloatingActionButton fab1,fab_input;
@@ -90,6 +97,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
     MapPOIItem searchMarker = new MapPOIItem();
+
+
 
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -115,10 +124,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         txtSystem = (EditText) findViewById(R.id.txtSystem);
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
-        initView();
+        //initView();
+        //setStt();
+        //startWithTD();
 
+    }
+
+    @Override
+    public void onStart() {
+        initView();
+        super.onStart();
+    }
+
+    @Override
+    public void onResume() {
         setStt();
         startWithTD();
+        super.onResume();
     }
 
     public void startWithTD(){
@@ -190,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] rs = new String[mResult.size()];
             if (checkTriggerWord(mResult)) trigger = true;
             if (trigger == true) {
+                mRecognizer.destroy();
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
             }
@@ -232,6 +255,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (v.equals("웨피 아")) return true;
                 if (v.equals("웨피 아")) return true;
                 if (v.equals("웨피 아")) return true;
+
+                if (v.equals("매퍄")) return true;
+                if (v.equals("피야")) return true;
+
             }
             return false;
         }
@@ -297,6 +324,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 맵 리스너
         mMapView.setMapViewEventListener(this);
         mMapView.setPOIItemEventListener(this);
+
         mMapView.setOpenAPIKeyAuthenticationResultListener(this);
 
         //버튼리스너
@@ -410,10 +438,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("currentLocation : "+currentLocation);
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 intent.putExtra("currentLocation",currentLocation);
+                searchMarker.setAlpha(0);
                 startActivity(intent);
                 break;
 
             case R.id.Action_Mic:
+                //tts.stop();
+                //tts.shutdown();
+                mRecognizer.destroy();
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
                 break;
@@ -728,6 +760,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
+
+
 
 
     @Override

@@ -398,5 +398,6 @@ public class InputActivity extends Activity {
         mAddressText = document.getAddressName();
         mPlaceNameText = document.getPlaceName();
         map.put(mAddressText, mPlaceNameText);
+
     }
 }

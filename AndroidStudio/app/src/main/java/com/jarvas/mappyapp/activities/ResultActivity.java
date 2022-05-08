@@ -135,7 +135,7 @@ public class ResultActivity extends AppCompatActivity {
                         //todo-주석해제
                         getRouteValues(routes);
                         customProgressDialog.dismiss();
-                        mRecyclerAdapter = new ResultRecyclerAdapter();
+                        mRecyclerAdapter = new ResultRecyclerAdapter(startAddressText, destinationAddressText);
                         mRecyclerView.setAdapter(mRecyclerAdapter);
                         mRecyclerAdapter.setResultList(mResultItems);
                     }
@@ -262,9 +262,9 @@ public class ResultActivity extends AppCompatActivity {
 
 
 
-        mRecyclerAdapter = new ResultRecyclerAdapter();
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-        mRecyclerAdapter.setResultList(mResultItems);
+        //mRecyclerAdapter = new ResultRecyclerAdapter();
+        //mRecyclerView.setAdapter(mRecyclerAdapter);
+        //mRecyclerAdapter.setResultList(mResultItems);
     }
 
     // StartTime과 크롤링시간을 더해서 예상 도착 시간 알려주는 함수
