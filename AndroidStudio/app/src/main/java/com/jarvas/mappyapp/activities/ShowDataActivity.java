@@ -75,8 +75,8 @@ public class ShowDataActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        handler = new RecognitionHandler((ShowDataActivity) ContextStorage.getCtx());
-        naverRecognizer = new NaverRecognizer(ContextStorage.getCtx(), handler, CLIENT_ID);
+        handler = new RecognitionHandler(ShowDataActivity.this);
+        naverRecognizer = new NaverRecognizer(ShowDataActivity.this, handler, CLIENT_ID);
 
         rec_thread_showdata rec_thread_showdata = new rec_thread_showdata(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread_showdata.start();
@@ -100,7 +100,7 @@ public class ShowDataActivity extends AppCompatActivity {
     }
 
     static class RecognitionHandler extends Handler {
-        private final WeakReference<ShowDataActivity> mActivity;
+        private WeakReference<ShowDataActivity> mActivity;
 
         RecognitionHandler(ShowDataActivity activity) {
             mActivity = new WeakReference<ShowDataActivity>(activity);

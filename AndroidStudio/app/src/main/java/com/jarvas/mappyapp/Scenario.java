@@ -98,6 +98,31 @@ public class Scenario {
         return 0;
     }
 
+    public int check_input_start(String msg) {
+        if (msg.contains("일") || msg.contains("첫번째") || msg.contains("1") || msg.contains("위")) {
+            return 0;
+        }
+        if (msg.contains("이") || msg.contains("두번째") || msg.contains("2")) {
+            return 1;
+        }
+        if (msg.contains("삼") || msg.contains("세번째") || msg.contains("3")) {
+            return 2;
+        }
+        if (msg.contains("사") || msg.contains("네번째") || msg.contains("4")) {
+            return 3;
+        }
+        return 0;
+    }
+
+    public int check_search(String msg) {
+        if (msg.contains("검색") || msg.contains("서치") || msg.contains("찾아")) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
 
 
     public String check_auto(String msg) {

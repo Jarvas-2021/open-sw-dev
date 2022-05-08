@@ -851,7 +851,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (this.scenario.check_main(client_msg) == 1) {
 
                     ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_main(true);
-                    System.out.println("여기"+end_point_main);
+                    System.out.println("여기"+((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_main());
                     try {Thread.sleep(3000);}
                     catch (InterruptedException e) {
                         e.printStackTrace();
@@ -885,8 +885,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    static class RecognitionHandler extends Handler {
-        private final WeakReference<MainActivity> mActivity;
+    class RecognitionHandler extends Handler {
+        private WeakReference<MainActivity> mActivity;
 
         RecognitionHandler(MainActivity activity) {
             mActivity = new WeakReference<MainActivity>(activity);

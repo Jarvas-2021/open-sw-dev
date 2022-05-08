@@ -1,8 +1,6 @@
 package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
-import static android.net.wifi.p2p.WifiP2pManager.ERROR;
-
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,6 +12,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.speech.tts.TextToSpeech;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,7 +36,7 @@ import com.jarvas.mappyapp.kakao_api.ApiInterface;
 import com.jarvas.mappyapp.listener.EventListener;
 import com.jarvas.mappyapp.listener.NaverRecognizer;
 import com.jarvas.mappyapp.listener.rec_thread_input;
-
+import com.jarvas.mappyapp.models.category_search.CategoryResult;
 import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
@@ -93,8 +93,8 @@ public class InputActivity extends Activity {
 
     String searchAddressText;
 
-    Integer checkTime=0;
-    String resultTime="";
+    Integer checkTime = 0;
+    String resultTime = "";
 
     Map<String, String> map = new HashMap<String, String>();
     Set<String> set = map.keySet();
@@ -106,14 +106,23 @@ public class InputActivity extends Activity {
     ProgressDialog progressDialog;
 
     ArrayList<Document> documentArrayList;
+    ArrayList<Document> documentArrayList2;
     LocationAdapter locationAdapter;
     LocationAdapter locationAdapter2;
     LinearLayoutManager layoutManager;
     LinearLayoutManager layoutManager2;
 
+    String intentStartPlace;
+    String intentDestinationPlace;
+
+    public boolean textToSpeechIsInitialized = false;
+
+
     // Naver CSR Variable
     private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
-    private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(),R.string.csr_key);
+    private static final String CLIENT_ID = StringResource.getStringResource(ContextStorage.getCtx(), R.string.csr_key);
+
+    public static Integer micCheck = 0;
     private NaverRecognizer naverRecognizer;
     private AudioWriterPCM writer;
     private boolean isEpdTypeSelected;
@@ -131,6 +140,7 @@ public class InputActivity extends Activity {
         setContentView(R.layout.activity_input);
         bus2.register(this);
         initView();
+
         // todo - 서버 확인 후 callbackActivity 함수 제거
         //callbackActivity();
         getProcessIntentAndKey();
@@ -143,30 +153,39 @@ public class InputActivity extends Activity {
         Button dtButton = findViewById(R.id.destinationTimeButton);
 
         end_point_input = false;
-        handler = new InputActivity.RecognitionHandler((InputActivity) ContextStorage.getCtx());
-        naverRecognizer = new NaverRecognizer(ContextStorage.getCtx(), handler, CLIENT_ID);
+        handler = new InputActivity.RecognitionHandler(InputActivity.this);
+        naverRecognizer = new NaverRecognizer(InputActivity.this, handler, CLIENT_ID);
         rec_thread_input = new rec_thread_input(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread_input.start();
+
 
         Intent intent = getIntent();
         //String intentStartPlace = intent.getStringExtra("start_place_scene");
         //String intentDestinationPlace = intent.getStringExtra("arrive_place_scene");
         //String intentStartTime = intent.getStringExtra("start_time_scene");
         //String intentDestinationTime = intent.getStringExtra("arrive_time_scene");
-        String intentStartPlace = "";
-        String intentDestinationPlace = "안양천";
+        intentStartPlace = "";
+        intentDestinationPlace = "안양천";
 //intent.getStringExtra("arrive_place_scene").length()!=0 ||
 
         // 안양천
-        if (intentDestinationPlace=="안양천") {
+        if (intentDestinationPlace == "안양천") {
             // 검색 텍스처 Listener
+            // if intentStartPlace가 ""이면 current SetText추가
             //searchEdit1.setText(currentLocation); //현재값
+            searchEdit1.setText(intentStartPlace);
+            recyclerView1.setVisibility(View.GONE);
             searchEdit2.setText(intentDestinationPlace);
+            recyclerView2.setVisibility(View.GONE);
+
+            // todo - 말이 안나옴
+//            if (!Util.isStringEmpty(intentDestinationPlace)) {
+//                System.out.println("에에엥");
+//                tts.speak("검색하시겠습니까?", TextToSpeech.QUEUE_FLUSH, null);
+//            }
+
 
         }
-
-
-
 
 
         stButton.setOnClickListener(new View.OnClickListener() {
@@ -190,16 +209,6 @@ public class InputActivity extends Activity {
             }
         });
 
-        // TTS를 생성하고 OnInitListener로 초기화 한다.
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != ERROR) {
-                    // 언어를 선택한다.
-                    tts.setLanguage(Locale.KOREAN);
-                }
-            }
-        });
 
     }
 
@@ -259,6 +268,29 @@ public class InputActivity extends Activity {
 //        //액티비티(팝업) 닫기
 //        finish();
 //    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // TTS를 생성하고 OnInitListener로 초기화 한다.
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    textToSpeechIsInitialized = true;
+                    int ttsLang = tts.setLanguage(Locale.KOREAN);
+                    if (ttsLang == TextToSpeech.LANG_MISSING_DATA || ttsLang == TextToSpeech.LANG_NOT_SUPPORTED) {
+                        Log.e("TTS", "The language is not supported");
+                    } else {
+                        Log.i("TTS", "Language Supported");
+                    }
+                    Log.i("TTS", "Initialization success");
+
+                } else {
+                    Toast.makeText(InputActivity.this, "TTS Initialization Failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -307,8 +339,9 @@ public class InputActivity extends Activity {
         okButton = findViewById(R.id.okButton);
 
         documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
+        documentArrayList2 = new ArrayList<>(); //지역명 검색 결과 리스트
         locationAdapter = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit1, recyclerView1);
-        locationAdapter2 = new LocationAdapter(documentArrayList, getApplicationContext(), searchEdit2, recyclerView2);
+        locationAdapter2 = new LocationAdapter(documentArrayList2, getApplicationContext(), searchEdit2, recyclerView2);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -322,19 +355,153 @@ public class InputActivity extends Activity {
 
 
         // 검색 텍스처 Listener
-        eventListener.addTextChangedListenerEventStart(searchEdit1, recyclerView1, documentArrayList, locationAdapter);
-        eventListener.addTextChangedListenerEventDestination(searchEdit2, recyclerView2, documentArrayList, locationAdapter2);
-        //eventListener.addTextChangedListenerEvent(searchEdit3,recyclerView3,documentArrayList,locationAdapter3);
+        //eventListener.addTextChangedListenerEventStart(searchEdit1, recyclerView1, documentArrayList, locationAdapter);
+        //eventListener.addTextChangedListenerEventDestination(searchEdit2, recyclerView2, documentArrayList, locationAdapter2);
+        searchEdit1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // 입력하기 전에
+                recyclerView1.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (charSequence.length() >= 1) {
+                    System.out.println("지금실행된다이거");
+                    documentArrayList.clear();
+                    locationAdapter.clear();
+                    locationAdapter.notifyDataSetChanged();
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(), R.string.restapi_key), charSequence.toString(), 15);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            if (response.isSuccessful()) {
+                                assert response.body() != null;
+                                for (Document document : response.body().getDocuments()) {
+                                    locationAdapter.addItem(document);
+                                }
+                                locationAdapter.notifyDataSetChanged();
+
+                                if (documentArrayList.size()!=0) {
+                                    startAddressText = documentArrayList.get(0).getAddressName();
+                                    System.out.println("start result" + documentArrayList.get(0).getAddressName());
+                                }
+                                if (!Util.isStringEmpty(intentStartPlace)) {
+                                    System.out.println("intentstartif"+startAddressText);
+                                }
+                            } else {
+                                Log.e("onResponse ERROR", response.message());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
+
+                        }
+                    });
+                } else {
+                    if (charSequence.length() <= 0) {
+                        recyclerView1.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // 입력이 끝났을 때
+
+            }
+        });
+
+        searchEdit2.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
+                // 입력하기 전에
+                recyclerView2.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (charSequence.length() >= 1) {
+                    documentArrayList2.clear();
+                    locationAdapter2.clear();
+                    locationAdapter2.notifyDataSetChanged();
+                    ApiInterface apiInterface = ApiClient.getApiClient().create(ApiInterface.class);
+                    Call<CategoryResult> call = apiInterface.getSearchLocation(StringResource.getStringResource(ContextStorage.getCtx(), R.string.restapi_key), charSequence.toString(), 15);
+                    call.enqueue(new Callback<CategoryResult>() {
+                        @Override
+                        public void onResponse(@NotNull Call<CategoryResult> call, @NotNull Response<CategoryResult> response) {
+                            if (response.isSuccessful()) {
+                                assert response.body() != null;
+                                for (Document document : response.body().getDocuments()) {
+                                    locationAdapter2.addItem(document);
+                                }
+                                locationAdapter2.notifyDataSetChanged();
+
+                            } else {
+                                Log.e("onResponse ERROR", response.message());
+                            }
+
+                            // 첫번째걸로 선택해줌
+                            if (documentArrayList2.size()!=0) {
+                                destinationAddressText = documentArrayList2.get(0).getAddressName();
+                                System.out.println("destination result" + documentArrayList2.get(0).getAddressName());
+                            }
+                            if (!Util.isStringEmpty(intentDestinationPlace)) {
+                                System.out.println("intentdestif"+destinationAddressText);
+                                if (checkTime == 1) {
+                                    resultTime = startTimeText;
+                                } else if (checkTime == 2) {
+                                    resultTime = destinationTimeText;
+                                } else if (checkTime == 0) {
+                                    resultTime = calculateCurrentTime();
+                                }
+                                System.out.println("resultTime : " + resultTime);
+
+                                if (destinationAddressText == null) {
+                                    Toast.makeText(InputActivity.this, "도착지를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    if (startAddressText == null) {
+                                        startAddressText = currentLocation;
+                                    }
+                                    putIntentAndStartActivity();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NotNull Call<CategoryResult> call, @NotNull Throwable t) {
+
+                        }
+                    });
+                } else {
+                    if (charSequence.length() <= 0) {
+                        recyclerView2.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // 입력이 끝났을 때
+
+
+            }
+        });
+
 
         // setOnFocusChangeListener
         eventListener.setOnFocusChangeListenerEvent(searchEdit1, recyclerView1);
         eventListener.setOnFocusChangeListenerEvent(searchEdit2, recyclerView2);
-        //eventListener.setOnFocusChangeListenerEvent(searchEdit3,recyclerView3);
+
 
         // setOnClickListener
         eventListener.setOnClickListenerEvent(searchEdit1);
         eventListener.setOnClickListenerEvent(searchEdit2);
-        //eventListener.setOnClickListenerEvent(searchEdit3);
+
+        // editText 검색 텍스처이벤트
+
 
         okButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -346,19 +513,18 @@ public class InputActivity extends Activity {
 
                 System.out.println();
 
-                if(checkTime==1){
-                    resultTime=startTimeText;
-                }else if (checkTime==2){
-                    resultTime=destinationTimeText;
-                }else if (checkTime==0) {
-                    resultTime=calculateCurrentTime();
+                if (checkTime == 1) {
+                    resultTime = startTimeText;
+                } else if (checkTime == 2) {
+                    resultTime = destinationTimeText;
+                } else if (checkTime == 0) {
+                    resultTime = calculateCurrentTime();
                 }
-                System.out.println("resultTime : " +resultTime);
+                System.out.println("resultTime : " + resultTime);
 
                 if (destinationAddressText == null) {
                     Toast.makeText(InputActivity.this, "도착지를 입력해주세요.", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     if (startAddressText == null) {
                         startAddressText = currentLocation;
                     }
@@ -414,10 +580,10 @@ public class InputActivity extends Activity {
             }
             switch (key) {
                 case IntentKey.PLACE_SEARCH_SET_STARTING:
-                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_STARTING, searchEdit1, startAddressText, recyclerView1,1);
+                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_STARTING, searchEdit1, startAddressText, recyclerView1, 1);
                     break;
                 case IntentKey.PLACE_SEARCH_SET_DESTINATION:
-                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_DESTINATION, searchEdit2, destinationAddressText, recyclerView2,2);
+                    processIntent(processIntent, IntentKey.PLACE_SEARCH_SET_DESTINATION, searchEdit2, destinationAddressText, recyclerView2, 2);
                     break;
             }
         }
@@ -434,8 +600,8 @@ public class InputActivity extends Activity {
         Intent intent = new Intent(InputActivity.this, ResultActivity.class);
         intent.putExtra("startAddressText", startAddressText);
         intent.putExtra("destinationAddressText", destinationAddressText);
-        intent.putExtra("resultTime",resultTime);
-        intent.putExtra("checkTIme",checkTime);
+        intent.putExtra("resultTime", resultTime);
+        intent.putExtra("checkTIme", checkTime);
         startActivity(intent);
     }
 
@@ -448,12 +614,12 @@ public class InputActivity extends Activity {
         }
     }
 
-    private void getDocumentValues(Document document, EditText searchEdit, String addressText, RecyclerView recyclerView,Integer check) {
+    private void getDocumentValues(Document document, EditText searchEdit, String addressText, RecyclerView recyclerView, Integer check) {
         searchEdit.setText(document.getPlaceName());
         addressText = document.getAddressName();
-        if (check==1) {
+        if (check == 1) {
             startAddressText = addressText;
-        } else if (check==2) {
+        } else if (check == 2) {
             destinationAddressText = addressText;
         }
         recyclerView.setVisibility(View.GONE);
@@ -476,6 +642,12 @@ public class InputActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        // TTS 객체가 남아있다면 실행을 중지하고 메모리에서 제거한다.
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+        }
     }
 
     //검색예시 클릭시 이벤트 오토버스
@@ -489,6 +661,7 @@ public class InputActivity extends Activity {
         mPlaceNameText = document.getPlaceName();
         map.put(mAddressText, mPlaceNameText);
     }
+
     // Handle speech recognition Messages.
     private void handleMessage(Message msg) {
         switch (msg.what) {
@@ -516,8 +689,8 @@ public class InputActivity extends Activity {
                     strBuf.append(result);
                     break;
                 }
-                System.out.println("results:"+results);
-                System.out.println("strBuf"+strBuf);
+                System.out.println("results:" + results);
+                System.out.println("strBuf" + strBuf);
                 Log.d("Take MSG", client_msg);
                 if (this.scenario.check_main(client_msg) == -1) {
                     ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_input(true);
