@@ -114,6 +114,8 @@ public class InputActivity extends Activity {
 
     String intentStartPlace;
     String intentDestinationPlace;
+    String intentStartTime;
+    String intentDestinationTime;
 
     public boolean textToSpeechIsInitialized = false;
 
@@ -165,10 +167,16 @@ public class InputActivity extends Activity {
         //String intentStartTime = intent.getStringExtra("start_time_scene");
         //String intentDestinationTime = intent.getStringExtra("arrive_time_scene");
         intentStartPlace = "";
-        intentDestinationPlace = "안양천";
+        intentDestinationPlace = "";
+        intentStartTime = "";
+        intentDestinationTime = "";
 //intent.getStringExtra("arrive_place_scene").length()!=0 ||
 
-        // 안양천
+
+        // if intentStartTime이 들어오면 checkTime=1로 하고 resultTime 값넣어주기
+        // if intentDestTime이 들어오면 checkTime=2로 하고 resultTime에 값넣어주기
+
+        // intentDestinationPlace가 ""아니면 으로 바꾸기
         if (intentDestinationPlace == "안양천") {
             // 검색 텍스처 Listener
             // if intentStartPlace가 ""이면 current SetText추가
@@ -178,11 +186,7 @@ public class InputActivity extends Activity {
             searchEdit2.setText(intentDestinationPlace);
             recyclerView2.setVisibility(View.GONE);
 
-            // todo - 말이 안나옴
-//            if (!Util.isStringEmpty(intentDestinationPlace)) {
-//                System.out.println("에에엥");
-//                tts.speak("검색하시겠습니까?", TextToSpeech.QUEUE_FLUSH, null);
-//            }
+
 
 
         }
@@ -210,6 +214,17 @@ public class InputActivity extends Activity {
         });
 
 
+    }
+
+    public String convertDataFormat(String d) {
+        System.out.println("data1"+d);
+        d = d.replace(" ","");
+        System.out.println("data2"+d);
+        d = d.replace("시",":");
+        System.out.println("data3"+d);
+        d = d.replace("분","");
+        System.out.println("data4"+d);
+        return d;
     }
 
     void showStartTime() {
@@ -271,25 +286,6 @@ public class InputActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        // TTS를 생성하고 OnInitListener로 초기화 한다.
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-                    textToSpeechIsInitialized = true;
-                    int ttsLang = tts.setLanguage(Locale.KOREAN);
-                    if (ttsLang == TextToSpeech.LANG_MISSING_DATA || ttsLang == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Log.e("TTS", "The language is not supported");
-                    } else {
-                        Log.i("TTS", "Language Supported");
-                    }
-                    Log.i("TTS", "Initialization success");
-
-                } else {
-                    Toast.makeText(InputActivity.this, "TTS Initialization Failed", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
     }
 
     @Override
@@ -450,10 +446,18 @@ public class InputActivity extends Activity {
                             }
                             if (!Util.isStringEmpty(intentDestinationPlace)) {
                                 System.out.println("intentdestif"+destinationAddressText);
+                                if (intentStartTime == "1시30분") {
+                                    checkTime=1;
+                                } else if (intentDestinationTime == "3시30분") {
+                                    checkTime=2;
+                                }
+                                System.out.println("idfsdfsdf"+checkTime);
                                 if (checkTime == 1) {
-                                    resultTime = startTimeText;
+                                    System.out.println("dsfaazzz"+intentStartTime);
+                                    resultTime = convertDataFormat(intentStartTime);
+                                    System.out.println("sdfsdfsdf"+resultTime);
                                 } else if (checkTime == 2) {
-                                    resultTime = destinationTimeText;
+                                    resultTime = convertDataFormat(intentDestinationTime);
                                 } else if (checkTime == 0) {
                                     resultTime = calculateCurrentTime();
                                 }
