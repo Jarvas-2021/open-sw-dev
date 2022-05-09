@@ -30,8 +30,8 @@ public class Scenario {
     public int error_code_scene = -1;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
-    Pattern date_time_check = Pattern.compile("<.*:TI>");
-    Pattern place_check = Pattern.compile("<.*:LC>");
+    Pattern date_time_check = Pattern.compile("<[\s[^\s]]*:TI>");
+    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\s]]*:LC>");
 
     public int check_scene() {
         if (arrive_place_scene.equals("")){
@@ -174,9 +174,6 @@ public class Scenario {
         int whatTimeCount = 0;
 
 
-
-
-
         // input message에 시간이 있는지 확인
         while (date_match_msg.find()) {
             timeCount++;
@@ -225,23 +222,6 @@ public class Scenario {
             }
 
             System.out.println("Time count = " + timeCount);
-        }
-
-        if (whatTimeCount == 1 && timeCount == 1) {
-            return_msg += "출발시간인지 도착시간인지 알려주세요.";
-            error_code_scene = 1;
-        }
-        if (start_time_scene.equals("") & arrive_time_scene.equals("")) {
-            return_msg = return_msg + "시간이 아직 입력되지 않았습니다.";
-        }
-        else if (start_time_scene.equals("")) {
-            return_msg = return_msg + "출발시간이 아직 입력되지 않았습니다.";
-        }
-        else if (arrive_time_scene.equals("")) {
-            return_msg = return_msg + "도착시간이 아직 입력되지 않았습니다.";
-        }
-        else {
-            return_msg = return_msg + "시간은 모두 입력되었습니다.";
         }
 
         // input message에 장소가 포함되어 있는지 확인
@@ -309,17 +289,23 @@ public class Scenario {
             System.out.println("count = " + placeCount);
         }
 
+        if (whatTimeCount == 1 && timeCount == 1) {
+            return_msg += "출발시간인지 도착시간인지 알려주세요.";
+            error_code_scene = 1;
+        }
+
         if (start_place_scene.equals("") & arrive_place_scene.equals("")) {
             return_msg = return_msg + "장소가 아직 입력되지 않았습니다.";
-        }
-        else if (start_place_scene.equals("")) {
-            return_msg = return_msg + "출발지가 아직 입력되지 않았습니다.";
         }
         else if (arrive_place_scene.equals("")) {
             return_msg = return_msg + "목적지가 아직 입력되지 않았습니다.";
         }
-        else {
+        else if (!arrive_place_scene.equals("") && !start_place_scene.equals("")){
             return_msg = return_msg + "장소는 모두 입력되었습니다.";
+        }
+
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0) {
+            return_msg += "검색을 시작할까요?";
         }
 
         convertWord();
