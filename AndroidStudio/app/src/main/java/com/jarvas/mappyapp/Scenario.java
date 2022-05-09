@@ -30,8 +30,8 @@ public class Scenario {
     public int error_code_scene = -1;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
-    Pattern date_time_check = Pattern.compile("<[\s[^\s]]*:TI>");
-    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\s]]*:LC>");
+    Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:TI>");
+    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:LC>");
 
     public int check_scene() {
         if (arrive_place_scene.equals("")){
