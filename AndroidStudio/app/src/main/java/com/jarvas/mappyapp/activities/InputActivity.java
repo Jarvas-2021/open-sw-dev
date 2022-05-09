@@ -138,14 +138,14 @@ public class InputActivity extends Activity {
         Button dtButton = findViewById(R.id.destinationTimeButton);
 
         Intent intent = getIntent();
-        //String intentStartPlace = intent.getStringExtra("start_place_scene");
-        //String intentDestinationPlace = intent.getStringExtra("arrive_place_scene");
-        //String intentStartTime = intent.getStringExtra("start_time_scene");
-        //String intentDestinationTime = intent.getStringExtra("arrive_time_scene");
-        intentStartPlace = "부평역";
+        //intentStartPlace = intent.getStringExtra("start_place_scene");
+        intentDestinationPlace = intent.getStringExtra("arrive_place_scene");
+        intentStartTime = intent.getStringExtra("start_time_scene");
+        intentDestinationTime = intent.getStringExtra("arrive_time_scene");
+        intentStartPlace = "";
         intentDestinationPlace = "안양천";
-        intentStartTime = "5시30분";
-        intentDestinationTime = "";
+        //intentStartTime = "5시30분";
+        //intentDestinationTime = "";
 //intent.getStringExtra("arrive_place_scene").length()!=0 ||
 
 
@@ -159,9 +159,12 @@ public class InputActivity extends Activity {
             // if intentStartPlace가 ""이면 current SetText추가
             //searchEdit1.setText(currentLocation); //현재값
             if (Util.isStringEmpty(intentStartPlace)) {
+                System.out.println("여기실행1");
                 searchEdit1.setText(currentLocation);
+                startAddressText = currentLocation;
             }
             else {
+                System.out.println("여기실행2"+intentStartTime);
                 searchEdit1.setText(intentStartPlace);
             }
             System.out.println("실행으으아ㅡ아ㅡ아으ㅏ으ㅏㅡ아으");
