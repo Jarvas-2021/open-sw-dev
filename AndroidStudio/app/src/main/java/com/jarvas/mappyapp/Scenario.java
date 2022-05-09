@@ -30,8 +30,8 @@ public class Scenario {
     public int error_code_scene = -1;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
-    Pattern date_time_check = Pattern.compile("<[\s[^\s]]*:TI>");
-    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\s]]*:LC>");
+    Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:TI>");
+    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:LC>");
 
     public int check_scene() {
         if (arrive_place_scene.equals("")){
@@ -156,6 +156,16 @@ public class Scenario {
                 arrive_time_scene = what_time;
                 what_time = "";
             }
+        }
+
+        //검색을 할까요??에 대답
+        //긍정의 대답일 경우
+        if (msg.equals("네") || msg.equals("그래") || msg.equals("예") || msg.equals("응")) {
+
+        }
+        //부정의 대답일 경우
+        if (msg.equals("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
+            
         }
 
         error_code_scene = -1;
