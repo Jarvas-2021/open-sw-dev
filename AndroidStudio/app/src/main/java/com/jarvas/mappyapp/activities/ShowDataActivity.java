@@ -5,6 +5,7 @@ import static com.jarvas.mappyapp.Network.Client.client_msg;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ShowDataActivity extends AppCompatActivity {
+public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     private TextToSpeech tts;
 
     // Naver CSR Variable
@@ -60,24 +62,27 @@ public class ShowDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
+        tts = new TextToSpeech(this, this);
 
-        // TTS를 생성하고 OnInitListener로 초기화 한다.
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != ERROR) {
-                    // 언어를 선택한다.
-                    tts.setLanguage(Locale.KOREAN);
-                }
-            }
-        });
+//        // TTS를 생성하고 OnInitListener로 초기화 한다.
+//        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+//            @Override
+//            public void onInit(int status) {
+//                if (status != ERROR) {
+//                    // 언어를 선택한다.
+//                    tts.setLanguage(Locale.KOREAN);
+//                }
+//            }
+//        });
 
         end_point_showdata = false;
 
 //        initData();
         mTextDataItems = new ArrayList<>();
         mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
-        tts.speak(mTextDataItems.get(0).toString(), TextToSpeech.QUEUE_FLUSH, null);
+        System.out.println("잉리ㅡ이ㅡㄹ니으리느이릉ㄹ");
+        speakOut();
+        System.out.println("잉리ㅡ이ㅡㄹㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀ");
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -101,6 +106,69 @@ public class ShowDataActivity extends AppCompatActivity {
 
 
 
+    }
+
+//    private void speak(String text) {
+//        tts = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+//            @Override
+//            public void onInit(int status) {
+//                if (status != ERROR){
+//                    int result = tts.setLanguage(Locale.KOREA); // 언어 선택
+//                    if(result == TextToSpeech.LANG_NOT_SUPPORTED || result == TextToSpeech.LANG_MISSING_DATA){
+//                        Log.e("TTS", "This Language is not supported");
+//                    }else{
+//                        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+//                    }
+//                }else{
+//                    Log.e("TTS", "Initialization Failed!");
+//                }
+//            }
+//        });
+//    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void speakOut(){
+        CharSequence text = "안녕하세요. 무엇을 도와드릴까요?";
+        tts.setPitch((float)1); // 음성 톤 높이 지정
+        tts.setSpeechRate((float)1); // 음성 속도 지정
+
+        // 첫 번째 매개변수: 음성 출력을 할 텍스트
+        // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
+        //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id1");
+        System.out.println("실행되는중2");
+    }
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void speakOut2(String data){
+        CharSequence text = data;
+        tts.setPitch((float)1); // 음성 톤 높이 지정
+        tts.setSpeechRate((float)1); // 음성 속도 지정
+
+        // 첫 번째 매개변수: 음성 출력을 할 텍스트
+        // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
+        //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id2");
+        System.out.println("실행되는중3");
+    }
+
+
+
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onInit(int status) { // OnInitListener를 통해서 TTS 초기화
+        if(status == TextToSpeech.SUCCESS){
+            int result = tts.setLanguage(Locale.KOREA); // TTS언어 한국어로 설정
+
+            if(result == TextToSpeech.LANG_NOT_SUPPORTED || result == TextToSpeech.LANG_MISSING_DATA){
+                Log.e("TTS", "This Language is not supported");
+            }else{
+                System.out.println("실행되는중");
+                speakOut();
+            }
+        }else{
+            Log.e("TTS", "Initialization Failed!");
+        }
     }
 
     private void initData() {
@@ -218,8 +286,8 @@ public class ShowDataActivity extends AppCompatActivity {
                 }
                 System.out.println(mTextDataItems);
                 mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
+                speakOut2(ai_msg);
                 mTextDataAdapter.setFriendList(mTextDataItems);
-                tts.speak(mTextDataItems.get(mTextDataItems.size() - 1).toString(), TextToSpeech.QUEUE_FLUSH, null);
                 System.out.println("실행");
                 break;
 
@@ -270,7 +338,6 @@ public class ShowDataActivity extends AppCompatActivity {
         if (tts != null) {
             tts.stop();
             tts.shutdown();
-            tts = null;
         }
     }
 }
