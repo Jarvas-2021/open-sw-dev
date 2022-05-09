@@ -52,6 +52,7 @@ import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
+import com.jarvas.mappyapp.utils.CurrentPlace;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
 import com.jarvas.mappyapp.utils.Util;
@@ -73,6 +74,8 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, MapView.MapViewEventListener, MapView.POIItemEventListener, MapView.OpenAPIKeyAuthenticationResultListener,MapView.CurrentLocationEventListener {
     final static String TAG = "MapTAG";
+
+    public static String currentLocation;
 
     private FloatingActionButton action_mic;
 
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ArrayList<Document> documentArrayList = new ArrayList<>(); //지역명 검색 결과 리스트
     MapPOIItem searchMarker = new MapPOIItem();
+    public static CurrentPlace currentPlace = new CurrentPlace();
 
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
@@ -411,6 +415,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     @Override
                                     public void run() {
                                         System.out.println("으아아아앙들어왔어쓰레드");
+                                        currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                                        currentPlace.setCurrentLocation(currentLocation);
                                         BusProvider.getInstance().post(documentArrayList.get(0));
                                     }
                                 },3000);
@@ -470,7 +476,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.fab_input:
-                String currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                currentPlace.setCurrentLocation(currentLocation);
                 System.out.println("currentLocation : "+currentLocation);
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 intent.putExtra("currentLocation",currentLocation);
@@ -732,6 +739,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!isTrackingMode) {
             mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
         }
+
+        currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+        currentPlace.setCurrentLocation(currentLocation);
+        System.out.println("currentLocation : "+currentLocation);
     }
 
     @Override

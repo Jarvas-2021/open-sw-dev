@@ -32,6 +32,11 @@ public class rec_thread_showdata extends Thread {
         while (!((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
             System.out.println("showdata"+end_point_showdata);
             System.out.println("case 들어옴");
+            try {
+                sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             this.writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
             if (!this.naverRecognizer.getSpeechRecognizer().isRunning()) {
                 System.out.println("음성인식 실행됨");
@@ -51,11 +56,7 @@ public class rec_thread_showdata extends Thread {
                     this.naverRecognizer.getSpeechRecognizer().stop();
                 }
             }
-            try {
-                sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
         }
     }
 }

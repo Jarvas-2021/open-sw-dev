@@ -1,11 +1,18 @@
 package com.jarvas.mappyapp.activities;
 
 import static com.jarvas.mappyapp.Network.Client.client_msg;
+import static com.jarvas.mappyapp.activities.MainActivity.currentLocation;
+import static com.jarvas.mappyapp.activities.MainActivity.currentPlace;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,6 +31,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,6 +48,7 @@ import com.jarvas.mappyapp.models.category_search.Document;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
 import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.ContextStorage;
+import com.jarvas.mappyapp.utils.CurrentPlace;
 import com.jarvas.mappyapp.utils.IntentKey;
 import com.jarvas.mappyapp.utils.StringResource;
 import com.jarvas.mappyapp.utils.Util;
@@ -87,8 +96,6 @@ public class InputActivity extends Activity {
 
     String startTimeText;
     String destinationTimeText;
-
-    String currentLocation;
 
     String searchAddressText;
 
@@ -160,7 +167,16 @@ public class InputActivity extends Activity {
             //searchEdit1.setText(currentLocation); //현재값
             if (Util.isStringEmpty(intentStartPlace)) {
                 System.out.println("여기실행1");
+//                Location loc_current;
+//                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//
+//                loc_current = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//                double cur_lat = loc_current.getLatitude();
+//                double cur_lon = loc_current.getLongitude();
+//                currentLocation = Util.getCompleteAddressString(getApplicationContext(),cur_lat,cur_lon).replace("\n","");
+                currentLocation = currentPlace.getCurrentLocation();
                 searchEdit1.setText(currentLocation);
+                System.out.println(currentLocation);
                 startAddressText = currentLocation;
             }
             else {
@@ -197,6 +213,7 @@ public class InputActivity extends Activity {
 
 
     }
+
 
     public String convertDataFormat(String d) {
         System.out.println("data1"+d);
