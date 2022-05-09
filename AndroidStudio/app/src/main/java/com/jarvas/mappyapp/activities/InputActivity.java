@@ -142,9 +142,9 @@ public class InputActivity extends Activity {
         //String intentDestinationPlace = intent.getStringExtra("arrive_place_scene");
         //String intentStartTime = intent.getStringExtra("start_time_scene");
         //String intentDestinationTime = intent.getStringExtra("arrive_time_scene");
-        intentStartPlace = "";
-        intentDestinationPlace = "";
-        intentStartTime = "";
+        intentStartPlace = "부평역";
+        intentDestinationPlace = "안양천";
+        intentStartTime = "5시30분";
         intentDestinationTime = "";
 //intent.getStringExtra("arrive_place_scene").length()!=0 ||
 
@@ -153,11 +153,18 @@ public class InputActivity extends Activity {
         // if intentDestTime이 들어오면 checkTime=2로 하고 resultTime에 값넣어주기
 
         // intentDestinationPlace가 ""아니면 으로 바꾸기
-        if (intentDestinationPlace == "안양천") {
+        // 도착지만 받아올때
+        if (!Util.isStringEmpty(intentDestinationPlace)) {
             // 검색 텍스처 Listener
             // if intentStartPlace가 ""이면 current SetText추가
             //searchEdit1.setText(currentLocation); //현재값
-            searchEdit1.setText(intentStartPlace);
+            if (Util.isStringEmpty(intentStartPlace)) {
+                searchEdit1.setText(currentLocation);
+            }
+            else {
+                searchEdit1.setText(intentStartPlace);
+            }
+            System.out.println("실행으으아ㅡ아ㅡ아으ㅏ으ㅏㅡ아으");
             recyclerView1.setVisibility(View.GONE);
             searchEdit2.setText(intentDestinationPlace);
             recyclerView2.setVisibility(View.GONE);
@@ -418,9 +425,9 @@ public class InputActivity extends Activity {
                             }
                             if (!Util.isStringEmpty(intentDestinationPlace)) {
                                 System.out.println("intentdestif"+destinationAddressText);
-                                if (intentStartTime == "1시30분") {
+                                if (!Util.isStringEmpty(intentStartTime)) {
                                     checkTime=1;
-                                } else if (intentDestinationTime == "3시30분") {
+                                } else if (!Util.isStringEmpty(intentDestinationTime)) {
                                     checkTime=2;
                                 }
                                 System.out.println("idfsdfsdf"+checkTime);

@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -103,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECORD_AUDIO};
 
+    String intentSearchPlace;
+
     Intent sttIntent;
 //    SpeechRecognizer mRecognizer;
     TextToSpeech tts;
@@ -110,6 +113,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     EditText txtSystem;
     EditText txtInMsg;
     Context cThis;
+
+    Boolean currentCheck = false;
     final int PERMISSION = 1;
     public static Boolean trigger = false;
 
@@ -124,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
 
+
         setStt();
         startWithTD();
 
@@ -132,6 +138,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStart() {
         initView();
+        intentSearchPlace="";
+        Intent intent = getIntent();
+        //intentStartPlace = intent.getStringExtra("search_place_scene");
+        intentSearchPlace = "인천대학교 송도캠퍼스";
+        if (!Util.isStringEmpty(intentSearchPlace)) {
+            System.out.println("실행으으아ㅡ아ㅡ아으ㅏ으ㅏㅡ아으");
+            mSearchEdit.setText(intentSearchPlace);
+            recyclerView.setVisibility(View.GONE);
+        }
         super.onStart();
     }
 
@@ -312,6 +327,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fab_input = findViewById(R.id.fab_input);
         action_mic = findViewById(R.id.Action_Mic);
 
+
+
         //stopTrackingFab = findViewById(R.id.fab_stop_tracking);
         mLoaderLayout = findViewById(R.id.loaderLayout);
         mMapView = new MapView(this);
@@ -351,6 +368,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //setCurrentLocationTrackingMode (지도랑 현재위치 좌표 찍어주고 따라다닌다.)
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading);
         mLoaderLayout.setVisibility(View.VISIBLE);
+        currentCheck=true;
 
 
         // editText 검색 텍스처이벤트
@@ -381,6 +399,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 locationAdapter.notifyDataSetChanged();
                             } else {
                                 Log.e("test", response.message());
+                            }
+                            // 첫번째걸로 선택해줌
+                            if (documentArrayList.size()!=0) {
+                                mSearchAddress = documentArrayList.get(0).getAddressName();
+                                System.out.println("search result" + documentArrayList.get(0).getAddressName());
+
+
+                                Handler mHandler = new Handler();
+                                mHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("으아아아앙들어왔어쓰레드");
+                                        BusProvider.getInstance().post(documentArrayList.get(0));
+                                    }
+                                },3000);
                             }
                         }
 
