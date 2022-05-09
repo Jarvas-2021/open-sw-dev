@@ -213,7 +213,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] rs = new String[mResult.size()];
             if (checkTriggerWord(mResult)) trigger = true;
             if (trigger == true) {
-//                mRecognizer.destroy();
+                mRecognizer.destroy();
+
 
                 Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
                 startActivity(intent_show);
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             System.out.println("trigger "+trigger);
             //System.out.println(rs[0]+"\r\n"+txtInMsg.getText()+trigger+"stt result");
             txtInMsg.setText(rs[0]+"\r\n"+txtInMsg.getText()+trigger);
-//            mRecognizer.startListening(sttIntent);
+            mRecognizer.startListening(sttIntent);
 
         }
 
