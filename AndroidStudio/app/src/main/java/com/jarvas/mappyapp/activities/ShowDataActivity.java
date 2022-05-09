@@ -1,5 +1,6 @@
 package com.jarvas.mappyapp.activities;
 
+import static android.net.wifi.p2p.WifiP2pManager.ERROR;
 import static com.jarvas.mappyapp.Network.Client.client_msg;
 
 import android.app.Activity;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,8 +33,10 @@ import com.naver.speech.clientapi.SpeechRecognitionResult;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ShowDataActivity extends AppCompatActivity {
+    private TextToSpeech tts;
 
     // Naver CSR Variable
     private static final String NAVER_TAG = ShowDataActivity.class.getSimpleName();
@@ -57,11 +61,23 @@ public class ShowDataActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_data);
 
+        // TTS를 생성하고 OnInitListener로 초기화 한다.
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != ERROR) {
+                    // 언어를 선택한다.
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
+
         end_point_showdata = false;
 
 //        initData();
         mTextDataItems = new ArrayList<>();
         mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
+        tts.speak(mTextDataItems.get(0).toString(), TextToSpeech.QUEUE_FLUSH, null);
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
@@ -82,6 +98,8 @@ public class ShowDataActivity extends AppCompatActivity {
         rec_thread_showdata.start();
 
         mTextDataAdapter.setFriendList(mTextDataItems);
+
+
 
     }
 
@@ -201,6 +219,7 @@ public class ShowDataActivity extends AppCompatActivity {
                 System.out.println(mTextDataItems);
                 mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
                 mTextDataAdapter.setFriendList(mTextDataItems);
+                tts.speak(mTextDataItems.get(mTextDataItems.size() - 1).toString(), TextToSpeech.QUEUE_FLUSH, null);
                 System.out.println("실행");
                 break;
 
@@ -242,5 +261,16 @@ public class ShowDataActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // TTS 객체가 남아있다면 실행을 중지하고 메모리에서 제거한다.
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+        }
     }
 }
