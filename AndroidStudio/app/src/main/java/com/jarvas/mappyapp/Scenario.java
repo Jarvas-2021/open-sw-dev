@@ -17,6 +17,7 @@ public class Scenario {
     static public String start_place_scene = "";
     static public String arrive_place_scene = "";
     static public String what_time = "";
+    static public String place_search = "";
 
     /*
      * error code numbers
@@ -34,7 +35,7 @@ public class Scenario {
     Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:LC>");
 
     public int check_scene() {
-        if (arrive_place_scene.equals("")){
+        if (arrive_place_scene.equals("") && place_search.equals("")){
             return 2;
         }
         if (arrive_time_scene.equals("") && start_time_scene.equals("")){
@@ -142,10 +143,6 @@ public class Scenario {
 
         }
 
-        // 장소 검색
-        if (msg.contains("어디") || msg.contains("어디야")) {
-
-        }
         // 출발도착
         if (what_time != "") {
             if (msg.contains("출발") || msg.contains("출발 시간") || msg.contains("출발시간")) {
@@ -186,6 +183,8 @@ public class Scenario {
         int startTimeCount = 0;
         int arriveTimeCount = 0;
         int whatTimeCount = 0;
+
+        int placeSearchCount = 0;
 
 
         // input message에 시간이 있는지 확인
@@ -242,6 +241,17 @@ public class Scenario {
         while (place_match_msg.find()){
             placeCount++;
 
+            // 장소 검색
+            if (place_search.equals("")) {
+                if (msg.contains("어디") || msg.contains("어디야")) {
+                    place_search = place_match_msg.group();
+                    convertWord();
+                    placeSearchCount++;
+
+                    System.out.println("place_search = " + place_search);
+                }
+            }
+
             if (arrive_place_scene.equals("")) {
                 try {
                     if (msg.substring(place_match_msg.end(),place_match_msg.end() + 2).equals("까지")
@@ -280,7 +290,7 @@ public class Scenario {
 
             }
 
-            if (startPlaceCount == 0 && arrivePlaceCount == 0 && placeCount == 1) {
+            if (startPlaceCount == 0 && arrivePlaceCount == 0 && placeCount == 1 && placeSearchCount == 0) {
                 arrive_place_scene = place_match_msg.group();
                 return_msg = return_msg + "도착지가 입력되었습니다.";
                 arrivePlaceCount++;
@@ -308,17 +318,17 @@ public class Scenario {
             error_code_scene = 1;
         }
 
-        if (start_place_scene.equals("") & arrive_place_scene.equals("")) {
+        if (start_place_scene.equals("") & arrive_place_scene.equals("") && placeSearchCount == 0) {
             return_msg = return_msg + "장소가 아직 입력되지 않았습니다.";
         }
-        else if (arrive_place_scene.equals("")) {
+        else if (arrive_place_scene.equals("") && placeSearchCount == 0) {
             return_msg = return_msg + "목적지가 아직 입력되지 않았습니다.";
         }
         else if (!arrive_place_scene.equals("") && !start_place_scene.equals("")){
             return_msg = return_msg + "장소는 모두 입력되었습니다.";
         }
 
-        if (!arrive_place_scene.equals("") && whatTimeCount == 0) {
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0) {
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }
@@ -345,6 +355,8 @@ public class Scenario {
 
         arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:TI[>]", "");
         arrive_time_scene = arrive_time_scene.replaceAll("[반]", "30분");
+
+        place_search = place_search.replaceAll("^[<]|:LC[>]", "");
     }
 
 
