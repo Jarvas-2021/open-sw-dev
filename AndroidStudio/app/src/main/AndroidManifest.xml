@@ -31,9 +31,9 @@
         <activity android:name=".activities.StarActivity" />
         <activity android:name=".activities.ShowDataActivity"
             android:theme="@style/Transparent"
-            android:noHistory="true"/>
+            />
         <activity android:name=".activities.MainActivity"
-            android:noHistory="true">
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
