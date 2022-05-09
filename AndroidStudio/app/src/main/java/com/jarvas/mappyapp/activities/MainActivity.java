@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onError(int i) {
             txtSystem.setText("천천히 다시 말해 주세요..........."+"\r\n"+txtSystem.getText());
             System.out.println("onError"+i);
-//            mRecognizer.startListening(sttIntent);
+            mRecognizer.startListening(sttIntent);
         }
 
         @Override
