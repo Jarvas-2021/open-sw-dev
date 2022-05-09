@@ -2,6 +2,7 @@ package com.jarvas.mappyapp;
 
 import android.content.Intent;
 
+import com.jarvas.mappyapp.activities.InputActivity;
 import com.jarvas.mappyapp.activities.SettingActivity;
 import com.jarvas.mappyapp.activities.StarActivity;
 import com.jarvas.mappyapp.utils.ContextStorage;
@@ -145,6 +146,7 @@ public class Scenario {
         // 장소 검색
         if (msg.contains("어디") || msg.contains("어디야")) {
 
+
         }
         // 출발도착
         if (what_time != "") {
@@ -162,7 +164,12 @@ public class Scenario {
         if (searchStart) {
             //긍정의 대답일 경우
             if (msg.equals("네") || msg.equals("그래") || msg.equals("예") || msg.equals("응")) {
-
+                Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
+                intent.putExtra("start_time_scene",start_time_scene);
+                intent.putExtra("arrive_time_scene",arrive_time_scene);
+                intent.putExtra("start_place_scene",start_place_scene);
+                intent.putExtra("arrive_place_scene",arrive_place_scene);
+                ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
             //부정의 대답일 경우
             if (msg.equals("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
