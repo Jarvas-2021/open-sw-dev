@@ -30,6 +30,7 @@ public class Scenario {
 
     public int error_code_scene = -1;
     public boolean searchStart = false;
+    public boolean searchNo = false;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
     Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:TI>");
@@ -169,7 +170,7 @@ public class Scenario {
             }
             //부정의 대답일 경우
             if (msg.equals("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
-
+                searchNo = true;
             }
             searchStart = false;
         }
@@ -334,9 +335,13 @@ public class Scenario {
             return_msg = return_msg + "장소는 모두 입력되었습니다.";
         }
 
-        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0) {
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false) {
             return_msg += "검색을 시작할까요?";
             searchStart = true;
+        }
+        if (searchNo == true) {
+            return_msg += "무엇을 입력하시겠습니까?";
+            searchNo = false;
         }
 
         convertWord();
