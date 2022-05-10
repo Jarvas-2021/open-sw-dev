@@ -31,6 +31,7 @@ public class Scenario {
     public int error_code_scene = -1;
     public boolean searchStart = false;
     public boolean searchNo = false;
+    public boolean whenTime = false;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
     Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:TI>");
@@ -130,6 +131,23 @@ public class Scenario {
 
 
     public String check_auto(String msg) {
+        error_code_scene = -1;
+        Matcher date_match_msg = date_time_check.matcher(msg);
+        Matcher place_match_msg = place_check.matcher(msg);
+
+        String return_msg = "";
+
+        int placeCount = 0;
+        int startPlaceCount = 0;
+        int arrivePlaceCount = 0;
+
+        int timeCount = 0;
+        int startTimeCount = 0;
+        int arriveTimeCount = 0;
+        int whatTimeCount = 0;
+
+        int placeSearchCount = 0;
+
         // 설정창 액티비티로 이동
         if (msg.contains("설정")) {
             Intent intent = new Intent(ContextStorage.getCtx(), SettingActivity.class);
@@ -175,24 +193,31 @@ public class Scenario {
             searchStart = false;
         }
 
+        //오전오후에 대한 답변
+        if (whenTime) {
+            if (msg.contains("오후")) {
+                convertTime();
+                if (!arrive_time_scene.equals("")) {
+                    return_msg = return_msg + "도착시간이 입력되었습니다.";
+                    arriveTimeCount++;
+                }
+                if (!start_time_scene.equals("")) {
+                    return_msg = return_msg + "출발시간이 입력되었습니다.";
+                    startTimeCount++;
+                }
+            } else if (msg.contains("오전")) {
+                if (!arrive_time_scene.equals("")) {
+                    return_msg = return_msg + "도착시간이 입력되었습니다.";
+                    arriveTimeCount++;
+                }
+                if (!start_time_scene.equals("")) {
+                    return_msg = return_msg + "출발시간이 입력되었습니다.";
+                    startTimeCount++;
+                }
 
-        error_code_scene = -1;
-        Matcher date_match_msg = date_time_check.matcher(msg);
-        Matcher place_match_msg = place_check.matcher(msg);
-
-        String return_msg = "";
-
-        int placeCount = 0;
-        int startPlaceCount = 0;
-        int arrivePlaceCount = 0;
-
-        int timeCount = 0;
-        int startTimeCount = 0;
-        int arriveTimeCount = 0;
-        int whatTimeCount = 0;
-
-        int placeSearchCount = 0;
-
+            }
+            whenTime = false;
+        }
 
         // input message에 시간이 있는지 확인
         while (date_match_msg.find()) {
@@ -202,9 +227,20 @@ public class Scenario {
                 try {
                     if (msg.substring(date_match_msg.end(),date_match_msg.end() + 2).equals("까지") ||
                             msg.contains("도착시간") || msg.contains("도착 시간")){
+
                         arrive_time_scene = date_match_msg.group();
-                        return_msg = return_msg + "도착시간이 입력되었습니다.\n";
-                        arriveTimeCount++;
+
+                        if (msg.contains("오후")) {
+                            convertTime();
+                            return_msg = return_msg + "도착시간이 입력되었습니다.";
+                            arriveTimeCount++;
+                        } else if (msg.contains("오전")) {
+                            return_msg = return_msg + "도착시간이 입력되었습니다.";
+                            arriveTimeCount++;
+                        } else {
+                            whenTime = true;
+                            return_msg += "오전인지 오후인지 알려주세요.";
+                        }
 
                         System.out.println("arriveTime: " + arrive_time_scene);
 
@@ -219,9 +255,20 @@ public class Scenario {
                 try {
                     if (msg.substring(date_match_msg.end(), date_match_msg.end() + 2).equals("부터") ||
                             msg.contains("출발시간") || msg.contains("출발 시간")) {
+
                         start_time_scene = date_match_msg.group();
-                        return_msg = return_msg + "출발시간이 입력되었습니다.\n";
-                        startTimeCount++;
+
+                        if (msg.contains("오후")) {
+                            convertTime();
+                            return_msg = return_msg + "출발시간이 입력되었습니다.";
+                            startTimeCount++;
+                        } else if (msg.contains("오전")) {
+                            return_msg = return_msg + "출발시간이 입력되었습니다.";
+                            startTimeCount++;
+                        } else {
+                            whenTime = true;
+                            return_msg += "오전인지 오후인지 알려주세요.";
+                        }
 
                         System.out.println("startTime: " + start_time_scene);
                     }
@@ -320,7 +367,7 @@ public class Scenario {
             System.out.println("count = " + placeCount);
         }
 
-        if (whatTimeCount == 1 && timeCount == 1) {
+        if (whatTimeCount == 1 && timeCount == 1 && whenTime == false) {
             return_msg += "출발시간인지 도착시간인지 알려주세요.\n";
             error_code_scene = 1;
         }
@@ -368,6 +415,32 @@ public class Scenario {
         arrive_time_scene = arrive_time_scene.replaceAll("[반]", "30분");
 
         place_search = place_search.replaceAll("^[<]|:LC[>]", "");
+    }
+
+    public static void convertTime() {
+        start_time_scene = start_time_scene.replaceAll("^[<]|:TI[>]", "");
+        start_time_scene = start_time_scene.replaceAll("[반]", "30분");
+
+        arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:TI[>]", "");
+        arrive_time_scene = arrive_time_scene.replaceAll("[반]", "30분");
+
+        int hour = 12;
+        if (!start_time_scene.equals("") && start_time_scene.contains("시")) {
+            hour += Integer.parseInt(start_time_scene.split("시")[0]);
+            if (hour >= 24) {
+                hour -= 24;
+            }
+            start_time_scene = start_time_scene.replaceAll("[0-9][0-9]시", Integer.toString(hour) + "시");
+        }
+        if (!arrive_time_scene.equals("") && arrive_time_scene.contains("시")) {
+            hour += Integer.parseInt(arrive_time_scene.split("시")[0]);
+            if (hour >= 24) {
+                hour -= 24;
+            }
+            arrive_time_scene = arrive_time_scene.replaceAll("[0-9][0-9]시", hour + "시");
+
+        }
+
     }
 
 
