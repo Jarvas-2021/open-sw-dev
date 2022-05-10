@@ -215,23 +215,19 @@ public class Scenario {
                 convertTime();
                 if (!arrive_time_scene.equals("")) {
                     return_msg = return_msg + "도착시간이 입력되었습니다.";
-                    arriveTimeCount++;
                     whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
                     return_msg = return_msg + "출발시간이 입력되었습니다.";
-                    startTimeCount++;
                     whenTime = false;
                 }
             } else if (msg.contains("오전")) {
                 if (!arrive_time_scene.equals("")) {
                     return_msg = return_msg + "도착시간이 입력되었습니다.";
-                    arriveTimeCount++;
                     whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
                     return_msg = return_msg + "출발시간이 입력되었습니다.";
-                    startTimeCount++;
                     whenTime = false;
                 }
 
