@@ -28,6 +28,7 @@ public class Scenario {
      * 3: 출발 시간, 도착 시간 둘 다 없을 때
      * */
 
+
     public int error_code_scene = -1;
     public boolean searchStart = false;
     public boolean searchNo = false;
@@ -167,18 +168,22 @@ public class Scenario {
         if (what_time != "") {
             if (msg.contains("출발") || msg.contains("출발 시간") || msg.contains("출발시간")) {
                 start_time_scene = what_time;
-                what_time = "";
+                return_msg = return_msg + "출발시간이 입력되었습니다.";
+                startTimeCount++;
             }
             if (msg.contains("도착") || msg.contains("도착 시간") || msg.contains("도착시간")) {
                 arrive_time_scene = what_time;
-                what_time = "";
+                return_msg = return_msg + "도착시간이 입력되었습니다.";
+                arriveTimeCount++;
             }
+            what_time = "";
         }
 
         //검색을 할까요??에 대답
         if (searchStart) {
             //긍정의 대답일 경우
-            if (msg.equals("네") || msg.equals("그래") || msg.equals("예") || msg.equals("응")) {
+            if (msg.equals("네") || msg.equals("그래") || msg.equals("예") || msg.equals("응") || msg.equals("응응")
+                    || msg.equals("엉") || msg.equals("웅") || msg.equals("웅웅") || msg.equals("음")) {
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
                 intent.putExtra("start_time_scene",start_time_scene);
                 intent.putExtra("arrive_time_scene",arrive_time_scene);
