@@ -57,8 +57,9 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
 
     public ContextStorage contextStorage = new ContextStorage();
 
-    Scenario scenario = new Scenario();
     String ai_msg = new String();
+    String currentLocation="";
+    Scenario scenario;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,9 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
 //                }
 //            }
 //        });
+        Intent resultIntent = getIntent();
+        currentLocation = resultIntent.getStringExtra("currentLocation");
+        scenario = new Scenario(currentLocation);
 
         end_point_showdata = false;
 
@@ -296,30 +300,30 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                 contextStorage.setmTextDataItems(strBuf.toString(), 1);
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
-                if (check_all(ai_msg)) {
-                    //ai_msg = ai_msg + " 검색을 마치시겠습니까?";
-                    check_end = true;
-                }
-                if (check_end) {
-                    if (client_msg.equals("네") | client_msg.equals("예")) {
-                        ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
-                    }
-                    else {
-                        check_end = false;
-                    }
-                }
-                if (this.scenario.check_scene() == -1) {
-                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
-                }
-                if (((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
-                    Intent intent = new Intent(getApplicationContext(), InputActivity.class);
-                    intent.putExtra("start_time_scene", this.scenario.start_time_scene);
-                    intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
-                    intent.putExtra("start_place_scene", this.scenario.start_place_scene);
-                    intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
-                    getApplicationContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                    finish();
-                }
+//                if (check_all(ai_msg)) {
+//                    //ai_msg = ai_msg + " 검색을 마치시겠습니까?";
+//                    check_end = true;
+//                }
+//                if (check_end) {
+//                    if (client_msg.equals("네") | client_msg.equals("예")) {
+//                        ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
+//                    }
+//                    else {
+//                        check_end = false;
+//                    }
+//                }
+//                if (this.scenario.check_scene() == -1) {
+//                    ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
+//                }
+//                if (((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
+//                    Intent intent = new Intent(getApplicationContext(), InputActivity.class);
+//                    intent.putExtra("start_time_scene", this.scenario.start_time_scene);
+//                    intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
+//                    intent.putExtra("start_place_scene", this.scenario.start_place_scene);
+//                    intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
+//                    getApplicationContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+//                    finish();
+//                }
                 System.out.println();
                 System.out.println("여기다여기다여기"+ai_msg);
                 System.out.println("여기여깅겨ㅣㅇ겨ㅣ"+contextStorage.getmTextDataItems());

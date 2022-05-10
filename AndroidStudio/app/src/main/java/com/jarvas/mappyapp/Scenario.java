@@ -41,9 +41,15 @@ public class Scenario {
     public int startTimeCount = 0;
     public int arriveTimeCount = 0;
 
+    public String currentLocation;
+
     Pattern time_check = Pattern.compile("[0-9]+시");
     Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:(TI|DT)>");
     Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:(LC|OG|PS)>");
+
+    public Scenario(String current_location) {
+        currentLocation= current_location;
+    }
 
     public int check_scene() {
         if (arrive_place_scene.equals("") && place_search.equals("")){
@@ -155,11 +161,13 @@ public class Scenario {
 
         // 설정창 액티비티로 이동
         if (msg.contains("설정")) {
+            ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
             Intent intent = new Intent(ContextStorage.getCtx(), SettingActivity.class);
             ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
         // 즐겨찾기 액티비티로 이동
         if (msg.contains("즐겨") || msg.contains("즐겨찾기")) {
+            ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
             Intent intent = new Intent(ContextStorage.getCtx(), StarActivity.class);
             ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
@@ -197,10 +205,14 @@ public class Scenario {
             //긍정의 대답일 경우
             if (msg.contains("네") || msg.contains("그래") || msg.contains("예") || msg.contains("응")
                     || msg.contains("엉") || msg.contains("웅") || msg.contains("웅웅") || msg.contains("음") || msg.contains("어")) {
+                ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
                 return_msg += "검색을 시작하겠습니다.";
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
                 intent.putExtra("start_time_scene",start_time_scene);
                 intent.putExtra("arrive_time_scene",arrive_time_scene);
+                if (start_place_scene.equals("")) {
+                    start_place_scene = currentLocation;
+                }
                 intent.putExtra("start_place_scene",start_place_scene);
                 intent.putExtra("arrive_place_scene",arrive_place_scene);
                 ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

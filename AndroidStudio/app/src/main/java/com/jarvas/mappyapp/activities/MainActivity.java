@@ -144,15 +144,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
         Handler mHandler = new Handler();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("으아아아앙들어왔쓰레드");
-                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
-                currentPlace.setCurrentLocation(currentLocation);
-
-            }
-        },5000);
 
         intentSearchPlace="";
         Intent intent = getIntent();
@@ -247,8 +238,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mRecognizer.destroy();
 
 
-                Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
-                startActivity(intent_show);
+                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                currentPlace.setCurrentLocation(currentLocation);
+                System.out.println("currentLocation : "+currentLocation);
+                Intent show_intent = new Intent(getApplicationContext(), ShowDataActivity.class);
+                show_intent.putExtra("currentLocation",currentLocation);
+                startActivity(show_intent);
+
             }
             mResult.toArray(rs);
             System.out.println("trigger "+trigger);
@@ -501,8 +497,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //tts.stop();
                 //tts.shutdown();
                 mRecognizer.destroy();
-                Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
-                startActivity(intent_show);
+                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                currentPlace.setCurrentLocation(currentLocation);
+                System.out.println("currentLocation : "+currentLocation);
+                Intent show_intent = new Intent(getApplicationContext(), ShowDataActivity.class);
+                show_intent.putExtra("currentLocation",currentLocation);
+//                Intent intent_show = new Intent(getApplicationContext(), ShowDataActivity.class);
+                startActivity(show_intent);
                 break;
 
             case R.id.sttStart:

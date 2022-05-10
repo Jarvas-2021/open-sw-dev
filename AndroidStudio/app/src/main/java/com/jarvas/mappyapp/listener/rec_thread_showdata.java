@@ -35,7 +35,7 @@ public class rec_thread_showdata extends Thread {
             while (!contextStorage.getCheckTTS()) {
                 System.out.println("true될때까지 기다림");
                 try {
-                    sleep(1000);
+                    sleep(4000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
