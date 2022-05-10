@@ -165,6 +165,10 @@ public class Scenario {
 
         }
 
+        if (msg != "" || msg.isEmpty()) {
+            msg += "  ";
+        }
+
         // 출발도착
         if (what_time != "") {
             if (msg.contains("출발") || msg.contains("출발 시간") || msg.contains("출발시간")) {
@@ -188,8 +192,8 @@ public class Scenario {
         //검색을 할까요??에 대답
         if (searchStart) {
             //긍정의 대답일 경우
-            if (msg.equals("네") || msg.contains("그래") || msg.equals("예") || msg.contains("응")
-                    || msg.equals("엉") || msg.equals("웅") || msg.equals("웅웅") || msg.equals("음") || msg.contains("어")) {
+            if (msg.contains("네") || msg.contains("그래") || msg.contains("예") || msg.contains("응")
+                    || msg.contains("엉") || msg.contains("웅") || msg.contains("웅웅") || msg.contains("음") || msg.contains("어")) {
                 return_msg += "검색을 시작하겠습니다.";
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
                 intent.putExtra("start_time_scene",start_time_scene);
@@ -199,7 +203,7 @@ public class Scenario {
                 ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
             //부정의 대답일 경우
-            else if (msg.equals("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
+            else if (msg.contains("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
                 searchNo = true;
                 searchStart = false;
             } else {
