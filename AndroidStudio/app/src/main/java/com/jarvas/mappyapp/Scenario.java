@@ -165,7 +165,7 @@ public class Scenario {
 
         }
 
-        if (msg != "" || !msg.isEmpty()) {
+        if (msg != "" && !msg.isEmpty()) {
             msg += "  ";
         }
 
@@ -205,8 +205,6 @@ public class Scenario {
             //부정의 대답일 경우
             else if (msg.contains("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
                 searchNo = true;
-                searchStart = false;
-            } else {
                 searchStart = false;
             }
         }
@@ -406,7 +404,6 @@ public class Scenario {
         }
 
         if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false && msg != "" && !Util.isStringEmpty(msg)) {
-
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }
