@@ -27,6 +27,7 @@ public class Scenario {
      * 1: TI 정보가 하나만 있을 때. 출발 시간인지 도착시간인지 모름
      * 2: 도착지를 입력 안 했을 때
      * 3: 출발 시간, 도착 시간 둘 다 없을 때
+     * 4: 오전, 오후인지 모를 때
      * */
 
 
@@ -51,7 +52,9 @@ public class Scenario {
         if (arrive_time_scene.equals("") && start_time_scene.equals("")){
             return 3;
         }
-
+        if (whenTime == true) {
+            return 4;
+        }
         if (error_code_scene != -1) {
             return error_code_scene;
         }
