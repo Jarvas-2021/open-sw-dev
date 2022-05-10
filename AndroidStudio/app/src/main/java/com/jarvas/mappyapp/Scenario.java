@@ -36,6 +36,8 @@ public class Scenario {
 
     public int whatTimeCount = 0;
     public int timeCount = 0;
+    public int startTimeCount = 0;
+    public int arriveTimeCount = 0;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
     Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:(TI|DT)>");
@@ -145,9 +147,6 @@ public class Scenario {
         int startPlaceCount = 0;
         int arrivePlaceCount = 0;
 
-        int startTimeCount = 0;
-        int arriveTimeCount = 0;
-
         int placeSearchCount = 0;
 
         // 설정창 액티비티로 이동
@@ -173,6 +172,7 @@ public class Scenario {
                 startTimeCount++;
                 what_time = "";
                 whatTimeCount--;
+                whenTime = true;
             }
             if (msg.contains("도착") || msg.contains("도착 시간") || msg.contains("도착시간")) {
                 arrive_time_scene = what_time;
@@ -180,6 +180,7 @@ public class Scenario {
                 arriveTimeCount++;
                 what_time = "";
                 whatTimeCount--;
+                whenTime = true;
             }
         }
 
@@ -209,23 +210,26 @@ public class Scenario {
                 if (!arrive_time_scene.equals("")) {
                     return_msg = return_msg + "도착시간이 입력되었습니다.";
                     arriveTimeCount++;
+                    whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
                     return_msg = return_msg + "출발시간이 입력되었습니다.";
                     startTimeCount++;
+                    whenTime = false;
                 }
             } else if (msg.contains("오전")) {
                 if (!arrive_time_scene.equals("")) {
                     return_msg = return_msg + "도착시간이 입력되었습니다.";
                     arriveTimeCount++;
+                    whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
                     return_msg = return_msg + "출발시간이 입력되었습니다.";
                     startTimeCount++;
+                    whenTime = false;
                 }
 
             }
-            whenTime = false;
         }
 
         // input message에 시간이 있는지 확인
@@ -248,7 +252,6 @@ public class Scenario {
                             arriveTimeCount++;
                         } else {
                             whenTime = true;
-                            return_msg += "오전인지 오후인지 알려주세요.";
                         }
 
                         System.out.println("arriveTime: " + arrive_time_scene);
@@ -276,7 +279,6 @@ public class Scenario {
                             startTimeCount++;
                         } else {
                             whenTime = true;
-                            return_msg += "오전인지 오후인지 알려주세요.";
                         }
 
                         System.out.println("startTime: " + start_time_scene);
@@ -287,7 +289,7 @@ public class Scenario {
                 }
             }
 
-            if (startTimeCount == 0 && arriveTimeCount == 0 && timeCount == 1) {
+            if (startTimeCount == 0 && arriveTimeCount == 0 && timeCount == 1 && whenTime == false) {
                 what_time = date_match_msg.group();
                 whatTimeCount++;
             }
@@ -376,6 +378,10 @@ public class Scenario {
             System.out.println("count = " + placeCount);
         }
 
+        if (whenTime == true) {
+            return_msg += "오전인지 오후인지 알려주세요.";
+        }
+
         if (whatTimeCount == 1 && timeCount == 1 && whenTime == false) {
             return_msg += "출발시간인지 도착시간인지 알려주세요.\n";
             error_code_scene = 1;
@@ -391,7 +397,7 @@ public class Scenario {
             return_msg = return_msg + "장소는 모두 입력되었습니다.\n";
         }
 
-        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false) {
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false) {
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }
