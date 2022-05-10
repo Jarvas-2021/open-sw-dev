@@ -400,7 +400,7 @@ public class Scenario {
             return_msg = return_msg + "장소는 모두 입력되었습니다.\n";
         }
 
-        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false) {
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false && msg != "") {
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }
