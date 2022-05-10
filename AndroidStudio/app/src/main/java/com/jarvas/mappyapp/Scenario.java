@@ -165,7 +165,7 @@ public class Scenario {
 
         }
 
-        if (msg != "" || !msg.isEmpty()) {
+        if (msg != "" && !msg.isEmpty()) {
             msg += "  ";
         }
 
@@ -206,8 +206,6 @@ public class Scenario {
             else if (msg.contains("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
                 searchNo = true;
                 searchStart = false;
-            } else {
-                searchStart = false;
             }
         }
 
@@ -217,23 +215,19 @@ public class Scenario {
                 convertTime();
                 if (!arrive_time_scene.equals("")) {
                     return_msg = return_msg + "도착시간이 입력되었습니다.";
-                    arriveTimeCount++;
                     whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
                     return_msg = return_msg + "출발시간이 입력되었습니다.";
-                    startTimeCount++;
                     whenTime = false;
                 }
             } else if (msg.contains("오전")) {
                 if (!arrive_time_scene.equals("")) {
                     return_msg = return_msg + "도착시간이 입력되었습니다.";
-                    arriveTimeCount++;
                     whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
                     return_msg = return_msg + "출발시간이 입력되었습니다.";
-                    startTimeCount++;
                     whenTime = false;
                 }
 
@@ -247,7 +241,7 @@ public class Scenario {
             if (arrive_time_scene.equals("")) {
                 try {
                     if (msg.substring(date_match_msg.end(),date_match_msg.end() + 2).equals("까지") ||
-                            msg.contains("도착시간") || msg.contains("도착 시간")){
+                            msg.contains("도착시간") || msg.contains("도착 시간") || msg.contains("도착")){
 
                         arrive_time_scene = date_match_msg.group();
 
@@ -274,7 +268,7 @@ public class Scenario {
             if (start_time_scene.equals("")) {
                 try {
                     if (msg.substring(date_match_msg.end(), date_match_msg.end() + 2).equals("부터") ||
-                            msg.contains("출발시간") || msg.contains("출발 시간")) {
+                            msg.contains("출발시간") || msg.contains("출발 시간") || msg.contains("출발")) {
 
                         start_time_scene = date_match_msg.group();
 
@@ -406,7 +400,6 @@ public class Scenario {
         }
 
         if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false && msg != "" && !Util.isStringEmpty(msg)) {
-
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }
