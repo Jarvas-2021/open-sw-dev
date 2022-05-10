@@ -34,6 +34,9 @@ public class Scenario {
     public boolean searchNo = false;
     public boolean whenTime = false;
 
+    public int whatTimeCount = 0;
+    public int timeCount = 0;
+
     Pattern time_check = Pattern.compile("[0-9]+시");
     Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:(TI|DT)>");
     Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:(LC|OG|PS)>");
@@ -142,10 +145,8 @@ public class Scenario {
         int startPlaceCount = 0;
         int arrivePlaceCount = 0;
 
-        int timeCount = 0;
         int startTimeCount = 0;
         int arriveTimeCount = 0;
-        int whatTimeCount = 0;
 
         int placeSearchCount = 0;
 
@@ -170,13 +171,16 @@ public class Scenario {
                 start_time_scene = what_time;
                 return_msg = return_msg + "출발시간이 입력되었습니다.";
                 startTimeCount++;
+                what_time = "";
+                whatTimeCount--;
             }
             if (msg.contains("도착") || msg.contains("도착 시간") || msg.contains("도착시간")) {
                 arrive_time_scene = what_time;
                 return_msg = return_msg + "도착시간이 입력되었습니다.";
                 arriveTimeCount++;
+                what_time = "";
+                whatTimeCount--;
             }
-            what_time = "";
         }
 
         //검색을 할까요??에 대답
