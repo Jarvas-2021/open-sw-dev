@@ -241,7 +241,7 @@ public class Scenario {
             if (arrive_time_scene.equals("")) {
                 try {
                     if (msg.substring(date_match_msg.end(),date_match_msg.end() + 2).equals("까지") ||
-                            msg.contains("도착시간") || msg.contains("도착 시간")){
+                            msg.contains("도착시간") || msg.contains("도착 시간") || msg.contains("도착")){
 
                         arrive_time_scene = date_match_msg.group();
 
@@ -268,7 +268,7 @@ public class Scenario {
             if (start_time_scene.equals("")) {
                 try {
                     if (msg.substring(date_match_msg.end(), date_match_msg.end() + 2).equals("부터") ||
-                            msg.contains("출발시간") || msg.contains("출발 시간")) {
+                            msg.contains("출발시간") || msg.contains("출발 시간") || msg.contains("출발")) {
 
                         start_time_scene = date_match_msg.group();
 
