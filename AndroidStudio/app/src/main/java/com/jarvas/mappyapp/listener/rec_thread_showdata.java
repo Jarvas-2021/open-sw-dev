@@ -34,14 +34,15 @@ public class rec_thread_showdata extends Thread {
         while (!((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
             while (!contextStorage.getCheckTTS()) {
                 System.out.println("true될때까지 기다림");
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             };
             System.out.println("showdata"+end_point_showdata);
             System.out.println("case 들어옴");
-            try {
-                sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
 
             this.writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
             if (!this.naverRecognizer.getSpeechRecognizer().isRunning()) {
