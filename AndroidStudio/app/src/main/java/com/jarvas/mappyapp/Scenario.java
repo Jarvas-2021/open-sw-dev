@@ -6,6 +6,7 @@ import com.jarvas.mappyapp.activities.InputActivity;
 import com.jarvas.mappyapp.activities.SettingActivity;
 import com.jarvas.mappyapp.activities.StarActivity;
 import com.jarvas.mappyapp.utils.ContextStorage;
+import com.jarvas.mappyapp.utils.Util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -400,7 +401,8 @@ public class Scenario {
             return_msg = return_msg + "장소는 모두 입력되었습니다.\n";
         }
 
-        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false && msg != "" && msg != null) {
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false && !Util.isStringEmpty(msg)) {
+
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }

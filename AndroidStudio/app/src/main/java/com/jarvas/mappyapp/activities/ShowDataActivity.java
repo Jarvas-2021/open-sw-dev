@@ -83,7 +83,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         contextStorage.initialize_textdata();
         contextStorage.setmTextDataItems("안녕하세요. 무엇을 도와드릴까요?", 0);
         System.out.println("잉리ㅡ이ㅡㄹ니으리느이릉ㄹ");
-        speakOut();
+        //speakOut();
         System.out.println("잉리ㅡ이ㅡㄹㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀ");
 
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -166,9 +166,11 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id2");
         //tts 사용x
         while (tts.isSpeaking()) {
+            System.out.println("아직 말하는중임");
         }
+        System.out.println("말 끝남2");
         contextStorage.setCheckTTS(true);
-        System.out.println("실행되는중3");
+        System.out.println("말 끝남2"+contextStorage.getCheckTTS());
     }
 
 
@@ -317,17 +319,22 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                     intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
                     finish();
                 }
+                System.out.println();
+                System.out.println("여기다여기다여기"+ai_msg);
+                System.out.println("여기여깅겨ㅣㅇ겨ㅣ"+contextStorage.getmTextDataItems());
                 contextStorage.setmTextDataItems(ai_msg, 0);
                 mTextDataAdapter.setFriendList(contextStorage.getmTextDataItems());
-                System.out.println(contextStorage.getmTextDataItems().get(contextStorage.getmTextDataItems().size()-1));
-                speakOut2(contextStorage.getmTextDataItems().get(contextStorage.getmTextDataItems().size()-1).getTextData());
-                Handler mHandler = new Handler();
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                },4000);
+                System.out.println("뿌애뿌애우우ㅐ우ㅒㅇㅇ"+contextStorage.getmTextDataItems().get(contextStorage.getmTextDataItems().size()-1).getTextData());
+                System.out.println("뿌뿌뿌뿌"+mTextDataAdapter.getTextItem());
+                System.out.println("뿌뿌뿌뿌22"+ai_msg);
+                speakOut2(ai_msg);
+//                Handler mHandler = new Handler();
+//                mHandler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                },4000);
 
                 System.out.println("실행");
                 break;

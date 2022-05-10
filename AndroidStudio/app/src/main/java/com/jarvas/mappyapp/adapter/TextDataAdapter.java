@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class TextDataAdapter extends RecyclerView.Adapter<TextDataAdapter.ViewHolder> {
     private ArrayList<TextDataItem> mTextList;
     Integer viewType = 1;
+    String text = "";
 
     public TextDataAdapter(ArrayList<TextDataItem> mTextDataItems) {
         mTextList = mTextDataItems;
@@ -62,6 +63,11 @@ public class TextDataAdapter extends RecyclerView.Adapter<TextDataAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getTextView().setText(mTextList.get(position).getTextData());
+        text = mTextList.get(position).getTextData();
+    }
+
+    public String getTextItem() {
+        return text;
     }
 
 

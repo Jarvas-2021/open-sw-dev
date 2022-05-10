@@ -145,12 +145,12 @@ public class InputActivity extends Activity {
         Button dtButton = findViewById(R.id.destinationTimeButton);
 
         Intent intent = getIntent();
-        //intentStartPlace = intent.getStringExtra("start_place_scene");
+        intentStartPlace = intent.getStringExtra("start_place_scene");
         intentDestinationPlace = intent.getStringExtra("arrive_place_scene");
         intentStartTime = intent.getStringExtra("start_time_scene");
         intentDestinationTime = intent.getStringExtra("arrive_time_scene");
-        intentStartPlace = "";
-        intentDestinationPlace = "안양천";
+        //intentStartPlace = "";
+        //intentDestinationPlace = "안양천";
         //intentStartTime = "5시30분";
         //intentDestinationTime = "";
 //intent.getStringExtra("arrive_place_scene").length()!=0 ||
