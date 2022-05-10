@@ -187,8 +187,8 @@ public class Scenario {
         //검색을 할까요??에 대답
         if (searchStart) {
             //긍정의 대답일 경우
-            if (msg.equals("네") || msg.equals("그래") || msg.equals("예") || msg.equals("응") || msg.equals("응응")
-                    || msg.equals("엉") || msg.equals("웅") || msg.equals("웅웅") || msg.equals("음")) {
+            if (msg.equals("네") || msg.contains("그래") || msg.equals("예") || msg.contains("응")
+                    || msg.equals("엉") || msg.equals("웅") || msg.equals("웅웅") || msg.equals("음") || msg.contains("어")) {
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
                 intent.putExtra("start_time_scene",start_time_scene);
                 intent.putExtra("arrive_time_scene",arrive_time_scene);
