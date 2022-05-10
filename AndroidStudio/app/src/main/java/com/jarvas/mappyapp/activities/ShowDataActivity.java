@@ -317,6 +317,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                     intent.putExtra("arrive_time_scene", this.scenario.arrive_time_scene);
                     intent.putExtra("start_place_scene", this.scenario.start_place_scene);
                     intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
+                    getApplicationContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     finish();
                 }
                 System.out.println();
