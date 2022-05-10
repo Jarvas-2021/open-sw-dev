@@ -19,6 +19,7 @@ public class rec_thread_showdata extends Thread {
     boolean isEpdTypeSelected;
     SpeechConfig.EndPointDetectType currentEpdType;
     Context context;
+    ContextStorage contextStorage = new ContextStorage();
 
     public rec_thread_showdata(NaverRecognizer naverRecognizer, String NAVER_TAG, boolean isEpdTypeSelected, Context context) {
         this.naverRecognizer = naverRecognizer;
@@ -31,15 +32,20 @@ public class rec_thread_showdata extends Thread {
     @Override
     public void run() {
         while (!((ContextStorage) ContextStorage.getCtx().getApplicationContext()).isEnd_point_show_data()) {
+            while (!contextStorage.getCheckTTS()) {
+                System.out.println("true될때까지 기다림");
+            };
             System.out.println("showdata"+end_point_showdata);
             System.out.println("case 들어옴");
             try {
-                sleep(5000);
+                sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             this.writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
             if (!this.naverRecognizer.getSpeechRecognizer().isRunning()) {
+                System.out.println("tts 사용x일때만 시작하기");
                 System.out.println("음성인식 실행됨");
                 // Run SpeechRecongizer by calling recognize().
                 currentEpdType = SpeechConfig.EndPointDetectType.HYBRID;

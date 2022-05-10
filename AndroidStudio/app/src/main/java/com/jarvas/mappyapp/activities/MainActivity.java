@@ -152,12 +152,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 currentPlace.setCurrentLocation(currentLocation);
 
             }
-        },3000);
+        },5000);
 
         intentSearchPlace="";
         Intent intent = getIntent();
-        //intentStartPlace = intent.getStringExtra("search_place_scene");
-        intentSearchPlace = "인천대학교 송도캠퍼스";
+        intentSearchPlace = intent.getStringExtra("search_place_scene");
+        //intentSearchPlace = "인천대학교 송도캠퍼스";
         if (!Util.isStringEmpty(intentSearchPlace)) {
             System.out.println("실행으으아ㅡ아ㅡ아으ㅏ으ㅏㅡ아으");
             mSearchEdit.setText(intentSearchPlace);

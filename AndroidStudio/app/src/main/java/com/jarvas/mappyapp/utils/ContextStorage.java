@@ -10,6 +10,8 @@ import java.util.ArrayList;
 public class ContextStorage extends Application {
     public static Context ctx_storage;
     private ArrayList<TextDataItem> mTextDataItems;
+    public static boolean checkTTS;
+
 
     @Override
     public void onCreate() {
@@ -46,5 +48,13 @@ public class ContextStorage extends Application {
         else {
             this.mTextDataItems.add(new TextDataItem(str, Code.ViewType.LEFT_CONTENT));
         }
+    }
+
+    public void setCheckTTS(boolean checkTTS) {
+        this.checkTTS = checkTTS;
+    }
+
+    public boolean getCheckTTS() {
+        return checkTTS;
     }
 }

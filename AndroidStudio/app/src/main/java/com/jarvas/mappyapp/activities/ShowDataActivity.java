@@ -26,9 +26,11 @@ import com.jarvas.mappyapp.listener.NaverRecognizer;
 import com.jarvas.mappyapp.listener.rec_thread_showdata;
 import com.jarvas.mappyapp.models.TextDataItem;
 import com.jarvas.mappyapp.utils.AudioWriterPCM;
+import com.jarvas.mappyapp.utils.BusProvider;
 import com.jarvas.mappyapp.utils.Code;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.StringResource;
+import com.jarvas.mappyapp.utils.Util;
 import com.naver.speech.clientapi.SpeechConfig;
 import com.naver.speech.clientapi.SpeechRecognitionResult;
 
@@ -37,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, TextToSpeech.OnUtteranceCompletedListener {
     private TextToSpeech tts;
 
     // Naver CSR Variable
@@ -57,7 +59,6 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,8 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
 
         ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(false);
 
+
+
         handler = new RecognitionHandler(ShowDataActivity.this);
         naverRecognizer = new NaverRecognizer(ShowDataActivity.this, handler, CLIENT_ID);
 
@@ -131,6 +134,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void speakOut(){
+        contextStorage.setCheckTTS(false);
         CharSequence text = "안녕하세요. 무엇을 도와드릴까요?";
         tts.setPitch((float)1); // 음성 톤 높이 지정
         tts.setSpeechRate((float)1); // 음성 속도 지정
@@ -140,9 +144,18 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id1");
         System.out.println("실행되는중2");
+
+        //tts 사용x
+        while (tts.isSpeaking()) {
+            System.out.println("아직 말하는중임");
+        }
+        System.out.println("말 끝남");
+        contextStorage.setCheckTTS(true);
+        System.out.println("말 끝남"+contextStorage.getCheckTTS());
     }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void speakOut2(String data){
+        contextStorage.setCheckTTS(false);
         CharSequence text = data;
         tts.setPitch((float)1); // 음성 톤 높이 지정
         tts.setSpeechRate((float)1); // 음성 속도 지정
@@ -151,6 +164,10 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
         //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id2");
+        //tts 사용x
+        while (tts.isSpeaking()) {
+        }
+        contextStorage.setCheckTTS(true);
         System.out.println("실행되는중3");
     }
 
@@ -172,6 +189,11 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         }else{
             Log.e("TTS", "Initialization Failed!");
         }
+    }
+
+    @Override
+    public void onUtteranceCompleted(String utteranceId) {
+
     }
 //
 //    private void initData() {
@@ -273,7 +295,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
                 if (check_all(ai_msg)) {
-                    ai_msg = ai_msg + " 검색을 마치시겠습니까?";
+                    //ai_msg = ai_msg + " 검색을 마치시겠습니까?";
                     check_end = true;
                 }
                 if (check_end) {
@@ -295,12 +317,18 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                     intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
                     finish();
                 }
-                System.out.println("dsmfksdfnasjkdnfkjnsdjkfnksjndfjknsdjf");
                 contextStorage.setmTextDataItems(ai_msg, 0);
-                System.out.println("dsmfksdfnasjkdnfkjnsdjkfnksjndfjknsdjf");
-                speakOut2(ai_msg);
                 mTextDataAdapter.setFriendList(contextStorage.getmTextDataItems());
-                System.out.println("dsmfksdfnasjkdnfkjnsdjkfnksjndfjknsdjf");
+                System.out.println(contextStorage.getmTextDataItems().get(contextStorage.getmTextDataItems().size()-1));
+                speakOut2(contextStorage.getmTextDataItems().get(contextStorage.getmTextDataItems().size()-1).getTextData());
+                Handler mHandler = new Handler();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                },4000);
+
                 System.out.println("실행");
                 break;
 

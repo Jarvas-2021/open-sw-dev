@@ -64,6 +64,7 @@ public class TextDataAdapter extends RecyclerView.Adapter<TextDataAdapter.ViewHo
         viewHolder.getTextView().setText(mTextList.get(position).getTextData());
     }
 
+
     public void setFriendList(ArrayList<TextDataItem> list) {
         this.mTextList = list;
         notifyDataSetChanged();
