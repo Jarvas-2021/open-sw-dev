@@ -142,6 +142,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStart() {
         initView();
+
+        Handler mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("으아아아앙들어왔쓰레드");
+                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                currentPlace.setCurrentLocation(currentLocation);
+
+            }
+        },3000);
+
         intentSearchPlace="";
         Intent intent = getIntent();
         //intentStartPlace = intent.getStringExtra("search_place_scene");
@@ -739,10 +751,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!isTrackingMode) {
             mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
         }
-
-        currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
-        currentPlace.setCurrentLocation(currentLocation);
-        System.out.println("currentLocation : "+currentLocation);
     }
 
     @Override

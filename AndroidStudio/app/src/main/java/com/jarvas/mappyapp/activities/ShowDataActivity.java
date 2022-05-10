@@ -48,11 +48,12 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
     private AudioWriterPCM writer;
     private boolean isEpdTypeSelected;
     private SpeechConfig.EndPointDetectType currentEpdType;
-    private ArrayList<TextDataItem> mTextDataItems;
     private TextDataAdapter mTextDataAdapter;
     Toast myToast;
     boolean check_end = false;
     public static boolean end_point_showdata;
+
+    public ContextStorage contextStorage = new ContextStorage();
 
     Scenario scenario = new Scenario();
     String ai_msg = new String();
@@ -78,8 +79,8 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         end_point_showdata = false;
 
 //        initData();
-        mTextDataItems = new ArrayList<>();
-        mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
+        contextStorage.initialize_textdata();
+        contextStorage.setmTextDataItems("안녕하세요. 무엇을 도와드릴까요?", 0);
         System.out.println("잉리ㅡ이ㅡㄹ니으리느이릉ㄹ");
         speakOut();
         System.out.println("잉리ㅡ이ㅡㄹㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀㅇㅀ");
@@ -88,13 +89,15 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(linearLayoutManager);
-        mTextDataAdapter = new TextDataAdapter(mTextDataItems);
-        mRecyclerView.setAdapter(mTextDataAdapter);
+        mTextDataAdapter = new TextDataAdapter(contextStorage.getmTextDataItems());
         /* initiate adapter */
 
         /* initiate recyclerview */
         mRecyclerView.setAdapter(mTextDataAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        System.out.println("mddmddddd으아ㅡ아으ㅏㅡ아ㅡ아으ㅏㅡㅇ");
+
+        ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(false);
 
         handler = new RecognitionHandler(ShowDataActivity.this);
         naverRecognizer = new NaverRecognizer(ShowDataActivity.this, handler, CLIENT_ID);
@@ -102,7 +105,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         rec_thread_showdata rec_thread_showdata = new rec_thread_showdata(naverRecognizer, NAVER_TAG, isEpdTypeSelected, getApplicationContext());
         rec_thread_showdata.start();
 
-        mTextDataAdapter.setFriendList(mTextDataItems);
+        mTextDataAdapter.setFriendList(contextStorage.getmTextDataItems());
 
 
 
@@ -170,20 +173,21 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
             Log.e("TTS", "Initialization Failed!");
         }
     }
+//
+//    private void initData() {
+//        mTextDataItems = new ArrayList<>();
+//        /* adapt data */
+//        mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
+//        mTextDataItems.add(new TextDataItem("인천대입구역까지 얼마나 걸려?", Code.ViewType.RIGHT_CONTENT));
+//        mTextDataItems.add(new TextDataItem("잠시만 기다려주세요. 탐색 중입니다.", Code.ViewType.RIGHT_CONTENT));
+//        mTextDataItems.add(new TextDataItem("약 30분 걸릴 것으로 예상됩니다.", Code.ViewType.RIGHT_CONTENT));
+//        mTextDataItems.add(new TextDataItem("알겠어.", Code.ViewType.LEFT_CONTENT));
+//        System.out.println("items:"+mTextDataItems.get(0).getViewType());
+//        System.out.println(mTextDataItems.get(1).getViewType());
+//        mTextDataAdapter.setFriendList(mTextDataItems);
+//
+//    }
 
-    private void initData() {
-        mTextDataItems = new ArrayList<>();
-        /* adapt data */
-        mTextDataItems.add(new TextDataItem("안녕하세요. 무엇을 도와드릴까요?", Code.ViewType.LEFT_CONTENT));
-        mTextDataItems.add(new TextDataItem("인천대입구역까지 얼마나 걸려?", Code.ViewType.RIGHT_CONTENT));
-        mTextDataItems.add(new TextDataItem("잠시만 기다려주세요. 탐색 중입니다.", Code.ViewType.RIGHT_CONTENT));
-        mTextDataItems.add(new TextDataItem("약 30분 걸릴 것으로 예상됩니다.", Code.ViewType.RIGHT_CONTENT));
-        mTextDataItems.add(new TextDataItem("알겠어.", Code.ViewType.LEFT_CONTENT));
-        System.out.println("items:"+mTextDataItems.get(0).getViewType());
-        System.out.println(mTextDataItems.get(1).getViewType());
-        mTextDataAdapter.setFriendList(mTextDataItems);
-
-    }
 
     static class RecognitionHandler extends Handler {
         private WeakReference<ShowDataActivity> mActivity;
@@ -218,6 +222,12 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        // TTS 객체가 남아있다면 실행을 중지하고 메모리에서 제거한다.
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        System.out.println("시험 : backpressed");
         this.finish();
     }
 
@@ -236,6 +246,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                 writer = new AudioWriterPCM(
                         Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
                 writer.open("Test");
+                Toast.makeText(this, "지금 말하세요", Toast.LENGTH_SHORT).show();
                 break;
 
             case R.id.audioRecording:
@@ -258,7 +269,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                 }
                 System.out.println("showresults:"+results);
                 System.out.println("showstrBuf"+strBuf);
-                mTextDataItems.add(new TextDataItem(strBuf.toString(),Code.ViewType.RIGHT_CONTENT));
+                contextStorage.setmTextDataItems(strBuf.toString(), 1);
                 Log.d("Take MSG", client_msg);
                 ai_msg = this.scenario.check_auto(client_msg);
                 if (check_all(ai_msg)) {
@@ -284,10 +295,12 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                     intent.putExtra("arrive_place_scene", this.scenario.arrive_place_scene);
                     finish();
                 }
-                System.out.println(mTextDataItems);
-                mTextDataItems.add(new TextDataItem(ai_msg, Code.ViewType.LEFT_CONTENT));
+                System.out.println("dsmfksdfnasjkdnfkjnsdjkfnksjndfjknsdjf");
+                contextStorage.setmTextDataItems(ai_msg, 0);
+                System.out.println("dsmfksdfnasjkdnfkjnsdjkfnksjndfjknsdjf");
                 speakOut2(ai_msg);
-                mTextDataAdapter.setFriendList(mTextDataItems);
+                mTextDataAdapter.setFriendList(contextStorage.getmTextDataItems());
+                System.out.println("dsmfksdfnasjkdnfkjnsdjkfnksjndfjknsdjf");
                 System.out.println("실행");
                 break;
 
@@ -339,5 +352,9 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
             tts.stop();
             tts.shutdown();
         }
+        System.out.println("시험 : destroy");
+        ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
     }
+
+
 }
