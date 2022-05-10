@@ -189,6 +189,7 @@ public class Scenario {
             //긍정의 대답일 경우
             if (msg.equals("네") || msg.contains("그래") || msg.equals("예") || msg.contains("응")
                     || msg.equals("엉") || msg.equals("웅") || msg.equals("웅웅") || msg.equals("음") || msg.contains("어")) {
+                return_msg += "검색을 시작하겠습니다.";
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
                 intent.putExtra("start_time_scene",start_time_scene);
                 intent.putExtra("arrive_time_scene",arrive_time_scene);
@@ -197,10 +198,12 @@ public class Scenario {
                 ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
             //부정의 대답일 경우
-            if (msg.equals("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
+            else if (msg.equals("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
                 searchNo = true;
+                searchStart = false;
+            } else {
+                searchStart = false;
             }
-            searchStart = false;
         }
 
         //오전오후에 대한 답변
@@ -397,7 +400,7 @@ public class Scenario {
             return_msg = return_msg + "장소는 모두 입력되었습니다.\n";
         }
 
-        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false) {
+        if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false) {
             return_msg += "검색을 시작할까요?";
             searchStart = true;
         }
