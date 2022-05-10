@@ -430,14 +430,14 @@ public class Scenario {
             if (hour >= 24) {
                 hour -= 24;
             }
-            start_time_scene = start_time_scene.replaceAll("[0-9][0-9]시", Integer.toString(hour) + "시");
+            start_time_scene = start_time_scene.replaceAll("[0-9]+시", Integer.toString(hour) + "시");
         }
         if (!arrive_time_scene.equals("") && arrive_time_scene.contains("시")) {
             hour += Integer.parseInt(arrive_time_scene.split("시")[0]);
             if (hour >= 24) {
                 hour -= 24;
             }
-            arrive_time_scene = arrive_time_scene.replaceAll("[0-9][0-9]시", hour + "시");
+            arrive_time_scene = arrive_time_scene.replaceAll("[0-9]+시", hour + "시");
 
         }
 
