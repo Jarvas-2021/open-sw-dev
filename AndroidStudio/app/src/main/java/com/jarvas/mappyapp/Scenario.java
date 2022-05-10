@@ -34,8 +34,8 @@ public class Scenario {
     public boolean whenTime = false;
 
     Pattern time_check = Pattern.compile("[0-9]+시");
-    Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:TI>");
-    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:LC>");
+    Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:(TI|DT)>");
+    Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:(LC|OG|PS)>");
 
     public int check_scene() {
         if (arrive_place_scene.equals("") && place_search.equals("")){
@@ -404,24 +404,24 @@ public class Scenario {
 
 
     public static void convertWord(){
-        start_place_scene = start_place_scene.replaceAll("^[<]|:LC[>]", "");
+        start_place_scene = start_place_scene.replaceAll("^[<]|:(LC|OG|PS)[>]", "");
 
-        arrive_place_scene = arrive_place_scene.replaceAll("^[<]|:LC[>]", "");
+        arrive_place_scene = arrive_place_scene.replaceAll("^[<]|:(LC|OG|PS)[>]", "");
 
-        start_time_scene = start_time_scene.replaceAll("^[<]|:TI[>]", "");
+        start_time_scene = start_time_scene.replaceAll("^[<]|:(TI|DT)[>]", "");
         start_time_scene = start_time_scene.replaceAll("[반]", "30분");
 
-        arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:TI[>]", "");
+        arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:(TI|DT)[>]", "");
         arrive_time_scene = arrive_time_scene.replaceAll("[반]", "30분");
 
-        place_search = place_search.replaceAll("^[<]|:LC[>]", "");
+        place_search = place_search.replaceAll("^[<]|:(LC|OG|PS)[>]", "");
     }
 
     public static void convertTime() {
-        start_time_scene = start_time_scene.replaceAll("^[<]|:TI[>]", "");
+        start_time_scene = start_time_scene.replaceAll("^[<]|:(TI|DT)[>]", "");
         start_time_scene = start_time_scene.replaceAll("[반]", "30분");
 
-        arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:TI[>]", "");
+        arrive_time_scene = arrive_time_scene.replaceAll("^[<]|:(TI|DT)[>]", "");
         arrive_time_scene = arrive_time_scene.replaceAll("[반]", "30분");
 
         int hour = 12;
