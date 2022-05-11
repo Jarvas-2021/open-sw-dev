@@ -341,6 +341,7 @@ public class Scenario {
                     placeSearchCount++;
 
                     System.out.println("place_search = " + place_search);
+                    break;
                 }
             }
 
@@ -403,6 +404,11 @@ public class Scenario {
             }
 
             System.out.println("count = " + placeCount);
+        }
+
+        //장소 검색 시작 부분
+        if (placeSearchCount == 1) {
+            return_msg += "장소 검색을 시작하겠습니다.";
         }
 
         if (whenTime == true) {
