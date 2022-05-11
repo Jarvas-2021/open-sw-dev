@@ -184,17 +184,47 @@ public class Scenario {
             msg += "  ";
         }
 
+        //오전오후에 대한 답변
+        if (whenTime) {
+            //긍정의 경우 오전에 넣기
+            if (msg.contains("네") || msg.contains("그래") || msg.contains("예") || msg.contains("응")
+                    || msg.contains("엉") || msg.contains("웅") || msg.contains("웅웅")
+                    || msg.contains("맞아") || msg.contains("어") || msg.contains("오전")) {
+                if (!arrive_time_scene.equals("")) {
+                    //return_msg = return_msg + "도착시간이 입력되었습니다.";
+                    whenTime = false;
+                }
+                if (!start_time_scene.equals("")) {
+                    //return_msg = return_msg + "출발시간이 입력되었습니다.";
+                    whenTime = false;
+                }
+            } else if (msg.contains("아니") || msg.contains("노") || msg.contains("오후")) {
+                convertTime();
+                if (!arrive_time_scene.equals("")) {
+                    //return_msg = return_msg + "도착시간이 입력되었습니다.";
+                    whenTime = false;
+                }
+                if (!start_time_scene.equals("")) {
+                    //return_msg = return_msg + "출발시간이 입력되었습니다.";
+                    whenTime = false;
+                }
+            }
+        }
+
         // 출발도착
         if (what_time != "") {
-            if (msg.contains("출발") || msg.contains("출발 시간") || msg.contains("출발시간")) {
+            if (msg.contains("출발") || msg.contains("출발 시간") || msg.contains("출발시간")
+                    || msg.contains("네") || msg.contains("그래") || msg.contains("예")
+                    || msg.contains("응") || msg.contains("엉") || msg.contains("웅")
+                    || msg.contains("웅웅") || msg.contains("맞아") || msg.contains("어")) {
                 start_time_scene = what_time;
                 //return_msg = return_msg + "출발시간이 입력되었습니다.";
                 startTimeCount++;
                 what_time = "";
                 whatTimeCount--;
                 whenTime = true;
-            }
-            if (msg.contains("도착") || msg.contains("도착 시간") || msg.contains("도착시간")) {
+            }else if (msg.contains("도착") || msg.contains("도착 시간") || msg.contains("도착시간")
+            || msg.contains("아니") || msg.contains("노")) {
                 arrive_time_scene = what_time;
                 //return_msg = return_msg + "도착시간이 입력되었습니다.";
                 arriveTimeCount++;
@@ -226,31 +256,6 @@ public class Scenario {
             else if (msg.contains("아니") || msg.contains("아직") || msg.contains("잠시만") || msg.contains("잠시")) {
                 searchNo = true;
                 searchStart = false;
-            }
-        }
-
-        //오전오후에 대한 답변
-        if (whenTime) {
-            if (msg.contains("오후")) {
-                convertTime();
-                if (!arrive_time_scene.equals("")) {
-                    //return_msg = return_msg + "도착시간이 입력되었습니다.";
-                    whenTime = false;
-                }
-                if (!start_time_scene.equals("")) {
-                    //return_msg = return_msg + "출발시간이 입력되었습니다.";
-                    whenTime = false;
-                }
-            } else if (msg.contains("오전")) {
-                if (!arrive_time_scene.equals("")) {
-                    //return_msg = return_msg + "도착시간이 입력되었습니다.";
-                    whenTime = false;
-                }
-                if (!start_time_scene.equals("")) {
-                    //return_msg = return_msg + "출발시간이 입력되었습니다.";
-                    whenTime = false;
-                }
-
             }
         }
 
