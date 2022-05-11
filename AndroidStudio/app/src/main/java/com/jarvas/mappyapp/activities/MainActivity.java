@@ -144,6 +144,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
 
         Handler mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("으아아아앙들어왔쓰레드");
+                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+                currentPlace.setCurrentLocation(currentLocation);
+
+            }
+        },7000);
 
         intentSearchPlace="";
         Intent intent = getIntent();
@@ -423,8 +432,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     @Override
                                     public void run() {
                                         System.out.println("으아아아앙들어왔어쓰레드");
-                                        currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
-                                        currentPlace.setCurrentLocation(currentLocation);
                                         BusProvider.getInstance().post(documentArrayList.get(0));
                                     }
                                 },3000);

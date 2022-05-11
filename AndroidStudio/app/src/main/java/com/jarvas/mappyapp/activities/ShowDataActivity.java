@@ -77,9 +77,9 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
 //                }
 //            }
 //        });
-        Intent resultIntent = getIntent();
-        currentLocation = resultIntent.getStringExtra("currentLocation");
-        scenario = new Scenario(currentLocation);
+        //Intent resultIntent = getIntent();
+        //currentLocation = resultIntent.getStringExtra("currentLocation");
+        scenario = new Scenario();
 
         end_point_showdata = false;
 

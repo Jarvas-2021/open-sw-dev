@@ -46,10 +46,11 @@ public class Scenario {
     Pattern time_check = Pattern.compile("[0-9]+시");
     Pattern date_time_check = Pattern.compile("<[\\s[^\\s]]*:(TI|DT)>");
     Pattern place_check = Pattern.compile("<[[가-힣][a-zA-Z][0-9][\\s]]*:(LC|OG|PS)>");
-
-    public Scenario(String current_location) {
-        currentLocation= current_location;
-    }
+//
+//    public Scenario(String current_location) {
+//        currentLocation= current_location;
+//        System.out.println(currentLocation+"scenario");
+//    }
 
     public int check_scene() {
         if (arrive_place_scene.equals("") && place_search.equals("")){
@@ -210,9 +211,10 @@ public class Scenario {
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
                 intent.putExtra("start_time_scene",start_time_scene);
                 intent.putExtra("arrive_time_scene",arrive_time_scene);
-                if (start_place_scene.equals("")) {
-                    start_place_scene = currentLocation;
-                }
+//                if (Util.isStringEmpty(start_place_scene)) {
+//                    System.out.println(currentLocation+"scenario if");
+//                    //start_place_scene = currentLocation;
+//                }
                 intent.putExtra("start_place_scene",start_place_scene);
                 intent.putExtra("arrive_place_scene",arrive_place_scene);
                 ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
