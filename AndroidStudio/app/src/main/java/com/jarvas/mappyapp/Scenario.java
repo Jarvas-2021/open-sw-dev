@@ -3,6 +3,7 @@ package com.jarvas.mappyapp;
 import android.content.Intent;
 
 import com.jarvas.mappyapp.activities.InputActivity;
+import com.jarvas.mappyapp.activities.MainActivity;
 import com.jarvas.mappyapp.activities.SettingActivity;
 import com.jarvas.mappyapp.activities.StarActivity;
 import com.jarvas.mappyapp.utils.ContextStorage;
@@ -174,7 +175,9 @@ public class Scenario {
         }
         // 현재위치 찾기
         if (msg.contains("현재") || msg.contains("위치")) {
-
+            ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
+            Intent intent = new Intent(ContextStorage.getCtx(), MainActivity.class);
+            ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
         }
 
         if (msg != "" && !msg.isEmpty()) {
@@ -185,7 +188,7 @@ public class Scenario {
         if (what_time != "") {
             if (msg.contains("출발") || msg.contains("출발 시간") || msg.contains("출발시간")) {
                 start_time_scene = what_time;
-                return_msg = return_msg + "출발시간이 입력되었습니다.";
+                //return_msg = return_msg + "출발시간이 입력되었습니다.";
                 startTimeCount++;
                 what_time = "";
                 whatTimeCount--;
@@ -193,7 +196,7 @@ public class Scenario {
             }
             if (msg.contains("도착") || msg.contains("도착 시간") || msg.contains("도착시간")) {
                 arrive_time_scene = what_time;
-                return_msg = return_msg + "도착시간이 입력되었습니다.";
+                //return_msg = return_msg + "도착시간이 입력되었습니다.";
                 arriveTimeCount++;
                 what_time = "";
                 whatTimeCount--;
@@ -231,20 +234,20 @@ public class Scenario {
             if (msg.contains("오후")) {
                 convertTime();
                 if (!arrive_time_scene.equals("")) {
-                    return_msg = return_msg + "도착시간이 입력되었습니다.";
+                    //return_msg = return_msg + "도착시간이 입력되었습니다.";
                     whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
-                    return_msg = return_msg + "출발시간이 입력되었습니다.";
+                    //return_msg = return_msg + "출발시간이 입력되었습니다.";
                     whenTime = false;
                 }
             } else if (msg.contains("오전")) {
                 if (!arrive_time_scene.equals("")) {
-                    return_msg = return_msg + "도착시간이 입력되었습니다.";
+                    //return_msg = return_msg + "도착시간이 입력되었습니다.";
                     whenTime = false;
                 }
                 if (!start_time_scene.equals("")) {
-                    return_msg = return_msg + "출발시간이 입력되었습니다.";
+                    //return_msg = return_msg + "출발시간이 입력되었습니다.";
                     whenTime = false;
                 }
 
@@ -264,10 +267,10 @@ public class Scenario {
 
                         if (msg.contains("오후")) {
                             convertTime();
-                            return_msg = return_msg + "도착시간이 입력되었습니다.";
+                            //return_msg = return_msg + "도착시간이 입력되었습니다.";
                             arriveTimeCount++;
                         } else if (msg.contains("오전")) {
-                            return_msg = return_msg + "도착시간이 입력되었습니다.";
+                            //return_msg = return_msg + "도착시간이 입력되었습니다.";
                             arriveTimeCount++;
                         } else {
                             whenTime = true;
@@ -291,10 +294,10 @@ public class Scenario {
 
                         if (msg.contains("오후")) {
                             convertTime();
-                            return_msg = return_msg + "출발시간이 입력되었습니다.";
+                            //return_msg = return_msg + "출발시간이 입력되었습니다.";
                             startTimeCount++;
                         } else if (msg.contains("오전")) {
-                            return_msg = return_msg + "출발시간이 입력되었습니다.";
+                            //return_msg = return_msg + "출발시간이 입력되었습니다.";
                             startTimeCount++;
                         } else {
                             whenTime = true;
@@ -344,7 +347,7 @@ public class Scenario {
                             || msg.substring(place_match_msg.end(),place_match_msg.end() + 1).equals("을")
                             || msg.substring(place_match_msg.end(),place_match_msg.end() + 1).equals("를")){
                         arrive_place_scene = place_match_msg.group();
-                        return_msg = return_msg + "도착지가 입력되었습니다.\n";
+                        //return_msg = return_msg + "도착지가 입력되었습니다.\n";
                         arrivePlaceCount++;
 
                         System.out.println("arrive: " + arrive_place_scene);
@@ -362,7 +365,7 @@ public class Scenario {
                     if (msg.substring(place_match_msg.end(), place_match_msg.end() + 2).equals("에서")
                             || msg.substring(place_match_msg.end(), place_match_msg.end() + 2).equals("부터")) {
                         start_place_scene = place_match_msg.group();
-                        return_msg = return_msg + "출발지가 입력되었습니다.\n";
+                        //return_msg = return_msg + "출발지가 입력되었습니다.\n";
                         startPlaceCount++;
 
                         System.out.println("start: " + start_place_scene);
@@ -376,7 +379,7 @@ public class Scenario {
 
             if (startPlaceCount == 0 && arrivePlaceCount == 0 && placeCount == 1 && placeSearchCount == 0) {
                 arrive_place_scene = place_match_msg.group();
-                return_msg = return_msg + "도착지가 입력되었습니다.\n";
+                //return_msg = return_msg + "도착지가 입력되었습니다.\n";
                 arrivePlaceCount++;
 
                 System.out.println("arrive: " + arrive_place_scene);
@@ -386,7 +389,7 @@ public class Scenario {
                 start_place_scene = arrive_place_scene;
                 arrive_place_scene = "";
                 arrive_place_scene = place_match_msg.group();
-                return_msg = return_msg + "출발지가 입력되었습니다.\n";
+                //return_msg = return_msg + "출발지가 입력되었습니다.\n";
                 startPlaceCount++;
 
 
@@ -398,11 +401,11 @@ public class Scenario {
         }
 
         if (whenTime == true) {
-            return_msg += "오전인지 오후인지 알려주세요.";
+            return_msg += "오전인가요?\n";
         }
 
         if (whatTimeCount == 1 && timeCount == 1 && whenTime == false) {
-            return_msg += "출발시간인지 도착시간인지 알려주세요.\n";
+            return_msg += "출발시간인가요?\n";
             error_code_scene = 1;
         }
 
@@ -413,7 +416,7 @@ public class Scenario {
             return_msg = return_msg + "목적지가 아직 입력되지 않았습니다.\n";
         }
         else if (!arrive_place_scene.equals("") && !start_place_scene.equals("")){
-            return_msg = return_msg + "장소는 모두 입력되었습니다.\n";
+            //return_msg = return_msg + "장소는 모두 입력되었습니다.\n";
         }
 
         if (!arrive_place_scene.equals("") && whatTimeCount == 0 && placeSearchCount == 0 && searchNo == false && whenTime == false && searchStart == false && msg != "" && !Util.isStringEmpty(msg)) {

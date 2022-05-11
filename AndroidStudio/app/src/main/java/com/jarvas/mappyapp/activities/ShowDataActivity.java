@@ -149,6 +149,7 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id1");
         System.out.println("실행되는중2");
 
+
         //tts 사용x
         while (tts.isSpeaking()) {
             System.out.println("아직 말하는중임");
@@ -169,9 +170,17 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
         //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id2");
         //tts 사용x
-        while (tts.isSpeaking()) {
-            System.out.println("아직 말하는중임");
-        }
+
+//        while (tts.isSpeaking()) {
+//            System.out.println("아직 말하는중임");
+//        }
+        Handler mHandler = new Handler();
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("으아아아앙들어왔쓰레드speakout");
+            }
+        },7000);
         System.out.println("말 끝남2");
         contextStorage.setCheckTTS(true);
         System.out.println("말 끝남2"+contextStorage.getCheckTTS());
@@ -190,7 +199,14 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                 Log.e("TTS", "This Language is not supported");
             }else{
                 System.out.println("실행되는중");
-                speakOut();
+                speakOut2("안녕하세요. 무엇을 도와드릴까요?");
+                Handler mHandler = new Handler();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("으아아아앙들어왔쓰레드speakout");
+                    }
+                },7000);
             }
         }else{
             Log.e("TTS", "Initialization Failed!");
@@ -327,7 +343,10 @@ public class ShowDataActivity extends AppCompatActivity implements TextToSpeech.
                 System.out.println();
                 System.out.println("여기다여기다여기"+ai_msg);
                 System.out.println("여기여깅겨ㅣㅇ겨ㅣ"+contextStorage.getmTextDataItems());
-                contextStorage.setmTextDataItems(ai_msg, 0);
+                if(!Util.isStringEmpty(ai_msg)) {
+                    contextStorage.setmTextDataItems(ai_msg, 0);
+                }
+
                 mTextDataAdapter.setFriendList(contextStorage.getmTextDataItems());
                 System.out.println("뿌애뿌애우우ㅐ우ㅒㅇㅇ"+contextStorage.getmTextDataItems().get(contextStorage.getmTextDataItems().size()-1).getTextData());
                 System.out.println("뿌뿌뿌뿌"+mTextDataAdapter.getTextItem());
