@@ -18,10 +18,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -123,6 +129,8 @@ public class InputActivity extends Activity {
     String intentStartTime;
     String intentDestinationTime;
 
+
+
     public boolean textToSpeechIsInitialized = false;
 
     @Override
@@ -130,7 +138,11 @@ public class InputActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_input);
+
+
+
         bus2.register(this);
+
         initView();
 
         // todo - 서버 확인 후 callbackActivity 함수 제거
@@ -636,6 +648,7 @@ public class InputActivity extends Activity {
         getApplicationContext().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
+
     @Override
     public void finish() {
         super.finish();
@@ -651,6 +664,7 @@ public class InputActivity extends Activity {
             tts.shutdown();
             tts = null;
         }
+
     }
 
     //검색예시 클릭시 이벤트 오토버스

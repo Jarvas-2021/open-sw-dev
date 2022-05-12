@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sttBtn = (Button)findViewById(R.id.sttStart);
         cThis = this;
 
-
         setStt();
         startWithTD();
 
@@ -497,6 +496,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(getApplicationContext(), InputActivity.class);
                 intent.putExtra("currentLocation",currentLocation);
                 searchMarker.setAlpha(0);
+                mRecognizer.destroy();
                 startActivity(intent);
                 break;
 
@@ -838,6 +838,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
         mMapView.setCurrentLocationTrackingMode(MapView.CurrentLocationTrackingMode.TrackingModeOff);
         mMapView.setShowCurrentLocationMarker(false);
+        mRecognizer.destroy();
+        System.out.println("destroy main");
     }
 
     @Override
