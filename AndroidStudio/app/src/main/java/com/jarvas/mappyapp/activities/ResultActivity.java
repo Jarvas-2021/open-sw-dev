@@ -34,6 +34,7 @@ import com.jarvas.mappyapp.models.ResultItem;
 import com.jarvas.mappyapp.models.Route;
 import com.jarvas.mappyapp.utils.ContextStorage;
 import com.jarvas.mappyapp.utils.StringResource;
+import com.jarvas.mappyapp.utils.Util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -62,6 +63,7 @@ public class ResultActivity extends AppCompatActivity implements TextToSpeech.On
     private Integer checkTimeResult;
 
     private com.jarvas.mappyapp.dialog.ProgressDialog customProgressDialog;
+
 
     EditText txtSystem;
     EditText txtInMsg;
@@ -172,7 +174,7 @@ public class ResultActivity extends AppCompatActivity implements TextToSpeech.On
         System.out.println("말 끝남2");
         contextStorage.setCheckTTS(true);
         System.out.println("말 끝남2" + contextStorage.getCheckTTS());
-    
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -185,7 +187,14 @@ public class ResultActivity extends AppCompatActivity implements TextToSpeech.On
         // 첫 번째 매개변수: 음성 출력을 할 텍스트
         // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
         //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
-        tts.speak(mResultItems.get(data).getPath().toString(), TextToSpeech.QUEUE_FLUSH, null, "id2");
+
+        if (data==4) {
+            tts.speak("최소 시간은"+mResultItems.get(0).getTime().toString()+"입니다.", TextToSpeech.QUEUE_FLUSH, null, "id3");
+        }
+        else {
+            tts.speak(mResultItems.get(data).getPath().toString(), TextToSpeech.QUEUE_FLUSH, null, "id2");
+        }
+
         //tts 사용x
 
 //        while (tts.isSpeaking()) {
@@ -292,17 +301,27 @@ public class ResultActivity extends AppCompatActivity implements TextToSpeech.On
         }
 
         public int check_input_start(ArrayList<String> msg) {
-            if (msg.contains("일") || msg.contains("첫번째") || msg.contains("1") || msg.contains("위")) {
+            if (msg.contains("일번") || msg.contains("첫번째") || msg.contains("1") || msg.contains("위")) {
+                System.out.println("첫번째 input start");
                 return 0;
             }
-            if (msg.contains("이") || msg.contains("두번째") || msg.contains("2")) {
+            if (msg.contains("이번") || msg.contains("두번째") || msg.contains("2")) {
+                System.out.println("두번째 input start");
                 return 1;
             }
-            if (msg.contains("삼") || msg.contains("세번째") || msg.contains("3")) {
+            if (msg.contains("삼번") || msg.contains("세번째") || msg.contains("3")) {
+                System.out.println("세번째 input start");
                 return 2;
             }
-            if (msg.contains("사") || msg.contains("네번째") || msg.contains("4")) {
+            if (msg.contains("사번") || msg.contains("네번째") || msg.contains("4")) {
+                System.out.println("네번째 input start");
                 return 3;
+            }
+            if (msg.contains("얼마나") || msg.contains("걸려")) {
+                return 4;
+            }
+            if (msg.contains("즐겨") || msg.contains("찾기")) {
+                return 5;
             }
 
             return 0;
@@ -317,21 +336,53 @@ public class ResultActivity extends AppCompatActivity implements TextToSpeech.On
             int num = -1;
             ArrayList<String> mResult = results.getStringArrayList(key);
             System.out.println("mresult"+mResult);
-            switch (check_input_start(mResult)) {
-                case 0:
-                    num = 0;
-                case 1:
-                    num = 1;
-                case 2:
-                    num = 2;
-                case 3:
-                    num = 3;
+            if (mResult.get(0).contains("일번") || mResult.get(0).contains("첫번째") || mResult.get(0).contains("첫 번째") || mResult.get(0).contains("위에") ||mResult.get(0).contains("첫 번째 읽어 줘")) {
+                System.out.println("첫번째 input start");
+                num= 0;
             }
+            if (mResult.get(0).contains("이번") || mResult.get(0).contains("두번째") ) {
+                System.out.println("두번째 input start");
+                num= 1;
+            }
+            if (mResult.get(0).contains("삼번") || mResult.get(0).contains("세번째") ) {
+                System.out.println("세번째 input start");
+                num= 2;
+            }
+            if (mResult.get(0).contains("사번") || mResult.get(0).contains("네번째") ) {
+                System.out.println("네번째 input start");
+                num= 3;
+            }
+            if (mResult.get(0).contains("얼마나") || mResult.get(0).contains("걸려")) {
+                num= 4;
+            }
+
+//            switch (check_input_start(mResult)) {
+//                case 0:
+//                    num = 0;
+//                case 1:
+//                    num = 1;
+//                case 2:
+//                    num = 2;
+//                case 3:
+//                    num = 3;
+//                case 4:
+//                    num = 4;
+//            }
             System.out.println("num"+num);
             String[] rs = new String[mResult.size()];
             if (num!=-1) {
                 speakOut2(num);
             }
+            Handler mHandler = new Handler();
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("으아아아앙들어왔쓰레드");
+
+                }
+            },6000);
+
+            mRecognizer.startListening(sttIntent);
             if (checkTriggerWord(mResult)) triggerinput = true;
             if (triggerinput == true) {
 
