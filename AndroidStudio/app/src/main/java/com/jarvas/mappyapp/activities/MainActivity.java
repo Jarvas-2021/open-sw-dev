@@ -142,16 +142,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onStart() {
         initView();
 
-        Handler mHandler = new Handler();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("으아아아앙들어왔쓰레드");
-                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
-                currentPlace.setCurrentLocation(currentLocation);
-
-            }
-        },7000);
+//        Handler mHandler = new Handler();
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                System.out.println("으아아아앙들어왔쓰레드");
+//                currentLocation = Util.getCompleteAddressString(getApplicationContext(),mCurrentLat,mCurrentLng).replace("\n","");
+//                currentPlace.setCurrentLocation(currentLocation);
+//
+//            }
+//        },7000);
 
         intentSearchPlace="";
         Intent intent = getIntent();
@@ -421,20 +421,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Log.e("test", response.message());
                             }
                             // 첫번째걸로 선택해줌
-                            if (documentArrayList.size()!=0) {
-                                mSearchAddress = documentArrayList.get(0).getAddressName();
-                                System.out.println("search result" + documentArrayList.get(0).getAddressName());
-
-
-                                Handler mHandler = new Handler();
-                                mHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        System.out.println("으아아아앙들어왔어쓰레드");
-                                        BusProvider.getInstance().post(documentArrayList.get(0));
-                                    }
-                                },3000);
-                            }
+//                            if (documentArrayList.size()!=0) {
+//                                mSearchAddress = documentArrayList.get(0).getAddressName();
+//                                System.out.println("search result" + documentArrayList.get(0).getAddressName());
+//
+//
+////                                Handler mHandler = new Handler();
+////                                mHandler.postDelayed(new Runnable() {
+////                                    @Override
+////                                    public void run() {
+////                                        System.out.println("으아아아앙들어왔어쓰레드");
+////                                        //BusProvider.getInstance().post(documentArrayList.get(0));
+////                                    }
+////                                },3000);
+//                            }
                         }
 
                         @Override
