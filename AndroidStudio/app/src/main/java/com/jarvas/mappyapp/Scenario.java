@@ -162,7 +162,7 @@ public class Scenario {
         int placeSearchCount = 0;
 
         // 설정창 액티비티로 이동
-        if (msg.contains("설정")) {
+        if (msg.contains("설정창")) {
             ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
             Intent intent = new Intent(ContextStorage.getCtx(), SettingActivity.class);
             ContextStorage.getCtx().startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -238,7 +238,8 @@ public class Scenario {
         if (searchStart) {
             //긍정의 대답일 경우
             if (msg.contains("네") || msg.contains("그래") || msg.contains("예") || msg.contains("응")
-                    || msg.contains("엉") || msg.contains("웅") || msg.contains("웅웅") || msg.contains("음") || msg.contains("어")) {
+                    || msg.contains("엉") || msg.contains("웅") || msg.contains("웅웅") || msg.contains("음") || msg.contains("어")
+                    || msg.contains("검색")) {
                 ((ContextStorage) ContextStorage.getCtx().getApplicationContext()).setEnd_point_show_data(true);
                 return_msg += "검색을 시작하겠습니다.";
                 Intent intent = new Intent(ContextStorage.getCtx(), InputActivity.class);
