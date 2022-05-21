@@ -1,5 +1,6 @@
 # open-sw-dev
 Mappy
+![20210520_2022졸업작품집_포스터-24](https://user-images.githubusercontent.com/75442105/169656979-f333de63-4355-4ad7-b190-760b9408d522.jpg)
 
 
 
